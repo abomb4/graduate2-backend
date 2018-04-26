@@ -134,4 +134,24 @@ public class Demand {
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
     }
+
+    @Override
+    public String toString() {
+        return "Demand{" +
+                "id=" + id +
+                ", demandNo='" + demandNo + '\'' +
+                ", publisherId=" + publisherId +
+                ", positionType='" + positionType + '\'' +
+                ", position='" + position + '\'' +
+                ", departmentId=" + departmentId +
+                ", hrName='" + hrName + '\'' +
+                ", total=" + total +
+                ", workingPlace='" + workingPlace + '\'' +
+                ", degreeRequest='" + degreeRequest + '\'' +
+                ", status=" + status +
+                ", memo='" + memo + '\'' +
+                ", gmtCreate=" + gmtCreate +
+                ", gmtModify=" + gmtModify +
+                '}';
+    }
 }
