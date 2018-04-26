@@ -1,0 +1,22 @@
+CREATE FUNCTION `nextval_bunch`(`i_seq_name` varchar(50), `i_size` int) RETURNS bigint(20)
+    MODIFIES SQL DATA
+    COMMENT '可以一次取多个流水号'
+BEGIN
+	declare v_value bigint;
+	declare v_increment int;
+
+	select current_value, increment into v_value, v_increment from sequences where name = i_seq_name limit 1 for update;
+
+	UPDATE fund_sequence SET current_value = current_value + increment + i_size - 1 WHERE name = i_seq_name;
+
+	set v_value = v_value + v_increment;
+	return v_value;
+END
+
+CREATE TABLE `sequences` (
+  `ID` bigint(16) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `current_value` bigint(11) NOT NULL,
+  `increment` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`ID`)
+) DEFAULT CHARSET=utf8
