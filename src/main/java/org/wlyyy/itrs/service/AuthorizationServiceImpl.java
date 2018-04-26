@@ -10,6 +10,7 @@ import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.utils.SecurityUtils;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -34,7 +35,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             // 4. 存储到分布式缓存
             final String sessionKey = SecurityUtils.generateSessionKey(user, clientIp, LocalDateTime.now());
             // TODO ROLES!!!!!!!!!!!!!!!!!!1
-            final Set<Role> roles = null;
+            final Set<Role> roles = new HashSet<>();
             final UserAgent userAgent = new UserAgent()
                     .setSessionKey(sessionKey)
                     .setId(user.getId())
@@ -51,11 +52,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
             // Put to distributed cache
             cache.put(sessionKey, userAgent, UserAgent.class);
+            return new BaseServiceResponse<>(true, "Login successfully", userAgent, null);
 
         } else {
             return new BaseServiceResponse<>(false, "Validate failed", null, null);
         }
-        return null;
     }
 
     @Override

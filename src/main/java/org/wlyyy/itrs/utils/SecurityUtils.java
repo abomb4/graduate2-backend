@@ -52,7 +52,7 @@ public class SecurityUtils {
         final String format = time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         final String toEncrypt = user.getUserName() + clientIp + format;
 
-        final String encrypted = new String(DigestUtils.md5(toEncrypt), Charset.forName("UTF-8"));
+        final String encrypted = DigestUtils.md5Hex(toEncrypt);
 
         return encrypted;
     }
