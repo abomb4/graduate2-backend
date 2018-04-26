@@ -16,8 +16,7 @@ public class DemandQuery {
     private Long totalStart;
     private Long totalEnd;
     private String workingPlace;
-    private String degreeRequestStart;
-    private String degreeRequestEnd;
+    private String degreeRequest;
     private Integer status;
     private String memo;
     private java.util.Date gmtCreateStart;
@@ -29,143 +28,152 @@ public class DemandQuery {
         return id;
     }
 
-    public void setId(Long id) {
+    public DemandQuery setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getDemandNo() {
         return demandNo;
     }
 
-    public void setDemandNo(String demandNo) {
+    public DemandQuery setDemandNo(String demandNo) {
         this.demandNo = demandNo;
+        return this;
     }
 
     public Long getPublisherId() {
         return publisherId;
     }
 
-    public void setPublisherId(Long publisherId) {
+    public DemandQuery setPublisherId(Long publisherId) {
         this.publisherId = publisherId;
+        return this;
     }
 
     public String getPositionType() {
         return positionType;
     }
 
-    public void setPositionType(String positionType) {
+    public DemandQuery setPositionType(String positionType) {
         this.positionType = positionType;
+        return this;
     }
 
     public String getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public DemandQuery setPosition(String position) {
         this.position = position;
+        return this;
     }
 
     public Long getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(Long departmentId) {
+    public DemandQuery setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+        return this;
     }
 
     public String getHrName() {
         return hrName;
     }
 
-    public void setHrName(String hrName) {
+    public DemandQuery setHrName(String hrName) {
         this.hrName = hrName;
+        return this;
     }
 
     public Long getTotalStart() {
         return totalStart;
     }
 
-    public void setTotalStart(Long totalStart) {
+    public DemandQuery setTotalStart(Long totalStart) {
         this.totalStart = totalStart;
+        return this;
     }
 
     public Long getTotalEnd() {
         return totalEnd;
     }
 
-    public void setTotalEnd(Long totalEnd) {
+    public DemandQuery setTotalEnd(Long totalEnd) {
         this.totalEnd = totalEnd;
+        return this;
     }
 
     public String getWorkingPlace() {
         return workingPlace;
     }
 
-    public void setWorkingPlace(String workingPlace) {
+    public DemandQuery setWorkingPlace(String workingPlace) {
         this.workingPlace = workingPlace;
+        return this;
     }
 
-    public String getDegreeRequestStart() {
-        return degreeRequestStart;
+    public String getDegreeRequest() {
+        return degreeRequest;
     }
 
-    public void setDegreeRequestStart(String degreeRequestStart) {
-        this.degreeRequestStart = degreeRequestStart;
-    }
-
-    public String getDegreeRequestEnd() {
-        return degreeRequestEnd;
-    }
-
-    public void setDegreeRequestEnd(String degreeRequestEnd) {
-        this.degreeRequestEnd = degreeRequestEnd;
+    public DemandQuery setDegreeRequest(String degreeRequest) {
+        this.degreeRequest = degreeRequest;
+        return this;
     }
 
     public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public DemandQuery setStatus(Integer status) {
         this.status = status;
+        return this;
     }
 
     public String getMemo() {
         return memo;
     }
 
-    public void setMemo(String memo) {
+    public DemandQuery setMemo(String memo) {
         this.memo = memo;
+        return this;
     }
 
     public Date getGmtCreateStart() {
         return gmtCreateStart;
     }
 
-    public void setGmtCreateStart(Date gmtCreateStart) {
+    public DemandQuery setGmtCreateStart(Date gmtCreateStart) {
         this.gmtCreateStart = gmtCreateStart;
+        return this;
     }
 
     public Date getGmtCreateEnd() {
         return gmtCreateEnd;
     }
 
-    public void setGmtCreateEnd(Date gmtCreateEnd) {
+    public DemandQuery setGmtCreateEnd(Date gmtCreateEnd) {
         this.gmtCreateEnd = gmtCreateEnd;
+        return this;
     }
 
     public Date getGmtModifyStart() {
         return gmtModifyStart;
     }
 
-    public void setGmtModifyStart(Date gmtModifyStart) {
+    public DemandQuery setGmtModifyStart(Date gmtModifyStart) {
         this.gmtModifyStart = gmtModifyStart;
+        return this;
     }
 
     public Date getGmtModifyEnd() {
         return gmtModifyEnd;
     }
 
-    public void setGmtModifyEnd(Date gmtModifyEnd) {
+    public DemandQuery setGmtModifyEnd(Date gmtModifyEnd) {
         this.gmtModifyEnd = gmtModifyEnd;
+        return this;
     }
 }
