@@ -5,39 +5,38 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.wlyyy.common.domain.BaseServiceResponse;
-import org.wlyyy.itrs.domain.Role;
 import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.service.AuthorizationService;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * AbstractAuthenticationProcessingFilter 调用 UsernamePasswordAuthenticationFilter 中的attemptAuthentication方法，
+ * 将表单请求的信息（用户、密码等信息）赋值给UsernamePasswordAuthenticationToken（authRequest），
+ * 然后调用AbstractAuthenticationProcessingFilter 中的AuthenticationManager类中的（默认是ProviderManager类）
+ * 方法——getAuthenticationManager().authenticate(authRequest)对用户密码的正确性进行验证，
+ * 认证失败就抛出异常，成功就返回Authentication对象。
+ *
+ * @author wly
+ */
 @Configuration
 public class AuthenticationProviderConfigurator {
 
-    @Bean
-    public UserServiceSpringProvider springAuthenticationProvider(AuthorizationService authService) {
-        return new UserServiceSpringProvider(authService);
-    }
-
+    /**
+     * 这东西是校验入口，继承了AbstractAuthenticationProcessingFilter
+     *
+     * @param manager 密码管理服务，boot默认生成的
+     * @return UsernamePasswordAuthenticationFilter
+     */
     @Bean
     public UsernamePasswordAuthenticationFilter getUsernamePasswordAuthenticationFilter(AuthenticationManager manager) {
         final UsernamePasswordAuthenticationFilter filter = new UsernamePasswordAuthenticationFilter();
@@ -49,6 +48,17 @@ public class AuthenticationProviderConfigurator {
             response.setHeader("Content-Type", "application/json;charset=UTF-8");
         });
         return filter;
+    }
+
+    /**
+     * 创建一个AuthenticationProvider，用于校验登录信息
+     *
+     * @param authService 我们自己的校验服务
+     * @return AuthenticationProvider
+     */
+    @Bean
+    public UserServiceSpringProvider springAuthenticationProvider(AuthorizationService authService) {
+        return new UserServiceSpringProvider(authService);
     }
 
     @Bean
