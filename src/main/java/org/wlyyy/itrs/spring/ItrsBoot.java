@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = "org.wlyyy.itrs")
 @MapperScan(basePackages = "org.wlyyy.itrs.dao")
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude={org.activiti.spring.boot.SecurityAutoConfiguration.class})
 public class ItrsBoot {
 
     public static void main(String[] args) {

@@ -12,7 +12,6 @@ import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.service.AuthorizationService;
 import org.wlyyy.itrs.service.UserService;
-import org.wlyyy.itrs.spring.AuthenticationProviderConfigurator;
 
 import javax.servlet.http.HttpServletRequest;
 
