@@ -79,7 +79,7 @@ public interface UserRepository {
         String getUpdate(User user) {
             Objects.requireNonNull(user.getId(), "Cannot update when id is null");
 
-            builder.append("update user put ");
+            builder.append("update user set ");
 
             tryAppend(user.getUserName(), "user_name = #{userName}");
             tryAppend(user.getEmail(), "email = #{email}");

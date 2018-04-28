@@ -6,8 +6,6 @@ import org.wlyyy.itrs.domain.Demand;
 import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.request.DemandQuery;
 
-import javax.management.Query;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 

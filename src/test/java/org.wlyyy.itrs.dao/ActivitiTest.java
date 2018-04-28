@@ -22,9 +22,6 @@ import java.util.zip.ZipInputStream;
 public class ActivitiTest {
 
     @Autowired
-    private DemandRepository dao;
-
-    @Autowired
     RepositoryService repositoryService;
 
     @Autowired
