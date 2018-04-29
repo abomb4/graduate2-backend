@@ -2,9 +2,11 @@ package org.wlyyy.itrs.dao;
 
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.wlyyy.itrs.domain.Demand;
 import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.request.DemandQuery;
+import org.springframework.data.domain.Sort.Order;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,18 +19,27 @@ import java.util.Objects;
 @Mapper
 public interface DemandRepository {
 
+    /**
+     * 根据id查询招聘需求
+     *
+     * @param id id
+     * @return 招聘需求
+     */
     @Select("select * from demand where id = #{id}")
-    Demand getById(Long id);
+    Demand findById(Long id);
 
-    @SelectProvider(type = DemandQueryProvider.class, method = "selectDemand")
+    @SelectProvider(type = DemandQueryProvider.class, method = "select")
     List<Demand> findByCondition(@Param("demand") DemandQuery queryObject, Pageable page);
+
+    @SelectProvider(type = DemandQueryProvider.class, method = "count")
+    long countByCondition(@Param("demand") DemandQuery queryObject);
 
     /**
      * 新建招聘需求，忽略id、gmtCreate、gmtModify字段
      * @param demand 招聘需求
      */
-    @Insert("insert into demand (demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, gmt_create, gmt_modify) values (" +
-            "#{demandNo}, #{publisherId}, #{positionType}, #{position}, #{departmentId}, #{hrName}, #{total}, #{workingPlace}, #{degreeRequest}, 1, #{memo}, now(), now())")
+    @Insert("insert into demand (demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify) values (" +
+            "#{demandNo}, #{publisherId}, #{positionType}, #{position}, #{departmentId}, #{hrName}, #{total}, #{workingPlace}, #{degreeRequest}, 1, #{memo}, #{procKey}, now(), now())")
     @SelectKey(statement = "select last_insert_id()", keyProperty = "id", before = false, resultType = Long.class)
     void insert(Demand demand);
 
@@ -74,6 +85,7 @@ public interface DemandRepository {
             tryAppend(demand.getDegreeRequest(), "degree_request = #{degreeRequest}");
             tryAppend(demand.getStatus(), "status = #{status}");
             tryAppend(demand.getMemo(), "memo = #{memo}");
+            tryAppend(demand.getProcKey(), "proc_key = #{procKey}");
 
             // 不能全都是空
             if (first) {
@@ -86,71 +98,128 @@ public interface DemandRepository {
         }
     }
 
+
     /**
      * 动态查询
      */
     class DemandQueryProvider {
-        public static String selectDemand(@Param("demand") DemandQuery demand, Pageable page) {
+        public static String select(@Param("demand") DemandQuery demand, Pageable page) {
             return new DemandRepository.DemandQueryProvider().getSelect(demand, page);
+        }
+        public static String count(@Param("demand") DemandQuery demand) {
+            return new DemandRepository.DemandQueryProvider().getCount(demand);
         }
 
         static String DELIMITER = " and ";
-        static String WHERE = " where ";
 
         boolean first = true;
         final StringBuilder builder = new StringBuilder();
 
-        private void tryAppend(Object o, String forAppend) {
+        private void tryAppendWhere(Object o, String forAppend) {
             if (Objects.nonNull(o) && !"".equals(o)) {
                 if (!first) {
                     builder.append(DELIMITER);
                 } else {
-                    builder.append(WHERE);
+                    builder.append(" where ");
                 }
                 first = false;
                 builder.append(forAppend);
             }
         }
 
-        private String getSelect(DemandQuery demand, Pageable page) {
+        /**
+         * 获取查询条件count sql
+         *
+         * @param demand 招聘需求查询对象
+         * @return sql语句
+         */
+        private String getCount(DemandQuery demand) {
             if (demand == null) {
-                return St.r("select {} from demand {}",
-                        "id, demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, gmt_create, gmt_modify",
-                        getPage(page)
-                );
+                return "select count(*) from demand";
             }
-            builder.append("select id, demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, gmt_create, gmt_modify from demand where ");
 
-            String hrName = "concat('%', #{demand.hrName}, '%')";
-            String workingPlace = "concat('%', #{demand.workingPlace}, '%')";
+            builder.append("select count(*) from demand where ");
 
-            tryAppend(demand.getId(), "id = #{demand.id}");
-            tryAppend(demand.getDemandNo(), "demand_no = #{demand.demandNo}");
-            tryAppend(demand.getPublisherId(), "publisher_id = #{demand.publisherId}");
-            tryAppend(demand.getPositionType(), "position_type = #{demand.positionType}");
-            tryAppend(demand.getPosition(), "position = #{demand.position}");
-            tryAppend(demand.getDepartmentId(), "department_id = #{demand.departmentId}");
-            tryAppend(demand.getHrName(), "hr_name like " + hrName);
-            tryAppend(demand.getTotalStart(), "total >= #{demand.totalStart}");
-            tryAppend(demand.getTotalEnd(), "total <= #{demdemand.totalEnd}");
-            tryAppend(demand.getWorkingPlace(), "working_place like " + workingPlace);
-            tryAppend(demand.getDegreeRequest(), "degree_request = #{demand.degreeRequest}");
-            tryAppend(demand.getStatus(), "status = #{demand.status}");
-            tryAppend(demand.getMemo(), "memo = #{demand.memo}");
-            tryAppend(demand.getGmtCreateStart(), "gmt_create >= #{demand.gmtCreateStart}");
-            tryAppend(demand.getGmtCreateEnd(), "gmt_create <= #{demdemand.and.gmtCreateEnd}");
-            tryAppend(demand.getGmtModifyStart(), "gmt_modify >= #{demand.gmtModifyStart}");
-            tryAppend(demand.getGmtModifyEnd(), "gmt_modify <= #{demand.gmtModifyEnd}");
-
+            packageWhere(demand);
 
             // 不能全都是空
             if (first) {
                 throw new IllegalArgumentException("One of query condition should be not null");
             }
 
+            return builder.toString();
+        }
+
+        /**
+         * 获取查询条件sql
+         *
+         * @param demand 招聘需求查询对象
+         * @param page 分页对象
+         * @return sql语句
+         */
+        private String getSelect(DemandQuery demand, Pageable page) {
+            if (demand == null) {
+                return St.r("select {} from demand {}",
+                        "id, demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify",
+                        getPage(page)
+                );
+            }
+            builder.append("select id, demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify from demand");
+
+            packageWhere(demand);
+
+            // 不能全都是空
+            if (first) {
+                throw new IllegalArgumentException("One of query condition should be not null");
+            }
+
+            builder.append(getOrder(page));
             builder.append(" ").append(getPage(page));
 
             return builder.toString();
+        }
+
+        private void packageWhere(DemandQuery demand) {
+            String hrName = "concat('%', #{demand.hrName}, '%')";
+            String workingPlace = "concat('%', #{demand.workingPlace}, '%')";
+
+            tryAppendWhere(demand.getId(), "id = #{demand.id}");
+            tryAppendWhere(demand.getDemandNo(), "demand_no = #{demand.demandNo}");
+            tryAppendWhere(demand.getPublisherId(), "publisher_id = #{demand.publisherId}");
+            tryAppendWhere(demand.getPositionType(), "position_type = #{demand.positionType}");
+            tryAppendWhere(demand.getPosition(), "position = #{demand.position}");
+            tryAppendWhere(demand.getDepartmentId(), "department_id = #{demand.departmentId}");
+            tryAppendWhere(demand.getHrName(), "hr_name like " + hrName);
+            tryAppendWhere(demand.getTotalStart(), "total >= #{demand.totalStart}");
+            tryAppendWhere(demand.getTotalEnd(), "total <= #{demdemand.totalEnd}");
+            tryAppendWhere(demand.getWorkingPlace(), "working_place like " + workingPlace);
+            tryAppendWhere(demand.getDegreeRequest(), "degree_request = #{demand.degreeRequest}");
+            tryAppendWhere(demand.getStatus(), "status = #{demand.status}");
+            tryAppendWhere(demand.getMemo(), "memo = #{demand.memo}");
+            tryAppendWhere(demand.getProcKey(), "proc_key = #{demand.procKey}");
+            tryAppendWhere(demand.getGmtCreateStart(), "gmt_create >= #{demand.gmtCreateStart}");
+            tryAppendWhere(demand.getGmtCreateEnd(), "gmt_create <= #{demand.gmtCreateEnd}");
+            tryAppendWhere(demand.getGmtModifyStart(), "gmt_modify >= #{demand.gmtModifyStart}");
+            tryAppendWhere(demand.getGmtModifyEnd(), "gmt_modify <= #{demand.gmtModifyEnd}");
+        }
+
+        private String getOrder(Pageable page) {
+            final StringBuilder sortBuilder =  new StringBuilder();
+            if (page.getSort() != null) {
+                Sort sort = page.getSort();
+                int count = 0;
+                for (Order order: sort) {
+                    if (count == 0) {
+                        // 第一个order
+                        sortBuilder.append(" order by ");
+                        sortBuilder.append(order.getProperty()).append(" ").append(order.getDirection());
+                    } else {
+                        sortBuilder.append(", ").append(order.getProperty()).append(" ").append(order.getDirection());
+                    }
+                    count++;
+                }
+            }
+            return sortBuilder.toString();
         }
 
         private String getPage(Pageable page) {

@@ -1,5 +1,7 @@
 package org.wlyyy.itrs.request;
 
+import org.springframework.data.domain.Sort;
+
 import java.util.Date;
 
 /**
@@ -18,11 +20,13 @@ public class DemandQuery {
     private String workingPlace;
     private String degreeRequest;
     private Integer status;
+    private String procKey;
     private String memo;
     private java.util.Date gmtCreateStart;
     private java.util.Date gmtCreateEnd;
     private java.util.Date gmtModifyStart;
     private java.util.Date gmtModifyEnd;
+    private Sort sort;
 
     public Long getId() {
         return id;
@@ -132,6 +136,15 @@ public class DemandQuery {
         return this;
     }
 
+    public String getProcKey() {
+        return procKey;
+    }
+
+    public DemandQuery setProcKey(String procKey) {
+        this.procKey = procKey;
+        return this;
+    }
+
     public String getMemo() {
         return memo;
     }
@@ -174,6 +187,15 @@ public class DemandQuery {
 
     public DemandQuery setGmtModifyEnd(Date gmtModifyEnd) {
         this.gmtModifyEnd = gmtModifyEnd;
+        return this;
+    }
+
+    public Sort getSort() {
+        return sort;
+    }
+
+    public DemandQuery setSort(Sort sort) {
+        this.sort = sort;
         return this;
     }
 }

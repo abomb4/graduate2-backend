@@ -1,5 +1,6 @@
 package org.wlyyy.itrs.request;
 
+import org.springframework.data.domain.Sort;
 import org.wlyyy.itrs.dao.UserRepository;
 
 import java.util.Date;
@@ -17,6 +18,7 @@ public class UserQuery {
     private Date gmtCreateEnd;
     private Date gmtModifyStart;
     private Date gmtModifyEnd;
+    private Sort sort;
 
     public Long getId() {
         return id;
@@ -96,6 +98,15 @@ public class UserQuery {
 
     public UserQuery setGmtModifyEnd(Date gmtModifyEnd) {
         this.gmtModifyEnd = gmtModifyEnd;
+        return this;
+    }
+
+    public Sort getSort() {
+        return sort;
+    }
+
+    public UserQuery setSort(Sort sort) {
+        this.sort = sort;
         return this;
     }
 }

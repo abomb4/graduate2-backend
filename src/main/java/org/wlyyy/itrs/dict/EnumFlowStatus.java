@@ -1,22 +1,21 @@
 package org.wlyyy.itrs.dict;
 
 /**
- * 需求状态枚举。
- *
- * @author wly
+ * 流程状态枚举
  */
-public enum EnumDemandStatus implements IDictionary<Integer> {
+public enum EnumFlowStatus  implements IDictionary<Integer> {
 
-    NORMAL(1, "normal", "正常"),
-    FULL(2, "full", "人数已满"),
-    DELETED(3, "deleted", "已删除"),
-    ;
+
+    EXECUTION(1, "execution", "执行中"),
+    FINISH(2, "finish", "结束"),
+    EXCEPTION(3, "exception", "异常"),
+            ;
 
     private final Integer code;
     private final String name;
     private final String desc;
 
-    EnumDemandStatus(Integer code, String name, String desc) {
+    EnumFlowStatus(Integer code, String name, String desc) {
         this.code = code;
         this.name = name;
         this.desc = desc;

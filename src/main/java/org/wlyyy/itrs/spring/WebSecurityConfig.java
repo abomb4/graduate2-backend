@@ -10,10 +10,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.wlyyy.common.utils.StringTemplateUtils.St;
+import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.service.AuthorizationServiceImpl;
 
 @Configuration
@@ -26,7 +29,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/myprofile/*").authenticated()
-                .antMatchers("/auth/check-status").anonymous()
                 .anyRequest().permitAll()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and().csrf().disable()
@@ -51,8 +53,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setAuthenticationManager(manager);
         filter.setFilterProcessesUrl("/auth/login");
         filter.setAuthenticationSuccessHandler((request, response, authentication) -> {
-            final int keyHash = ((RememberMeAuthenticationToken) authentication).getKeyHash();
-            response.getOutputStream().print(St.r("{ \"status\": 200, \"sessionKey\": \"{}\" }", keyHash));
+            final UserAgent userAgent = (UserAgent) authentication.getDetails();
+            final String sessionKey = userAgent.getSessionKey();
+            response.getOutputStream().print(St.r("{ \"status\": 200, \"sessionKey\": \"{}\" }", sessionKey));
             response.setStatus(200);
             response.setHeader("Content-Type", "application/json;charset=UTF-8");
         });

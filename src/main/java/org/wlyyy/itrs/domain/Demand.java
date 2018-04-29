@@ -19,6 +19,7 @@ public class Demand {
     private String workingPlace;
     private String degreeRequest;
     private Integer status;
+    private String procKey; // 部署流程key
     private String memo;
     private java.util.Date gmtCreate;
     private java.util.Date gmtModify;
@@ -111,6 +112,10 @@ public class Demand {
         this.status = status;
     }
 
+    public String getProcKey() { return procKey; }
+
+    public void setProcKey(String procKey) { this.procKey = procKey; }
+
     public String getMemo() {
         return memo;
     }
@@ -149,6 +154,7 @@ public class Demand {
                 ", workingPlace='" + workingPlace + '\'' +
                 ", degreeRequest='" + degreeRequest + '\'' +
                 ", status=" + status +
+                ", procKey='" + procKey + '\'' +
                 ", memo='" + memo + '\'' +
                 ", gmtCreate=" + gmtCreate +
                 ", gmtModify=" + gmtModify +

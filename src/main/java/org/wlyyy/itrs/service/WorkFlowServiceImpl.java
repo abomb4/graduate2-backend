@@ -70,7 +70,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
     public BaseServiceResponse<Deployment> deployWorkFlow_zip(String zipName, String deployName) {
         try {
             // 读取classpath下的zip文件
-            String pathName = "processes/" + zipName;
+            String pathName = "processes/" + zipName + ".zip";
             InputStream in = this.getClass().getClassLoader().getResourceAsStream(pathName);
             ZipInputStream zipInputStream = new ZipInputStream(in);
             Deployment deployment = repositoryService.createDeployment()
@@ -80,7 +80,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
             return new BaseServiceResponse<>(true, "Deploy success", deployment, null);
         } catch (Exception e) {
             e.printStackTrace();
-            return new BaseServiceResponse<>(false, "Deploy fail", null, null);
+            return new BaseServiceResponse<>(false, "Deploy fail", null, e);
         }
     }
 
@@ -179,7 +179,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
         }
 
         return new BaseServicePageableResponse<>(
-                true, "DeploymentList query success!", taskList,
+                true, "TaskList query success!", taskList,
                 request.getPageNo(), request.getPageSize(),  count
         );
     }

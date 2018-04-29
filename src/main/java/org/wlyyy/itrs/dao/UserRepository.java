@@ -3,6 +3,7 @@ package org.wlyyy.itrs.dao;
 import java.util.List;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.request.UserQuery;
@@ -116,10 +117,12 @@ public interface UserRepository {
         boolean first = true;
         final StringBuilder builder = new StringBuilder();
 
-        private void tryAppend(Object o, String forAppend) {
+        private void tryAppendWhere(Object o, String forAppend) {
             if (Objects.nonNull(o) && !"".equals(o)) {
                 if (!first) {
                     builder.append(DELIMITER);
+                } else {
+                    builder.append(" where ");
                 }
                 first = false;
                 builder.append(forAppend);
@@ -172,6 +175,7 @@ public interface UserRepository {
                 throw new IllegalArgumentException("One of query condition should be not null");
             }
 
+            builder.append(getOrder(page));
             builder.append(" ").append(getPage(page));
 
             return builder.toString();
@@ -181,15 +185,34 @@ public interface UserRepository {
             String userName = "concat('%', #{user.userName}, '%')";
             String realName = "concat('%', #{user.realName}, '%')";
 
-            tryAppend(user.getId(), "id = #{id}");
-            tryAppend(user.getUserName(), "user_name like " + userName);
-            tryAppend(user.getEmail(), "email = #{user.email}");
-            tryAppend(user.getDepartmentId(), "department_id = #{user.departmentId}");
-            tryAppend(user.getRealName(), "real_name like " + realName);
-            tryAppend(user.getGmtCreateStart(), "gmt_create >= #{user.gmtCreateStart}");
-            tryAppend(user.getGmtCreateEnd(), "gmt_create <= #{user.gmtCreateEnd}");
-            tryAppend(user.getGmtModifyStart(), "gmt_modify >= #{user.gmtModifyStart}");
-            tryAppend(user.getGmtModifyEnd(), "gmt_modify <= #{user.gmtModifyEnd}");
+            tryAppendWhere(user.getId(), "id = #{id}");
+            tryAppendWhere(user.getUserName(), "user_name like " + userName);
+            tryAppendWhere(user.getEmail(), "email = #{user.email}");
+            tryAppendWhere(user.getDepartmentId(), "department_id = #{user.departmentId}");
+            tryAppendWhere(user.getRealName(), "real_name like " + realName);
+            tryAppendWhere(user.getGmtCreateStart(), "gmt_create >= #{user.gmtCreateStart}");
+            tryAppendWhere(user.getGmtCreateEnd(), "gmt_create <= #{user.gmtCreateEnd}");
+            tryAppendWhere(user.getGmtModifyStart(), "gmt_modify >= #{user.gmtModifyStart}");
+            tryAppendWhere(user.getGmtModifyEnd(), "gmt_modify <= #{user.gmtModifyEnd}");
+        }
+
+        private String getOrder(Pageable page) {
+            final StringBuilder sortBuilder =  new StringBuilder();
+            if (page.getSort() != null) {
+                Sort sort = page.getSort();
+                int count = 0;
+                for (Sort.Order order: sort) {
+                    if (count == 0) {
+                        // 第一个order
+                        sortBuilder.append(" order by ");
+                        sortBuilder.append(order.getProperty()).append(" ").append(order.getDirection());
+                    } else {
+                        sortBuilder.append(", ").append(order.getProperty()).append(" ").append(order.getDirection());
+                    }
+                    count++;
+                }
+            }
+            return sortBuilder.toString();
         }
 
         private String getPage(Pageable page) {

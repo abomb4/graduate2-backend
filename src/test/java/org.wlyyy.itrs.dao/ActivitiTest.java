@@ -10,6 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.wlyyy.common.domain.BaseRestResponse;
+import org.wlyyy.common.domain.BaseServiceResponse;
+import org.wlyyy.itrs.service.WorkFlowService;
 import org.wlyyy.itrs.spring.ItrsBoot;
 
 import java.io.InputStream;
@@ -27,6 +30,9 @@ public class ActivitiTest {
     @Autowired
     RuntimeService runtimeService;
 
+    @Autowired
+    private WorkFlowService workFlowService;
+
     @Test
     public void test() {
 
@@ -40,5 +46,20 @@ public class ActivitiTest {
         System.out.println("部署ID："+deployment.getId());
         System.out.println("部署名称："+deployment.getName());
 
+    }
+
+    @Test
+    public void deployWorkFlow_zip() {
+        String zipName = "twoInterviews";
+        String deployName = "两轮面试";
+        BaseServiceResponse<Deployment> deploymentResult = workFlowService.deployWorkFlow_zip(zipName, deployName);
+        if (deploymentResult.isSuccess()) {
+            Deployment deployment = deploymentResult.getData();
+            System.out.println(deployment.getId());
+            System.out.println(deployment.getName());
+            System.out.println("部署成功");
+        } else {
+            System.out.println("部署失败");
+        }
     }
 }
