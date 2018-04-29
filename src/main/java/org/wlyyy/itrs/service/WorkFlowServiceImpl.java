@@ -185,7 +185,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
 
     @Override
     public BaseServiceResponse<Task> findCurrentTaskByApplyId(Long id) {
-        String bussinessKey = EnumTableName.APPLY_FLOW.getCode() + id;
+        String bussinessKey = EnumTableName.APPLY_FLOW.getCode() + "." + id;
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(bussinessKey)
                 .singleResult();
@@ -237,7 +237,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
 
     @Override
     public BaseServiceResponse<Boolean> isFinishByApplyId(Long id) {
-        String bussinessKey = EnumTableName.APPLY_FLOW.getCode() + id;
+        String bussinessKey = EnumTableName.APPLY_FLOW.getCode() + "." + id;
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(bussinessKey)
                 .singleResult();
@@ -254,7 +254,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
     public BaseServiceResponse<List<String>> findCurrentOutcomeListByApplyId(Long id) {
         // 存放连线的名称集合
         List<String> list = new ArrayList<String>();
-        String bussinessKey = EnumTableName.APPLY_FLOW.getCode() + id;
+        String bussinessKey = EnumTableName.APPLY_FLOW.getCode() + "." + id;
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(bussinessKey)
                 .singleResult();
@@ -300,7 +300,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
     }
 
     @Override
-    public void completeRecommendTask(WorkFlow workFlow) {
+    public BaseServiceResponse<String> completeRecommendTask(WorkFlow workFlow) {
         String taskId = workFlow.getTaskId();
         Long publisherId = workFlow.getPublisherId();
         Map<String, Object> variables = new HashMap<String,Object>();
@@ -310,5 +310,6 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
 
         // 完成任务的同时，设置下一任务的处理人（发布的hr）和任务结果
         taskService.complete(taskId, variables);
+        return new BaseServiceResponse<>(true, "Complete task success!", null, null);
     }
 }

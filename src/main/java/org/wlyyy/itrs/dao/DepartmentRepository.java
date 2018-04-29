@@ -122,7 +122,7 @@ public interface DepartmentRepository {
                 return "select count(*) from department";
             }
 
-            builder.append("select count(*) from department where ");
+            builder.append("select count(*) from department");
 
             packageWhere(department);
 

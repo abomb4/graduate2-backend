@@ -35,4 +35,14 @@ public enum EnumFlowStatus  implements IDictionary<Integer> {
     public String getDesc() {
         return desc;
     }
+
+    public static String getDescByCode(Integer code) {
+        EnumFlowStatus[] values = EnumFlowStatus.values();
+        for (EnumFlowStatus enumFlowStatus : values) {
+            if (enumFlowStatus.getCode().equals(code)) {
+                return enumFlowStatus.getDesc();
+            }
+        }
+        return "";
+    }
 }

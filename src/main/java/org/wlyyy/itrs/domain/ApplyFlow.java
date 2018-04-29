@@ -40,7 +40,7 @@ public class ApplyFlow {
     /**
      * 流程状态
      */
-    private int flowStatus;
+    private Integer flowStatus;
 
     /**
      * 创建时间
@@ -100,13 +100,9 @@ public class ApplyFlow {
         this.currentDealer = currentDealer;
     }
 
-    public int getFlowStatus() {
-        return flowStatus;
-    }
+    public Integer getFlowStatus() { return flowStatus; }
 
-    public void setFlowStatus(int flowStatus) {
-        this.flowStatus = flowStatus;
-    }
+    public void setFlowStatus(Integer flowStatus) { this.flowStatus = flowStatus; }
 
     public Date getGmtCreate() {
         return gmtCreate;

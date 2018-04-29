@@ -138,7 +138,7 @@ public interface DemandRepository {
                 return "select count(*) from demand";
             }
 
-            builder.append("select count(*) from demand where ");
+            builder.append("select count(*) from demand");
 
             packageWhere(demand);
 

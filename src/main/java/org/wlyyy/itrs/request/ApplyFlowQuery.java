@@ -39,7 +39,7 @@ public class ApplyFlowQuery {
     /**
      * 流程状态
      */
-    private int flowStatus;
+    private Integer flowStatus;
 
     private Date gmtCreateStart;
 
@@ -108,11 +108,11 @@ public class ApplyFlowQuery {
         return this;
     }
 
-    public int getFlowStatus() {
+    public Integer getFlowStatus() {
         return flowStatus;
     }
 
-    public ApplyFlowQuery setFlowStatus(int flowStatus) {
+    public ApplyFlowQuery setFlowStatus(Integer flowStatus) {
         this.flowStatus = flowStatus;
         return this;
     }

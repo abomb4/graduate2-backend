@@ -118,5 +118,21 @@ public class UserAgent implements Serializable {
         this.refreshTime = refreshTime;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "UserAgent{" +
+                "sessionKey='" + sessionKey + '\'' +
+                ", id=" + id +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", roles=" + roles +
+                ", sex=" + sex +
+                ", departmentId=" + departmentId +
+                ", realName='" + realName + '\'' +
+                ", loginTime=" + loginTime +
+                ", refreshTime=" + refreshTime +
+                '}';
+    }
 }
 
