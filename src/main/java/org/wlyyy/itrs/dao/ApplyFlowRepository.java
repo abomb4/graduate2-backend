@@ -2,6 +2,7 @@ package org.wlyyy.itrs.dao;
 
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.ApplyFlow;
 import org.wlyyy.itrs.request.ApplyFlowQuery;
@@ -34,10 +35,10 @@ public interface ApplyFlowRepository {
     void insert(ApplyFlow applyFlow);
 
     @SelectProvider(type = ApplyFlowQueryProvider.class, method = "select")
-    List<ApplyFlow> findByCondition(@Param("applyFlow") ApplyFlow queryObject, Pageable page);
+    List<ApplyFlow> findByCondition(@Param("applyFlow") ApplyFlowQuery queryObject, Pageable page);
 
     @SelectProvider(type = ApplyFlowQueryProvider.class, method = "count")
-    long countByCondition(@Param("applyFlow") ApplyFlow queryObject);
+    long countByCondition(@Param("applyFlow") ApplyFlowQuery queryObject);
 
     @UpdateProvider(type = ApplyFlowUpdateByIdProvider.class, method = "myMethod")
     int updateById(ApplyFlow applyFlow);
@@ -102,10 +103,12 @@ public interface ApplyFlowRepository {
         boolean first = true;
         final StringBuilder builder = new StringBuilder();
 
-        private void tryAppend(Object o, String forAppend) {
+        private void tryAppendWhere(Object o, String forAppend) {
             if (Objects.nonNull(o) && !"".equals(o)) {
                 if (!first) {
                     builder.append(DELIMITER);
+                } else {
+                    builder.append(" where ");
                 }
                 first = false;
                 builder.append(forAppend);
@@ -120,10 +123,10 @@ public interface ApplyFlowRepository {
          */
         private String getCount(ApplyFlowQuery applyFlow) {
             if (applyFlow == null) {
-                return "select count(*) from user";
+                return "select count(*) from apply_flow";
             }
 
-            builder.append("select count(*) from user where ");
+            builder.append("select count(*) from apply_flow where ");
 
             packageWhere(applyFlow);
 
@@ -149,7 +152,7 @@ public interface ApplyFlowRepository {
                         getPage(page)
                 );
             }
-            builder.append("select demand_no, candidate_id, user_id, current_flow_node, current_dealer, flow_status, gmt_create, gmt_modify from user where ");
+            builder.append("select id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, flow_status, gmt_create, gmt_modify from apply_flow");
 
             packageWhere(applyFlow);
 
@@ -158,6 +161,7 @@ public interface ApplyFlowRepository {
                 throw new IllegalArgumentException("One of query condition should be not null");
             }
 
+            builder.append(getOrder(page));
             builder.append(" ").append(getPage(page));
 
             return builder.toString();
@@ -166,13 +170,36 @@ public interface ApplyFlowRepository {
         private void packageWhere(ApplyFlowQuery applyFlow) {
             String currentFlowNode = "concat('%', #{applyFlow.currentFlowNode}, '%')";
 
-            tryAppend(applyFlow.getId(), "id = #{id}");
-            tryAppend(applyFlow.getDemandNo(), "demand_no = #{applyFlow.demandNo}");
-            tryAppend(applyFlow.getCandidateId(), "candidate_id = #{applyFlow.candidateId}");
-            tryAppend(applyFlow.getUserId(), "user_id = #{applyFlow.userId}");
-            tryAppend(applyFlow.getCurrentFlowNode(), "current_flow_node liek " + currentFlowNode);
-            tryAppend(applyFlow.getCurrentDealer(), "current_dealer = #{applyFlow.currentDealer}");
-            tryAppend(applyFlow.getFlowStatus(), "flow_status = #{applyFlow.flowStatus}");
+            tryAppendWhere(applyFlow.getId(), "id = #{id}");
+            tryAppendWhere(applyFlow.getDemandNo(), "demand_no = #{applyFlow.demandNo}");
+            tryAppendWhere(applyFlow.getCandidateId(), "candidate_id = #{applyFlow.candidateId}");
+            tryAppendWhere(applyFlow.getUserId(), "user_id = #{applyFlow.userId}");
+            tryAppendWhere(applyFlow.getCurrentFlowNode(), "current_flow_node like " + currentFlowNode);
+            tryAppendWhere(applyFlow.getCurrentDealer(), "current_dealer = #{applyFlow.currentDealer}");
+            tryAppendWhere(applyFlow.getFlowStatus(), "flow_status = #{applyFlow.flowStatus}");
+            tryAppendWhere(applyFlow.getGmtCreateStart(), "gmt_create >= #{applyFlow.gmtCreateStart}");
+            tryAppendWhere(applyFlow.getGmtCreateEnd(), "gmt_create <= #{applyFlow.gmtCreateEnd}");
+            tryAppendWhere(applyFlow.getGmtModifyStart(), "gmt_modify >= #{applyFlow.gmtModifyStart}");
+            tryAppendWhere(applyFlow.getGmtModifyEnd(), "gmt_modify <= #{applyFlow.gmtModifyEnd}");
+        }
+
+        private String getOrder(Pageable page) {
+            final StringBuilder sortBuilder = new StringBuilder();
+            if (page.getSort() != null) {
+                Sort sort = page.getSort();
+                int count = 0;
+                for (Sort.Order order : sort) {
+                    if (count == 0) {
+                        // 第一个order
+                        sortBuilder.append(" order by ");
+                        sortBuilder.append(order.getProperty()).append(" ").append(order.getDirection());
+                    } else {
+                        sortBuilder.append(", ").append(order.getProperty()).append(" ").append(order.getDirection());
+                    }
+                    count++;
+                }
+            }
+            return sortBuilder.toString();
         }
 
         private String getPage(Pageable page) {

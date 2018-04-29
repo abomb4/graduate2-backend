@@ -1,5 +1,7 @@
 package org.wlyyy.itrs.request;
 
+import org.springframework.data.domain.Sort;
+
 import java.util.Date;
 
 public class ApplyFlowQuery {
@@ -46,6 +48,11 @@ public class ApplyFlowQuery {
     private Date gmtModifyStart;
 
     private Date gmtModifyEnd;
+
+    /**
+     * 排序
+     */
+    private Sort sort;
 
     public Long getId() {
         return id;
@@ -143,6 +150,15 @@ public class ApplyFlowQuery {
 
     public ApplyFlowQuery setGmtModifyEnd(Date gmtModifyEnd) {
         this.gmtModifyEnd = gmtModifyEnd;
+        return this;
+    }
+
+    public Sort getSort() {
+        return sort;
+    }
+
+    public ApplyFlowQuery setSort(Sort sort) {
+        this.sort = sort;
         return this;
     }
 }
