@@ -2,6 +2,7 @@ package org.wlyyy.itrs.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.wlyyy.common.domain.BaseServicePageableRequest;
 import org.wlyyy.common.domain.BaseServicePageableResponse;
 import org.wlyyy.common.domain.BaseServiceResponse;
@@ -12,6 +13,7 @@ import org.wlyyy.itrs.request.DepartmentQuery;
 
 import java.util.List;
 
+@Service
 public class DepartmentServiceImpl implements  DepartmentService{
 
     @Autowired

@@ -136,13 +136,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         }
     }
 
-    // Session management
-
-    @Bean
-    public LettuceConnectionFactory connectionFactory() {
-        return new LettuceConnectionFactory();
-    }
-
 //    @Bean
 //    public CookieSerializer cookieSerializer(@Value("${web.secirity.cookie.domain:0}") String value) {
 //        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
