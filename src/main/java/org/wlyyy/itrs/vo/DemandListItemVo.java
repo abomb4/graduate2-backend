@@ -1,6 +1,6 @@
 package org.wlyyy.itrs.vo;
 
-import  org.wlyyy.itrs.domain.Demand;
+import org.wlyyy.itrs.domain.Demand;
 
 import java.text.SimpleDateFormat;
 import java.util.function.Function;

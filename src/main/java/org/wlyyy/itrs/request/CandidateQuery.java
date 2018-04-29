@@ -2,7 +2,6 @@ package org.wlyyy.itrs.request;
 
 import org.springframework.data.domain.Sort;
 
-import java.io.File;
 import java.util.Date;
 
 public class CandidateQuery {

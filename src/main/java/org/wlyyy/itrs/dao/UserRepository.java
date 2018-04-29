@@ -1,6 +1,5 @@
 package org.wlyyy.itrs.dao;
 
-import java.util.List;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -8,6 +7,7 @@ import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.request.UserQuery;
 
+import java.util.List;
 import java.util.Objects;
 
 /**

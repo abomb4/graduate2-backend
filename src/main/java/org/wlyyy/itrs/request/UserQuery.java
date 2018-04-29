@@ -1,7 +1,6 @@
 package org.wlyyy.itrs.request;
 
 import org.springframework.data.domain.Sort;
-import org.wlyyy.itrs.dao.UserRepository;
 
 import java.util.Date;
 

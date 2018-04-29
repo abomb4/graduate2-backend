@@ -2,7 +2,6 @@ package org.wlyyy.itrs.service;
 
 import org.wlyyy.common.domain.BaseServicePageableRequest;
 import org.wlyyy.common.domain.BaseServicePageableResponse;
-
 import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.domain.ApplyFlow;
 import org.wlyyy.itrs.request.ApplyFlowQuery;

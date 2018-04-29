@@ -1,7 +1,5 @@
 package org.wlyyy.common.domain;
 
-import org.springframework.data.domain.Sort;
-
 /**
  * 通用分页查询请求类
  */

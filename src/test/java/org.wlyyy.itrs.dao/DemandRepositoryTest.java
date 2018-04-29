@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.wlyyy.itrs.domain.Demand;
 import org.wlyyy.itrs.request.DemandQuery;
 import org.wlyyy.itrs.spring.ItrsBoot;
+
 import java.util.List;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ItrsBoot.class)

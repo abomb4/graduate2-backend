@@ -3,10 +3,10 @@ package org.wlyyy.itrs.dao;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.wlyyy.itrs.domain.Demand;
-import org.wlyyy.common.utils.StringTemplateUtils.St;
-import org.wlyyy.itrs.request.DemandQuery;
 import org.springframework.data.domain.Sort.Order;
+import org.wlyyy.common.utils.StringTemplateUtils.St;
+import org.wlyyy.itrs.domain.Demand;
+import org.wlyyy.itrs.request.DemandQuery;
 
 import java.util.List;
 import java.util.Objects;

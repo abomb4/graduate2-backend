@@ -4,8 +4,6 @@ import org.wlyyy.common.domain.BaseServicePageableRequest;
 import org.wlyyy.common.domain.BaseServicePageableResponse;
 import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.domain.Demand;
-import org.wlyyy.itrs.domain.Demand;
-import org.wlyyy.itrs.request.DemandQuery;
 import org.wlyyy.itrs.request.DemandQuery;
 
 /**

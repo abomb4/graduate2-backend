@@ -2,10 +2,8 @@ package org.wlyyy.itrs.controller;
 
 import org.activiti.engine.repository.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.wlyyy.common.domain.BaseRestResponse;
 import org.wlyyy.common.domain.BaseServicePageableRequest;
@@ -15,14 +13,11 @@ import org.wlyyy.itrs.dict.EnumFlowStatus;
 import org.wlyyy.itrs.domain.ApplyFlow;
 import org.wlyyy.itrs.domain.Candidate;
 import org.wlyyy.itrs.domain.Demand;
-import org.wlyyy.itrs.domain.Recommend;
 import org.wlyyy.itrs.request.ApplyFlowQuery;
 import org.wlyyy.itrs.request.CandidateQuery;
-import org.wlyyy.itrs.request.RecommendQuery;
 import org.wlyyy.itrs.service.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 
 @RestController
 @RequestMapping("/myProfile/flow")

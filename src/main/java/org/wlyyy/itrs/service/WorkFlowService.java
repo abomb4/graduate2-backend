@@ -6,13 +6,11 @@ import org.activiti.engine.task.Task;
 import org.wlyyy.common.domain.BaseServicePageableRequest;
 import org.wlyyy.common.domain.BaseServicePageableResponse;
 import org.wlyyy.common.domain.BaseServiceResponse;
-import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.domain.WorkFlow;
 import org.wlyyy.itrs.request.WorkFlowQuery;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 
 /**

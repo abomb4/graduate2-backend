@@ -4,9 +4,10 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.Recommend;
 import org.wlyyy.itrs.request.RecommendQuery;
-import org.wlyyy.common.utils.StringTemplateUtils.St;
+
 import java.util.List;
 import java.util.Objects;
 

@@ -1,6 +1,5 @@
 package org.wlyyy.itrs.domain;
 
-import java.io.File;
 import java.util.Date;
 
 public class Candidate {
