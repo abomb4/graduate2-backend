@@ -118,6 +118,7 @@ public interface WorkFlowService {
      *  完成“员工推荐”任务
      *
      * @param workFlow
+     * @return
      */
-    void completeRecommendTask(WorkFlow workFlow);
+    BaseServiceResponse<String> completeRecommendTask(WorkFlow workFlow);
 }

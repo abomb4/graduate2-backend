@@ -124,7 +124,7 @@ public interface RecommendRepository {
                 return "select count(*) from recommend";
             }
 
-            builder.append("select count(*) from recommend where ");
+            builder.append("select count(*) from recommend");
 
             packageWhere(recommend);
 

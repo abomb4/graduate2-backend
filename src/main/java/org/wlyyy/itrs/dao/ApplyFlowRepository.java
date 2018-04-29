@@ -126,7 +126,7 @@ public interface ApplyFlowRepository {
                 return "select count(*) from apply_flow";
             }
 
-            builder.append("select count(*) from apply_flow where ");
+            builder.append("select count(*) from apply_flow");
 
             packageWhere(applyFlow);
 

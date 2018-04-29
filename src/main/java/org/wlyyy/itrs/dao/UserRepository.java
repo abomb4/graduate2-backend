@@ -140,7 +140,7 @@ public interface UserRepository {
                 return "select count(*) from user";
             }
 
-            builder.append("select count(*) from user where ");
+            builder.append("select count(*) from user");
 
             packageWhere(user);
 

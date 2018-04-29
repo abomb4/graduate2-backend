@@ -109,10 +109,10 @@ public interface CandidateRepository {
 
         private void tryAppendWhere(Object o, String forAppend) {
             if (Objects.nonNull(o) && !"".equals(o)) {
-                if (!first) {
-                    builder.append(DELIMITER);
-                } else {
+                if (first) {
                     builder.append(" where ");
+                } else {
+                    builder.append(DELIMITER);
                 }
                 first = false;
                 builder.append(forAppend);
@@ -130,7 +130,7 @@ public interface CandidateRepository {
                 return "select count(*) from candidate";
             }
 
-            builder.append("select count(*) from candidate where ");
+            builder.append("select count(*) from candidate");
 
             packageWhere(candidate);
 
