@@ -2,9 +2,11 @@ package org.wlyyy.itrs.controller;
 
 import org.activiti.engine.repository.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.wlyyy.common.domain.BaseRestResponse;
 import org.wlyyy.common.domain.BaseServicePageableRequest;
 import org.wlyyy.common.domain.BaseServicePageableResponse;
@@ -22,6 +24,7 @@ import org.wlyyy.itrs.service.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 
+@RestController
 @RequestMapping("/myProfile/flow")
 public class FlowController {
 
@@ -42,7 +45,6 @@ public class FlowController {
     @Autowired
     ApplyFlowService applyFlowService;
 
-    @ResponseBody
     @RequestMapping("deployFile")
     public BaseRestResponse<Deployment> deployWorkFlow_file(){
         // TODO
@@ -52,7 +54,6 @@ public class FlowController {
     /**
      * 根据classpath下的zip文件以及部署名称进行部署
      */
-    @ResponseBody
     @RequestMapping(value = "/deployZip", method = RequestMethod.GET)
     public BaseRestResponse<Deployment> deployWorkFlow_zip(String zipName, String deployName){
         BaseServiceResponse<Deployment> deploymentResult = workFlowService.deployWorkFlow_zip(zipName, deployName);
@@ -67,7 +68,6 @@ public class FlowController {
     /**
      * 员工给某一招聘需求推荐人才
      */
-    @ResponseBody
     @RequestMapping(value = "/recommendTalent")
     public BaseRestResponse<String> recommendTalent(final Long demandId, final Candidate candidate, final HttpServletRequest req) {
         // 1. 获取该招聘需求对应的procKey
