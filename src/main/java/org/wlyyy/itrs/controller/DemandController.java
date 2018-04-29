@@ -2,6 +2,7 @@ package org.wlyyy.itrs.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.wlyyy.common.domain.BaseRestPageableResponse;
 import org.wlyyy.common.domain.BaseServicePageableRequest;
 import org.wlyyy.common.domain.BaseServicePageableResponse;
@@ -15,6 +16,7 @@ import org.wlyyy.itrs.vo.DemandListItemVo;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RestController
 @RequestMapping("demand")
 public class DemandController {
 
