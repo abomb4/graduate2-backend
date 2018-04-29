@@ -8,7 +8,7 @@ import org.wlyyy.itrs.domain.UserAgent;
  *
  * @author wly
  */
-public interface AuthorizationService {
+public interface AuthenticationService {
 
     /**
      * 登录功能
@@ -29,8 +29,7 @@ public interface AuthorizationService {
     /**
      * 登出，消除Session
      *
-     * @param sessionKey 可以
      * @return 成功登出和未登录则true，异常则false
      */
-    boolean logout(String sessionKey);
+    boolean logout();
 }

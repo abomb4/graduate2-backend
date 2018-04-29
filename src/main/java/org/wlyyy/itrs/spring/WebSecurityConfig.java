@@ -2,22 +2,28 @@ package org.wlyyy.itrs.spring;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.UserAgent;
-import org.wlyyy.itrs.service.AuthorizationServiceImpl;
+import org.wlyyy.itrs.service.AuthenticationServiceImpl;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableRedisHttpSession
@@ -31,6 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/myprofile/*").authenticated()
                 .anyRequest().permitAll()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout")).logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                 .and().csrf().disable()
         // .addFilterAfter(new CsrfGrantingFilter(), SessionManagementFilter.class)
         ;
@@ -42,7 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * 一般情况下AuthenticationManager 由{@link ProviderManager}来提供。
      * ProviderManager会找到{@link AuthenticationProvider} 来进行真正的身份验证。
      * <p>
-     * 我们的{@link AuthorizationServiceImpl} 实现了AuthenticationProvider，可以验证。
+     * 我们的{@link AuthenticationServiceImpl} 实现了AuthenticationProvider，可以验证。
      *
      * @param manager 密码管理服务，boot默认生成的
      * @return UsernamePasswordAuthenticationFilter
@@ -55,7 +62,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setAuthenticationSuccessHandler((request, response, authentication) -> {
             final UserAgent userAgent = (UserAgent) authentication.getDetails();
             final String sessionKey = userAgent.getSessionKey();
-            response.getOutputStream().print(St.r("{ \"status\": 200, \"sessionKey\": \"{}\" }", sessionKey));
+            response.getOutputStream().print(St.r("{ \"status\": 200, \"sessionKey\": \"{}\", \"userName\": \"{}\"" +
+                            ", \"realName\": \"{}\", \"sex\": \"{}\" }",
+                    sessionKey,
+                    userAgent.getUserName(),
+                    userAgent.getRealName(),
+                    userAgent.getSex()));
             response.setStatus(200);
             response.setHeader("Content-Type", "application/json;charset=UTF-8");
         });

@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import org.springframework.stereotype.Service;
-import org.wlyyy.common.cache.SimpleKeyValueCache;
 import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.domain.Role;
 import org.wlyyy.itrs.domain.User;
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
  * @author wly
  */
 @Service
-public class AuthorizationServiceImpl implements AuthorizationService, AuthenticationProvider {
+public class AuthenticationServiceImpl implements AuthenticationService, AuthenticationProvider {
 
     @Autowired
     private UserService userService;
@@ -87,7 +86,7 @@ public class AuthorizationServiceImpl implements AuthorizationService, Authentic
     }
 
     @Override
-    public boolean logout(String sessionKey) {
+    public boolean logout() {
         return true;
     }
 
