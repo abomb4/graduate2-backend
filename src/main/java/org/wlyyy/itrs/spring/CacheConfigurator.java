@@ -18,9 +18,4 @@ public class CacheConfigurator {
     public SimpleKeyValueCache jvmSimpleKeyValueCache() {
         return new JvmSimpleKeyValueCacheImpl();
     }
-
-    @Bean
-    public LettuceConnectionFactory connectionFactory() {
-        return new LettuceConnectionFactory();
-    }
 }

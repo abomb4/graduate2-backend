@@ -45,7 +45,7 @@ public class FlowController {
     @Autowired
     ApplyFlowService applyFlowService;
 
-    @RequestMapping("deployFile")
+    @RequestMapping("/deployFile")
     public BaseRestResponse<Deployment> deployWorkFlow_file(){
         // TODO
         return null;
