@@ -6,14 +6,23 @@ mybatis:
         default-fetch-size: 100
         default-statement-timeout: 30
 
-spring.datasource.driverClassName : com.mysql.jdbc.Driver
-spring.datasource.url : jdbc:mysql://localhost:3306/itrs?useUnicode:true&characterEncoding:utf-8&useSSL=true
-spring.datasource.username : wly
-spring.datasource.password : wly19#
+spring:
+  datasource:
+    driverClassName : com.mysql.jdbc.Driver
+    url : jdbc:mysql://localhost:3306/itrs?useUnicode:true&characterEncoding:utf-8&useSSL=true
+    username : root
+    password : cao123
+  redis:
+    host: localhost
 
 # activiti会对数据库中所有表进行更新操作。如果表不存在，则自动创建。
 spring.activiti.database-schema: true
-#启动报错class path resource [processes/] cannot be resolved to URL because it does not exist
+
+# 启动报错class path resource [processes/] cannot be resolved to URL because it does not exist
 spring.activiti.check-process-definitions: false
 
+# -==--==--=-==-=-=--==-=--==-=-=-
+# custom
+# -==--==--=-==-=-=--==-=--==-=-=-
 web.crossorigin.domains: http://localhost:3000
+# web.secirity.cookie.domain: http://localhost*.com
