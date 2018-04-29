@@ -1,43 +1,59 @@
 package org.wlyyy.itrs.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import org.springframework.stereotype.Service;
 import org.wlyyy.common.cache.SimpleKeyValueCache;
 import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.domain.Role;
 import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.domain.UserAgent;
-import org.wlyyy.itrs.utils.SecurityUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+/**
+ * 认证服务实现，既实现了管理系统的认证接口，又实现了Spring Security认证服务接口，
+ * 可以直接被Spring Security调用。
+ *
+ * @author wly
+ */
 @Service
-public class AuthorizationServiceImpl implements AuthorizationService {
+public class AuthorizationServiceImpl implements AuthorizationService, AuthenticationProvider {
 
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private SimpleKeyValueCache cache;
-
+    /**
+     * 登录验证方法。
+     *
+     * @param userName 用户名
+     * @param password 密码，明文
+     * @return 登录用户信息对象
+     */
     @Override
-    public BaseServiceResponse<UserAgent> login(String userName, String password, String clientIp) {
+    public BaseServiceResponse<UserAgent> login(String userName, String password) {
         // 1. 校验参数
         // 2. 验证密码
         final BaseServiceResponse<User> validateResponse = userService.validateUser(userName, password);
         if (validateResponse.isSuccess()) {
             final User user = validateResponse.getData();
-            // 3. 生成SessionKey
-            // 4. TODO 获取roles
-            // 4. 创建UserAgent
-            // 4. 存储到分布式缓存
-            final String sessionKey = SecurityUtils.generateSessionKey(user, clientIp, LocalDateTime.now());
+
+            // final String sessionKey = SecurityUtils.generateSessionKey(user, clientIp, LocalDateTime.now());
             // TODO ROLES!!!!!!!!!!!!!!!!!!1
             final Set<Role> roles = new HashSet<>();
+
             final UserAgent userAgent = new UserAgent()
-                    .setSessionKey(sessionKey)
                     .setId(user.getId())
                     .setEmail(user.getEmail())
                     .setRoles(roles)
@@ -47,11 +63,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                     .setRealName(user.getRealName())
                     .setLoginTime(LocalDateTime.now())
                     .setRefreshTime(LocalDateTime.now())
-                    .setIp(clientIp)
                     ;
 
             // Put to distributed cache
-            cache.put(sessionKey, userAgent, UserAgent.class);
+            // cache.put(sessionKey, userAgent, UserAgent.class);
             return new BaseServiceResponse<>(true, "Login successfully", userAgent, null);
 
         } else {
@@ -60,18 +75,64 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     @Override
-    public boolean isLogin(String sessionKey, String clientIp) {
-        final UserAgent userAgent = cache.get(sessionKey, UserAgent.class);
-        if (userAgent == null) {
-            return false;
+    public BaseServiceResponse<UserAgent> isLogin() {
+
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal().toString())) {
+            return new BaseServiceResponse<UserAgent>(true, "You are logged in.", (UserAgent) auth.getDetails(), null);
         } else {
-            return userAgent.getIp().equals(clientIp);
+            return new BaseServiceResponse<UserAgent>(false, "You are NOT logged in.", null, null);
         }
     }
 
     @Override
     public boolean logout(String sessionKey) {
-        cache.remove(sessionKey);
+        return true;
+    }
+
+    /**
+     * 实现Spring AuthenticationProvider接口，提供认证服务
+     *
+     * @param authentication 认证信息
+     * @return 认证结果信息
+     * @throws AuthenticationException 认证异常
+     */
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        final String userName = authentication.getPrincipal().toString();
+        final WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
+        final String ip = details.getRemoteAddress();
+        final String sessionKey = details.getSessionId();
+        final String password = authentication.getCredentials().toString();
+
+        final BaseServiceResponse<UserAgent> login = login(userName, password);
+        if (login.isSuccess()) {
+            final UserAgent userAgent = login.getData();
+            userAgent.setSessionKey(sessionKey);
+            final org.springframework.security.core.userdetails.User.UserBuilder userBuilder = org.springframework.security.core.userdetails.User.withUsername(userAgent.getUserName());
+
+            final List<SimpleGrantedAuthority> roles = userAgent.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .collect(Collectors.toList());
+
+            userBuilder.password(password);
+            userBuilder.roles(roles.stream().map(SimpleGrantedAuthority::getAuthority).toArray(String[]::new));
+
+            final RememberMeAuthenticationToken authenticationToken = new RememberMeAuthenticationToken(
+                    userAgent.getSessionKey(),
+                    userBuilder.build(),
+                    roles
+            );
+            authenticationToken.setDetails(login.getData());
+            return authenticationToken;
+        } else {
+            throw new RememberMeAuthenticationException("Cannot authenticate " + authentication.getPrincipal());
+        }
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
         return true;
     }
 }

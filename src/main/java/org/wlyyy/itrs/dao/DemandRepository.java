@@ -95,6 +95,7 @@ public interface DemandRepository {
         }
 
         static String DELIMITER = " and ";
+        static String WHERE = " where ";
 
         boolean first = true;
         final StringBuilder builder = new StringBuilder();
@@ -103,6 +104,8 @@ public interface DemandRepository {
             if (Objects.nonNull(o) && !"".equals(o)) {
                 if (!first) {
                     builder.append(DELIMITER);
+                } else {
+                    builder.append(WHERE);
                 }
                 first = false;
                 builder.append(forAppend);

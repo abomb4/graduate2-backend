@@ -1,12 +1,13 @@
 package org.wlyyy.itrs.domain;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
  * 用户登录信息
  */
-public class UserAgent {
+public class UserAgent implements Serializable {
     private String sessionKey;
     private Long id;
     private String userName;
@@ -15,7 +16,6 @@ public class UserAgent {
     private Integer sex;
     private Long departmentId;
     private String realName;
-    private String ip;
     private LocalDateTime loginTime;
     private LocalDateTime refreshTime;
 
@@ -98,15 +98,6 @@ public class UserAgent {
 
     public UserAgent setRealName(String realName) {
         this.realName = realName;
-        return this;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public UserAgent setIp(String ip) {
-        this.ip = ip;
         return this;
     }
 

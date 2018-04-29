@@ -15,19 +15,16 @@ public interface AuthorizationService {
      *
      * @param userName 用户名
      * @param password 密码，明文
-     * @param clientIp
      * @return 成功则返回用户身份信息，失败就失败
      */
-    BaseServiceResponse<UserAgent> login(String userName, String password, String clientIp);
+    BaseServiceResponse<UserAgent> login(String userName, String password);
 
     /**
      * 判断一个Session 是否在登录状态
      *
-     * @param sessionKey 齐
-     * @param clientIp 客户端ip
      * @return 是否登录
      */
-    boolean isLogin(String sessionKey, String clientIp);
+    BaseServiceResponse<UserAgent> isLogin();
 
     /**
      * 登出，消除Session
