@@ -55,17 +55,20 @@ public class DemandRepositoryTest {
 
         // assertEquals(demand, dao.getById(id));
 
-        Order order1 = new Order(Sort.Direction.DESC, "demand_no");
-        Sort sort = new Sort(order1);
+//        Order order1 = new Order(Sort.Direction.DESC, "demand_no");
+//        Sort sort = new Sort(order1);
+//
+//        final List<Demand> byCondition = dao.findByCondition(
+//                new DemandQuery()
+//                        .setHrName("巧丽")
+//                ,
+//                new PageRequest(0, 10)
+//        );
+//
+//        System.out.println(byCondition);
 
-        final List<Demand> byCondition = dao.findByCondition(
-                new DemandQuery()
-                        .setHrName("巧丽")
-                ,
-                new PageRequest(0, 10)
-        );
-
-        System.out.println(byCondition);
+        Demand demand = dao.findByNo("11153");
+        System.out.println(demand);
 
     }
 }

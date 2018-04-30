@@ -28,6 +28,15 @@ public interface DemandRepository {
     @Select("select * from demand where id = #{id}")
     Demand findById(Long id);
 
+    /**
+     * 根据招聘需求No查询招聘需求
+     *
+     * @param demandNo 招聘需求No
+     * @return 招聘需求
+     */
+    @Select("select * from demand where demand_no = #{demandNo}")
+    Demand findByNo(String demandNo);
+
     @SelectProvider(type = DemandQueryProvider.class, method = "select")
     List<Demand> findByCondition(@Param("demand") DemandQuery queryObject, Pageable page);
 
@@ -38,7 +47,7 @@ public interface DemandRepository {
      * 新建招聘需求，忽略id、gmtCreate、gmtModify字段
      * @param demand 招聘需求
      */
-    @Insert("insert into demand (demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify) values (" +
+    @Insert("insert into demand (demand_no, publisher_id, position_type, sub_position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify) values (" +
             "#{demandNo}, #{publisherId}, #{positionType}, #{position}, #{departmentId}, #{hrName}, #{total}, #{workingPlace}, #{degreeRequest}, 1, #{memo}, #{procKey}, now(), now())")
     @SelectKey(statement = "select last_insert_id()", keyProperty = "id", before = false, resultType = Long.class)
     void insert(Demand demand);
@@ -77,6 +86,7 @@ public interface DemandRepository {
             tryAppend(demand.getDemandNo(), "demand_no = #{demandNo}");
             tryAppend(demand.getPublisherId(), "publisher_id = #{publisherId}");
             tryAppend(demand.getPositionType(), "position_type = #{positionType}");
+            tryAppend(demand.getSubPositionType(), "sub_position_type = #{subPositionType}");
             tryAppend(demand.getPosition(), "position = #{position}");
             tryAppend(demand.getDepartmentId(), "department_id = #{departmentId}");
             tryAppend(demand.getHrName(), "hr_name = #{hrName}");
@@ -160,11 +170,11 @@ public interface DemandRepository {
         private String getSelect(DemandQuery demand, Pageable page) {
             if (demand == null) {
                 return St.r("select {} from demand {}",
-                        "id, demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify",
+                        "id, demand_no, publisher_id, position_type, sub_position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify",
                         getPage(page)
                 );
             }
-            builder.append("select id, demand_no, publisher_id, position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify from demand");
+            builder.append("select id, demand_no, publisher_id, position_type, sub_position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify from demand");
 
             packageWhere(demand);
 
@@ -187,11 +197,12 @@ public interface DemandRepository {
             tryAppendWhere(demand.getDemandNo(), "demand_no = #{demand.demandNo}");
             tryAppendWhere(demand.getPublisherId(), "publisher_id = #{demand.publisherId}");
             tryAppendWhere(demand.getPositionType(), "position_type = #{demand.positionType}");
+            tryAppendWhere(demand.getSubPositionType(), "sub_position_type = #{demand.subPositionType}");
             tryAppendWhere(demand.getPosition(), "position = #{demand.position}");
             tryAppendWhere(demand.getDepartmentId(), "department_id = #{demand.departmentId}");
             tryAppendWhere(demand.getHrName(), "hr_name like " + hrName);
             tryAppendWhere(demand.getTotalStart(), "total >= #{demand.totalStart}");
-            tryAppendWhere(demand.getTotalEnd(), "total <= #{demdemand.totalEnd}");
+            tryAppendWhere(demand.getTotalEnd(), "total <= #{demand.totalEnd}");
             tryAppendWhere(demand.getWorkingPlace(), "working_place like " + workingPlace);
             tryAppendWhere(demand.getDegreeRequest(), "degree_request = #{demand.degreeRequest}");
             tryAppendWhere(demand.getStatus(), "status = #{demand.status}");

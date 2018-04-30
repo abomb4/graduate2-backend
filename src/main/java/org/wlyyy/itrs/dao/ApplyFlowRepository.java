@@ -22,15 +22,15 @@ public interface ApplyFlowRepository {
      * @param id id
      * @return 招聘流程信息
      */
-    @Select("select id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, flow_status, gmt_create, gmt_modify from apply_flow where id = #{id}")
+    @Select("select id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, current_result, flow_status, gmt_create, gmt_modify from apply_flow where id = #{id}")
     ApplyFlow findById(@Param("id") Long id);
 
     /**
      * 新建招聘流程信息，忽略id、gmtCreate、gmtModify字段
      * @param applyFlow 招聘流程信息
      */
-    @Insert("insert into apply_flow(demand_no, candidate_id, user_id, current_flow_node, current_dealer, flow_status, gmt_create, gmt_modify) values (" +
-            "#{demandNo}, #{candidateId}, #{userId}, #{currentFlowNode}, #{currentDealer}, #{flowStatus}, now(), now())")
+    @Insert("insert into apply_flow(demand_no, candidate_id, user_id, current_flow_node, current_dealer, current_result, flow_status, gmt_create, gmt_modify) values (" +
+            "#{demandNo}, #{candidateId}, #{userId}, #{currentFlowNode}, #{currentDealer}, #{currentResult}, #{flowStatus}, now(), now())")
     @SelectKey(statement = "select last_insert_id()", keyProperty = "id", before = false, resultType = Long.class)
     void insert(ApplyFlow applyFlow);
 
@@ -74,6 +74,7 @@ public interface ApplyFlowRepository {
             tryAppend(applyFlow.getUserId(), "user_id = #{userId}");
             tryAppend(applyFlow.getCurrentFlowNode(), "current_flow_node = #{currentFlowNode}");
             tryAppend(applyFlow.getCurrentDealer(), "current_dealer = #{currentDealer}");
+            tryAppend(applyFlow.getCurrentResult(), "current_result = #{currentResult}");
             tryAppend(applyFlow.getFlowStatus(), "flow_status = #{flowStatus}");
 
             // 不能全都是空
@@ -148,11 +149,11 @@ public interface ApplyFlowRepository {
         private String getSelect(ApplyFlowQuery applyFlow, Pageable page) {
             if (applyFlow == null) {
                 return St.r("select {} from apply_flow {}",
-                        "id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, flow_status, gmt_create, gmt_modify",
+                        "id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, current_result, flow_status, gmt_create, gmt_modify",
                         getPage(page)
                 );
             }
-            builder.append("select id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, flow_status, gmt_create, gmt_modify from apply_flow");
+            builder.append("select id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, current_result, flow_status, gmt_create, gmt_modify from apply_flow");
 
             packageWhere(applyFlow);
 
@@ -176,6 +177,7 @@ public interface ApplyFlowRepository {
             tryAppendWhere(applyFlow.getUserId(), "user_id = #{applyFlow.userId}");
             tryAppendWhere(applyFlow.getCurrentFlowNode(), "current_flow_node like " + currentFlowNode);
             tryAppendWhere(applyFlow.getCurrentDealer(), "current_dealer = #{applyFlow.currentDealer}");
+            tryAppendWhere(applyFlow.getCurrentResult(), "current_result = #{currentResult}");
             tryAppendWhere(applyFlow.getFlowStatus(), "flow_status = #{applyFlow.flowStatus}");
             tryAppendWhere(applyFlow.getGmtCreateStart(), "gmt_create >= #{applyFlow.gmtCreateStart}");
             tryAppendWhere(applyFlow.getGmtCreateEnd(), "gmt_create <= #{applyFlow.gmtCreateEnd}");

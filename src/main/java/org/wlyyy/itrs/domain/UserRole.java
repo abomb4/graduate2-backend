@@ -2,10 +2,11 @@ package org.wlyyy.itrs.domain;
 
 import java.util.Date;
 
-public class Role {
+public class UserRole {
+
     private Long id;
-    private String roleName;
-    private String memo;
+    private Long userId;
+    private Long roleId;
     private Date gmtCreate;
     private Date gmtModify;
 
@@ -17,20 +18,20 @@ public class Role {
         this.id = id;
     }
 
-    public String getRoleName() {
-        return roleName;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public String getMemo() {
-        return memo;
+    public Long getRoleId() {
+        return roleId;
     }
 
-    public void setMemo(String memo) {
-        this.memo = memo;
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
 
     public Date getGmtCreate() {
