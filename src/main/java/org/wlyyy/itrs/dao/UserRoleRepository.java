@@ -40,49 +40,6 @@ public interface UserRoleRepository {
     @SelectProvider(type = UserRoleRepository.UserRoleQueryProvider.class, method = "count")
     long countByCondition(@Param("userRole") UserRoleQuery queryObject);
 
-    @UpdateProvider(type = UserRoleRepository.UserRoleUpdateByIdProvider.class, method = "myMethod")
-    int updateById(UserRole userRole);
-
-    /**
-     * Update动态SQL
-     */
-    class UserRoleUpdateByIdProvider {
-        public static String myMethod(UserRole userRole) {
-            return new UserRoleRepository.UserRoleUpdateByIdProvider().getUpdate(userRole);
-        }
-
-        boolean first = true;
-        final StringBuilder builder = new StringBuilder();
-
-        private void tryAppend(Object o, String forAppend) {
-            if (Objects.nonNull(o) && !"".equals(o)) {
-                if (!first) {
-                    builder.append(", ");
-                }
-                first = false;
-                builder.append(forAppend);
-            }
-        }
-
-        String getUpdate(UserRole userRole) {
-            Objects.requireNonNull(userRole.getId(), "Cannot update when id is null");
-
-            builder.append("update user_role set ");
-
-            tryAppend(userRole.getUserId(), "user_id = #{userId}");
-            tryAppend(userRole.getRoleId(), "role_id = #{roleId}");
-
-            // 不能全都是空
-            if (first) {
-                throw new IllegalArgumentException("One of update attribute should be not null");
-            }
-
-            builder.append(", gmt_modify = now() where id = #{id}");
-
-            return builder.toString();
-        }
-    }
-
     /**
      * 动态查询
      */
