@@ -1,5 +1,7 @@
 package org.wlyyy.itrs.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -16,7 +18,9 @@ public class UserAgent implements Serializable {
     private Integer sex;
     private Long departmentId;
     private String realName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime refreshTime;
 
     /**
