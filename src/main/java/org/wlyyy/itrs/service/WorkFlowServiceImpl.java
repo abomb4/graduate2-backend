@@ -4,6 +4,9 @@ import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -111,30 +114,25 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
         // 流程实例对应的BussinessKey，这里规定由 {招聘流程信息表的表名.id} 构成
         String bussinessKey = EnumTableName.APPLY_FLOW.getCode() + "." + busID;
         Long recommendId = workFlow.getRecommendId();
-        Map<String, Object> variables = new HashMap<String,Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("userId", recommendId.toString());
 
         // 根据key值启动流程实例，当key值相同时，会按照最新版部署的流程进行启动
         // 同时设置BussinessKey（将activiti自带的表与业务表相关联）和下一任务的处理人（自己）
         ProcessInstance pi = runtimeService.startProcessInstanceByKey(procKey, bussinessKey, variables);
 
-        return new BaseServiceResponse(true, "Start process instance suceess!", pi, null);
+        return new BaseServiceResponse<>(true, "Start process instance suceess!", pi, null);
     }
 
     @Override
-    public BaseServicePageableResponse<Task> findTaskByAssigneeAndDesc(BaseServicePageableRequest<WorkFlowQuery> request, UserAgent user) {
+    public BaseServicePageableResponse<Task> findTaskByAssignee(BaseServicePageableRequest<WorkFlowQuery> request, UserAgent user) {
         int firstResult = (request.getPageNo() - 1) * request.getPageSize();    // 查询起始项，从0开始
         int maxResults = request.getPageSize();    // 查询数量
         Long userId = user.getId();
-        WorkFlowQuery query = request.getData();
 
         TaskQuery taskQuery = taskService.createTaskQuery()
-                .orderByTaskCreateTime()
+                .orderByTaskCreateTime().desc()
                 .taskAssignee(userId.toString());
-        if (StringUtils.isBlank(query.getTaskDesc())) {
-            // 查询展现在hr端或面试官端的任务
-            taskQuery.taskDescriptionLike('%' + query.getTaskDesc() + '%');
-        }
 
         List<Task> taskList = taskQuery
                 .listPage(firstResult, maxResults);
@@ -153,32 +151,25 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
     }
 
     @Override
-    public BaseServicePageableResponse<Task> findHistoricTaskByAssigneeAndDesc(BaseServicePageableRequest<WorkFlowQuery> request, UserAgent user) {
+    public BaseServicePageableResponse<HistoricTaskInstance> findHistoricTaskByAssignee(BaseServicePageableRequest<WorkFlowQuery> request, UserAgent user) {
         int firstResult = (request.getPageNo() - 1) * request.getPageSize();    // 查询起始项，从0开始
         int maxResults = request.getPageSize();    // 查询数量
         Long userId = user.getId();
-        WorkFlowQuery query = request.getData();
 
-        TaskInfoQuery hisTaskQuery = historyService.createHistoricTaskInstanceQuery()
-                .orderByTaskCreateTime()
-                .taskAssignee(userId.toString());
-        if (StringUtils.isBlank(query.getTaskDesc())) {
-            // 查询展现在hr端或面试官端的任务
-            hisTaskQuery.taskDescriptionLike('%' + query.getTaskDesc() + '%');
-        }
-
-        List<Task> taskList = hisTaskQuery
+        List<HistoricTaskInstance> historicTaskList = historyService.createHistoricTaskInstanceQuery()
+                .orderByTaskCreateTime().desc()
+                .taskAssignee(userId.toString())
                 .listPage(firstResult, maxResults);
 
         final long count;
-        if (taskList.size() < request.getPageSize()) {
-            count = taskList.size();
+        if (historicTaskList.size() < request.getPageSize()) {
+            count = historicTaskList.size();
         } else {
             count = request.getPageSize();
         }
 
         return new BaseServicePageableResponse<>(
-                true, "TaskList query success!", taskList,
+                true, "HistoricTaskList query success!", historicTaskList,
                 request.getPageNo(), request.getPageSize(),  count
         );
     }
@@ -189,6 +180,9 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(bussinessKey)
                 .singleResult();
+        if (task == null) {
+            return new BaseServiceResponse<>(true, "There is no current task!", null, null);
+        }
         return new BaseServiceResponse<>(true, "Find task by applyId success!", task, null);
     }
 
@@ -196,17 +190,26 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
     public BaseServiceResponse<String> completeTaskByTaskId(WorkFlow workFlow) {
         try {
             String taskId = workFlow.getTaskId();
-            List<Long> nextUserId = workFlow.getNextUserId();
+            Long nextUserId = workFlow.getNextUserId();
             String outcome = workFlow.getOutcome();
 
             if (taskId.equals(NO_TASK)) {
                 return new BaseServiceResponse<>(false, "No task to complete!", null, null);
             }
 
-            if (nextUserId == null && nextUserId.size() == 0) {
+            // 当前流程结果
+            String result = workFlow.getResult();
+            // 设置与taskId绑定的流程变量currentResult值
+            if (result == null) {
+                taskService.setVariableLocal(taskId, "currentResult", "");
+            } else {
+                taskService.setVariableLocal(taskId, "currentResult", result);
+            }
+
+            if (nextUserId == null) {
                 // 没有下一步任务的完成人，即流程即将结束
                 if (StringUtils.isNotBlank(outcome)) {
-                    Map<String, Object> variables = new HashMap<String,Object>();
+                    Map<String, Object> variables = new HashMap<>();
                     variables.put("outcome", outcome);
                     taskService.complete(taskId, variables);
                 } else {
@@ -215,15 +218,11 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
                 return new BaseServiceResponse<>(true, "Complete last task success!", null, null);
             } else {
                 // 设置流程变量，指定任务结果（outcome）和下一任务的完成人（userId）
-                Map<String, Object> variables = new HashMap<String,Object>();
+                Map<String, Object> variables = new HashMap<>();
                 if (StringUtils.isNotBlank(outcome)) {
                     variables.put("outcome", outcome);
                 }
-                if (nextUserId.size() == 1) {
-                    variables.put("userId", nextUserId.get(0).toString());
-                } else {
-                    variables.put("userId", nextUserId);
-                }
+                variables.put("userId", nextUserId.toString());
 
                 taskService.complete(taskId, variables);
                 return new BaseServiceResponse<>(true, "Complete task success!", null, null);
@@ -282,6 +281,31 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
         }
 
         return new BaseServiceResponse<>(true, "Find current outcome success", list, null);
+    }
+
+    @Override
+    public BaseServiceResponse<String> findVarValueByTaskIdAndVarName(String taskId, String varName) {
+        // 先查询历史流程变量表，获取流程变量值
+        String historicVar = "";
+        HistoricVariableInstance historicVarInstance = historyService.createHistoricVariableInstanceQuery()
+                .taskId(taskId)
+                .variableName(varName)
+                .singleResult();
+        if (historicVarInstance != null) {
+            historicVar = historicVarInstance.getValue().toString();
+        }
+
+        return new BaseServiceResponse<>(true, "Query historicVariableInstance success!", historicVar, null);
+    }
+
+    @Override
+    public BaseServiceResponse<Long> findApplyIdByProcInstanceId(String processInstanceId) {
+        HistoricProcessInstance hpi = historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .singleResult();
+        String bussinessKey = hpi.getBusinessKey();
+        Long applyId = Long.parseLong(bussinessKey.split("\\.")[1]);
+        return new BaseServiceResponse<>(true, "Query applyId by processInstanceId success!", applyId, null);
     }
 
     @Override

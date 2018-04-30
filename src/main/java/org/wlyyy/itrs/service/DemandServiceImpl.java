@@ -47,6 +47,11 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
+    public Demand findByNo(String demandNo) {
+        return dao.findByNo(demandNo);
+    }
+
+    @Override
     public BaseServiceResponse<Long> insertDemand(Demand demand) {
         dao.insert(demand);
         final Long id = demand.getId();

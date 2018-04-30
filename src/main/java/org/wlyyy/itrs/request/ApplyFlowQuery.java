@@ -37,6 +37,11 @@ public class ApplyFlowQuery {
     private Long currentDealer;
 
     /**
+     * 当前流程处理结果
+     */
+    private String currentResult;
+
+    /**
      * 流程状态
      */
     private Integer flowStatus;
@@ -105,6 +110,15 @@ public class ApplyFlowQuery {
 
     public ApplyFlowQuery setCurrentDealer(Long currentDealer) {
         this.currentDealer = currentDealer;
+        return this;
+    }
+
+    public String getCurrentResult() {
+        return currentResult;
+    }
+
+    public ApplyFlowQuery setCurrentResult(String currentResult) {
+        this.currentResult = currentResult;
         return this;
     }
 

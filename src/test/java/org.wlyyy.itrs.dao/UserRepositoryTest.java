@@ -23,14 +23,14 @@ public class UserRepositoryTest {
 
     @Test
     public void test() {
-        final User user = new User();
-        user.setDepartmentId(1L);
-        user.setEmail("xxx@yyy.zzz");
-        user.setPassword("cao123");
-        user.setRealName("真实姓名");
-        user.setSalt("sale");
-        user.setSex(1);
-        user.setUserName("abomb4");
+//        final User user = new User();
+//        user.setDepartmentId(1L);
+//        user.setEmail("xxx@yyy.zzz");
+//        user.setPassword("cao123");
+//        user.setRealName("真实姓名");
+//        user.setSalt("sale");
+//        user.setSex(1);
+//        user.setUserName("abomb4");
 
         // dao.insert(user);
 
@@ -50,21 +50,25 @@ public class UserRepositoryTest {
 //                new PageRequest(0, 10)
 //        );
 
-        final List<User>  byCondition = dao.findByCondition(
-                new UserQuery()
-                        .setRealName(user.getRealName())
-                        .setEmail(user.getEmail())
-                        // .setUserName("'%' and 1=1 and '%'='")
-                        .setUserName(user.getUserName())
+//        final List<User>  byCondition = dao.findByCondition(
+//                new UserQuery()
+//                        .setRealName(user.getRealName())
+//                        .setEmail(user.getEmail())
+//                        // .setUserName("'%' and 1=1 and '%'='")
+//                        .setUserName(user.getUserName())
+//
+//                ,
+//                new PageRequest(0, 10)
+//        );
 
-                ,
-                new PageRequest(0, 10)
-        );
 
-
-        System.out.println(byCondition);
+//        System.out.println(byCondition);
 
         // assertEquals(1, byCondition.getTotalElements());
+        
+        
+        User user = dao.findById(null);
+        System.out.println("user" + user);
 
     }
 }

@@ -1,5 +1,7 @@
 package org.wlyyy.itrs.service;
 
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -58,7 +60,7 @@ public interface WorkFlowService {
      * @param user 当前用户信息
      * @return 分页任务信息
      */
-    BaseServicePageableResponse<Task> findTaskByAssigneeAndDesc(BaseServicePageableRequest<WorkFlowQuery> request, UserAgent user);
+    BaseServicePageableResponse<Task> findTaskByAssignee(BaseServicePageableRequest<WorkFlowQuery> request, UserAgent user);
 
     /**
      * 根据assignee和description分页查询历史任务
@@ -67,7 +69,7 @@ public interface WorkFlowService {
      * @param user 当前用户信息
      * @return 分页任务信息
      */
-    BaseServicePageableResponse<Task> findHistoricTaskByAssigneeAndDesc(BaseServicePageableRequest<WorkFlowQuery> request, UserAgent user);
+    BaseServicePageableResponse<HistoricTaskInstance> findHistoricTaskByAssignee(BaseServicePageableRequest<WorkFlowQuery> request, UserAgent user);
 
     /**
      * 根据招聘流程id找到当前对应的Task（正需要进行处理的Task）
@@ -101,7 +103,20 @@ public interface WorkFlowService {
      */
     BaseServiceResponse<List<String>> findCurrentOutcomeListByApplyId(Long id);
 
+    /**
+     *
+     * @param taskId 任务id
+     * @param varName 变量变量值
+     * @return 变量值
+     */
+    BaseServiceResponse<String> findVarValueByTaskIdAndVarName(String taskId, String varName);
 
+    /**
+     *
+     * @param processInstanceId 流程实例id
+     * @return 该流程实例对应的招聘流程id
+     */
+    BaseServiceResponse<Long> findApplyIdByProcInstanceId(String processInstanceId);
 
 
     /**

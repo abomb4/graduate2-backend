@@ -20,7 +20,7 @@ public interface DemandService {
     BaseServicePageableResponse<Demand> findByCondition(BaseServicePageableRequest<DemandQuery> request);
 
     /**
-     * 根据被推荐人id查询
+     * 根据招聘需求id查询
      *
      * @param id 被推荐人id
      * @return 招聘需求，没有的话返回null
@@ -28,10 +28,18 @@ public interface DemandService {
     Demand findById(Long id);
 
     /**
+     * 根据招聘需求id查询
+     *
+     * @param demandNo 招聘需求No
+     * @return 招聘需求，没有的话返回null
+     */
+    Demand findByNo(String demandNo);
+
+    /**
      * 插入招聘需求
      *
      * @param demand 招聘需求
-     * @return id 插入的被推荐人id
+     * @return id 插入的招聘需求id
      */
     BaseServiceResponse<Long> insertDemand(Demand demand);
 

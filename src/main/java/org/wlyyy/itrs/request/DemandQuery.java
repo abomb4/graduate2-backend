@@ -12,6 +12,7 @@ public class DemandQuery {
     private String demandNo;
     private Long publisherId;
     private String positionType;
+    private String subPositionType;
     private String position;
     private Long departmentId;
     private String hrName;
@@ -61,6 +62,15 @@ public class DemandQuery {
 
     public DemandQuery setPositionType(String positionType) {
         this.positionType = positionType;
+        return this;
+    }
+
+    public String getSubPositionType() {
+        return subPositionType;
+    }
+
+    public DemandQuery setSubPositionType(String subPositionType) {
+        this.subPositionType = subPositionType;
         return this;
     }
 

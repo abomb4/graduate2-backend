@@ -1,7 +1,6 @@
 package org.wlyyy.itrs.domain;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * 工作流查询对象
@@ -53,12 +52,17 @@ public class WorkFlow {
     /**
      * 下一任务的完成人
      */
-    private List<Long> nextUserId;
+    private Long nextUserId;
 
     /**
      * 连线名称（通过or不通过等）
      */
     private String outcome;
+
+    /**
+     * 当前流程结果
+     */
+    private String result;
 
     /**
      * 备注
@@ -200,11 +204,19 @@ public class WorkFlow {
         this.taskDesc = taskDesc;
     }
 
-    public List<Long> getNextUserId() {
+    public Long getNextUserId() {
         return nextUserId;
     }
 
-    public void setNextUserId(List<Long> nextUserId) {
+    public void setNextUserId(Long nextUserId) {
         this.nextUserId = nextUserId;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

@@ -38,6 +38,11 @@ public class ApplyFlow {
     private Long currentDealer;
 
     /**
+     * 当前流程结果
+     */
+    private String currentResult;
+
+    /**
      * 流程状态
      */
     private Integer flowStatus;
@@ -100,9 +105,21 @@ public class ApplyFlow {
         this.currentDealer = currentDealer;
     }
 
-    public Integer getFlowStatus() { return flowStatus; }
+    public String getCurrentResult() {
+        return currentResult;
+    }
 
-    public void setFlowStatus(Integer flowStatus) { this.flowStatus = flowStatus; }
+    public void setCurrentResult(String currentResult) {
+        this.currentResult = currentResult;
+    }
+
+    public Integer getFlowStatus() {
+        return flowStatus;
+    }
+
+    public void setFlowStatus(Integer flowStatus) {
+        this.flowStatus = flowStatus;
+    }
 
     public Date getGmtCreate() {
         return gmtCreate;
