@@ -112,7 +112,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
             final org.springframework.security.core.userdetails.User.UserBuilder userBuilder = org.springframework.security.core.userdetails.User.withUsername(userAgent.getUserName());
 
             final List<SimpleGrantedAuthority> roles = userAgent.getRoles().stream()
-                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                     .collect(Collectors.toList());
 
             userBuilder.password(password);
