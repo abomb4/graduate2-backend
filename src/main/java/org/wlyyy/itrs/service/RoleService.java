@@ -6,6 +6,8 @@ import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.domain.Role;
 import org.wlyyy.itrs.request.RoleQuery;
 
+import java.util.Set;
+
 /**
  * 角色信息表基本管理服务
  */
@@ -42,4 +44,29 @@ public interface RoleService {
      * @return 更新数目
      */
     BaseServiceResponse<Integer> updateRole(Role role);
+
+    /**
+     * 查询某角色id下的所有用户id
+     *
+     * @param roleId 角色id
+     * @return 用户id集合
+     */
+    BaseServiceResponse<Set<Long>> findUserIdsByRoleId(Long roleId);
+
+    /**
+     * 查询某用户id下的所有角色id
+     *
+     * @param userId 用户id
+     * @return 角色id集合
+     */
+    BaseServiceResponse<Set<Long>> findRoleIdsByUserId(Long userId);
+
+    /**
+     * 更新某用户id下的角色id们
+     *
+     * @param userId 用户id
+     * @param roleIds 角色id们
+     * @return 更新成功or失败信息
+     */
+    BaseServiceResponse<String> updateUserRole(Long userId, Set<Long> roleIds);
 }

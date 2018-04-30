@@ -41,6 +41,15 @@ public interface UserRoleRepository {
     long countByCondition(@Param("userRole") UserRoleQuery queryObject);
 
     /**
+     * 删除该userId下的所有角色
+     *
+     * @param userId 用户id
+     * @return 删除的条数
+     */
+    @Delete("delete from user_role where user_id = #{userId}")
+    long deleteByUserID(@Param("userId") Long userId);
+
+    /**
      * 动态查询
      */
     class UserRoleQueryProvider {
@@ -115,7 +124,11 @@ public interface UserRoleRepository {
             }
 
             builder.append(getOrder(page));
-            builder.append(" ").append(getPage(page));
+
+            // 若pageSize为最大值，则不进行分页
+            if (page.getPageSize() != Integer.MAX_VALUE) {
+                builder.append(" ").append(getPage(page));
+            }
 
             return builder.toString();
         }

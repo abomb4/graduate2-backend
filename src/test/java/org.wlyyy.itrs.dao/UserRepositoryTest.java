@@ -67,8 +67,10 @@ public class UserRepositoryTest {
         // assertEquals(1, byCondition.getTotalElements());
         
         
-        User user = dao.findById(null);
-        System.out.println("user" + user);
+//        User user = dao.findById(null);
+//        System.out.println("user" + user);
+
+
 
     }
 }
