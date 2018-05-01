@@ -31,17 +31,22 @@ public class DemandController {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(DemandController.class);
 
-    @RequestMapping("list")
-    public BaseRestPageableResponse<DemandListItemVo> queryDemandList() {
+    @RequestMapping(value = "/list")
+    public BaseRestPageableResponse<DemandListItemVo> queryDemandList(DemandQuery demandQuery, int pageNo, int pageSize) {
 
-        BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(1, 10, null);
+        BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize, demandQuery);
         BaseServicePageableResponse<Demand> demandResult =  demandService.findByCondition(request);
-        List<Demand> demandList = demandResult.getDatas();
 
+        if (!demandResult.isSuccess()) {
+            return new BaseRestPageableResponse<>(false, "查询招聘需求列表失败!", null,
+                    demandResult.getPageNo(), demandResult.getPageSize(), demandResult.getTotal());
+        }
+
+        List<Demand> demandList = demandResult.getDatas();
         List<DemandListItemVo> datas = demandList.stream().map(source -> DemandListItemVo.buildFromDomain(source,
                 (pid) -> userService.findById(pid).getUserName(),
                 (did) -> departmentService.findById(did).getDepartmentName())).collect(Collectors.toList());
-        return new BaseRestPageableResponse<>(true, "Query demandList success!", datas,
+        return new BaseRestPageableResponse<>(true, "查询招聘需求列表成功!", datas,
                 demandResult.getPageNo(), demandResult.getPageSize(), demandResult.getTotal());
     }
 }

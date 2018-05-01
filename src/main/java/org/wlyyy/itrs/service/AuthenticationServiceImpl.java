@@ -33,6 +33,9 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RoleService roleService;
+
     /**
      * 登录验证方法。
      *
@@ -49,9 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
             final User user = validateResponse.getData();
 
             // final String sessionKey = SecurityUtils.generateSessionKey(user, clientIp, LocalDateTime.now());
-            // TODO ROLES!!!!!!!!!!!!!!!!!!1
-            final Set<Role> roles = new HashSet<>();
-
+            final Set<Role> roles = roleService.findRoleIdsByUserId(user.getId()).getData();
             final UserAgent userAgent = new UserAgent()
                     .setId(user.getId())
                     .setEmail(user.getEmail())

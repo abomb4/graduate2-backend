@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
             return new BaseServiceResponse<>(false, "User not found.", null, null);
         }
 
+        // 将用户对象的密码和盐置为null，避免泄露密码和盐
         final String realPassword = fullUserInfo.getPassword();
         final String salt = fullUserInfo.getSalt();
 

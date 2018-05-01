@@ -15,7 +15,7 @@ import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ItrsBoot.class)
-// @Transactional
+@Transactional
 public class RoleServiceTest {
 
     @Autowired
@@ -23,16 +23,16 @@ public class RoleServiceTest {
 
     @Test
     public void testUpdateUserRole() {
-//        Set<Long> roleIds = new HashSet<>();
-//        roleIds.add(1l);
-//        roleIds.add(2l);
-//        roleIds.add(3l);
-//        roleService.updateUserRole(8l, roleIds);
+        Set<Long> roleIds = new HashSet<>();
+        roleIds.add(1l);
+        roleIds.add(4l);
+        roleIds.add(3l);
+        roleService.updateUserRole(8l, roleIds);
 
         Set<Long> userIds = roleService.findRoleIdsByUserId(8l).getData();
         System.out.println(userIds);
 
-        Set<Long> roleIDS = roleService.findUserIdsByRoleId(1l).getData();
-        System.out.println(roleIDS);
+        Set<Long> roleIdss = roleService.findUserIdsByRoleId(1l).getData();
+        System.out.println(roleIdss);
     }
 }

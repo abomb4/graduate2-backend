@@ -26,7 +26,7 @@ public interface DemandRepository {
      * @return 招聘需求
      */
     @Select("select * from demand where id = #{id}")
-    Demand findById(Long id);
+    Demand findById(@Param("id") Long id);
 
     /**
      * 根据招聘需求No查询招聘需求
@@ -37,6 +37,13 @@ public interface DemandRepository {
     @Select("select * from demand where demand_no = #{demandNo}")
     Demand findByNo(String demandNo);
 
+    /**
+     * 调用DemandQueryProvider类中的select方法的返回值，拼接成sql查询语句
+     *
+     * @param queryObject demandQuery查询对象
+     * @param page 分页请求对象
+     * @return 查询结果
+     */
     @SelectProvider(type = DemandQueryProvider.class, method = "select")
     List<Demand> findByCondition(@Param("demand") DemandQuery queryObject, Pageable page);
 
@@ -169,9 +176,9 @@ public interface DemandRepository {
          */
         private String getSelect(DemandQuery demand, Pageable page) {
             if (demand == null) {
-                return St.r("select {} from demand {}",
+                return St.r("select {} from demand{} {}",
                         "id, demand_no, publisher_id, position_type, sub_position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify",
-                        getPage(page)
+                        getOrder(page), getPage(page)
                 );
             }
             builder.append("select id, demand_no, publisher_id, position_type, sub_position_type, position, department_id, hr_name, total, working_place, degree_request, status, memo, proc_key, gmt_create, gmt_modify from demand");
