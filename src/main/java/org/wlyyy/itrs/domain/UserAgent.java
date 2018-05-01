@@ -1,15 +1,19 @@
 package org.wlyyy.itrs.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.security.core.CredentialsContainer;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Set;
 
 /**
  * 用户登录信息
  */
-public class UserAgent implements Serializable {
+public class UserAgent implements UserDetails, Serializable {
     private String sessionKey;
     private Long id;
     private String userName;
@@ -137,6 +141,41 @@ public class UserAgent implements Serializable {
                 ", loginTime=" + loginTime +
                 ", refreshTime=" + refreshTime +
                 '}';
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return userName;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
 

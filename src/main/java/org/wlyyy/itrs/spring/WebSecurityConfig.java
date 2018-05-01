@@ -46,6 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .and().rememberMe()
                 .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout")).logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                 .and().csrf().disable()
         // .addFilterAfter(new CsrfGrantingFilter(), SessionManagementFilter.class)
@@ -92,7 +93,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setAuthenticationManager(manager);
         filter.setFilterProcessesUrl("/auth/login");
         filter.setAuthenticationSuccessHandler((request, response, authentication) -> {
-            final UserAgent userAgent = (UserAgent) authentication.getDetails();
+            final UserAgent userAgent = (UserAgent) authentication.getPrincipal();
             final String sessionKey = userAgent.getSessionKey();
             response.setCharacterEncoding("UTF-8");
             response.getWriter().print(St.r("{ \"status\": 200, \"sessionKey\": \"{}\", \"userName\": \"{}\"" +

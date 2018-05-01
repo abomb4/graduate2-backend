@@ -65,6 +65,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-log4j2:${spring_boot_version}"
     compile "org.springframework.boot:spring-boot-maven-plugin:${spring_boot_version}"
     compile "org.springframework.boot:spring-boot-devtools:${spring_boot_version}"
+    compile("org.springframework.boot:spring-boot-starter-mail:${spring_boot_version}")
     compile("org.springframework.boot:spring-boot-starter-security:${spring_boot_version}")
     compile "org.springframework.boot:spring-boot-starter-data-redis:${spring_boot_version}"
     compile "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatis_version}"
@@ -87,6 +88,8 @@ dependencies {
 
     // Functional libs
     compile "com.hankcs:hanlp:${hanlp_version}"
+    compile 'javax.mail:javax.mail-api:1.6.1'
+    compile 'javax.mail:mail:1.4.7'
 
     // activiti
     compile "org.activiti:activiti-spring-boot-starter-basic:${activiti_spring_boot_version}"

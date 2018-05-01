@@ -1,8 +1,10 @@
 package org.wlyyy.itrs.domain;
 
+import org.springframework.security.core.GrantedAuthority;
+
 import java.util.Date;
 
-public class Role {
+public class Role implements GrantedAuthority {
     private Long id;
     private String roleName;
     private String memo;
@@ -47,5 +49,10 @@ public class Role {
 
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
+    }
+
+    @Override
+    public String getAuthority() {
+        return roleName;
     }
 }

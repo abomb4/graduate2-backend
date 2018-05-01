@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import org.springframework.stereotype.Service;
@@ -78,8 +79,10 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
 
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal().toString())) {
-            return new BaseServiceResponse<UserAgent>(true, "You are logged in.", (UserAgent) auth.getDetails(), null);
+        final UserDetails userDetail = (UserDetails) auth.getPrincipal();
+
+        if (auth.isAuthenticated() && !"anonymousUser".equals(userDetail.getUsername())) {
+            return new BaseServiceResponse<UserAgent>(true, "You are logged in.", (UserAgent) userDetail, null);
         } else {
             return new BaseServiceResponse<UserAgent>(false, "You are NOT logged in.", null, null);
         }
@@ -109,21 +112,12 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
         if (login.isSuccess()) {
             final UserAgent userAgent = login.getData();
             userAgent.setSessionKey(sessionKey);
-            final org.springframework.security.core.userdetails.User.UserBuilder userBuilder = org.springframework.security.core.userdetails.User.withUsername(userAgent.getUserName());
-
-            final List<SimpleGrantedAuthority> roles = userAgent.getRoles().stream()
-                    .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
-                    .collect(Collectors.toList());
-
-            userBuilder.password(password);
-            userBuilder.roles(roles.stream().map(SimpleGrantedAuthority::getAuthority).toArray(String[]::new));
 
             final RememberMeAuthenticationToken authenticationToken = new RememberMeAuthenticationToken(
                     userAgent.getSessionKey(),
-                    userBuilder.build(),
-                    roles
+                    userAgent,
+                    userAgent.getRoles()
             );
-            authenticationToken.setDetails(login.getData());
             return authenticationToken;
         } else {
             throw new RememberMeAuthenticationException("Cannot authenticate " + authentication.getPrincipal());
