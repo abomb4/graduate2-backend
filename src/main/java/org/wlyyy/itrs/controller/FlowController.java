@@ -238,9 +238,7 @@ public class FlowController {
                     return workFlowService.findCurrentOutcomeListByApplyId(aid).getData();
                 },
                 (dno) -> {
-                    BaseServicePageableRequest<DemandQuery> requestDemand = new BaseServicePageableRequest<>(1, 1,
-                            new DemandQuery().setDemandNo(dno));
-                    return demandService.findByCondition(requestDemand).getDatas().get(0).getId();
+                    return demandService.findByNo(dno).getId();
                 }))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
@@ -259,7 +257,7 @@ public class FlowController {
         // 获取当前登录用户信息
         UserAgent userAgent = authenticationService.isLogin().getData();
 
-        // 1. 根据招聘需求id找到其下的招聘流程列表
+        // 1. 根据用户id找到其下的招聘流程列表
         BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
                 new ApplyFlowQuery().setCurrentDealer(userAgent.getId()));
         BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
@@ -294,9 +292,49 @@ public class FlowController {
                     return workFlowService.findCurrentOutcomeListByApplyId(aid).getData();
                 },
                 (dno) -> {
-                    BaseServicePageableRequest<DemandQuery> requestDemand = new BaseServicePageableRequest<>(1, 1,
-                             new DemandQuery().setDemandNo(dno));
-                    return demandService.findByCondition(requestDemand).getDatas().get(0).getId();
+                    return demandService.findByNo(dno).getId();
+                }))
+                .collect(Collectors.toList());
+        return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
+                applyFlowResult.getPageNo(), applyFlowResult.getPageSize(), applyFlowResult.getTotal());
+    }
+
+    /**
+     * 展示该用户下的所有展示层招聘流程信息表（给推荐人用）
+     *
+     * @param pageNo 页码
+     * @param pageSize 分页大小
+     * @return ApplyFlowListItemVo列表
+     */
+    @RequestMapping(value = "/listApplyFlowRecommender", method = RequestMethod.GET)
+    BaseRestPageableResponse<ApplyFlowListItemVo> queryApplyFlowListByDemandIdForRecommender(final int pageNo, final int pageSize) {
+        // 获取当前登录用户信息
+        UserAgent userAgent = authenticationService.isLogin().getData();
+
+        // 1. 根据用户id找到其下的招聘流程列表
+        BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
+                new ApplyFlowQuery().setUserId(userAgent.getId()));
+        BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
+        List<ApplyFlow> applyFlowList = applyFlowResult.getDatas();
+
+        // 2. 转化成的展示层招聘流程信息表
+        // 在根据招聘流程id得到任务id和操作的过程中，若当前处理人不是该登录用户，则置任务id为-1，操作为空
+        List<ApplyFlowListItemVo> datas = applyFlowList.stream().map(source -> ApplyFlowListItemVo.buildFromDomain(source,
+                (cid) -> candidateService.findById(cid),
+                (uid) -> {
+                    if (uid == 0l) {
+                        return "无";
+                    }
+                    return userService.findById(uid).getRealName();
+                },
+                (aid) -> {
+                    return NO_TASK;
+                },
+                (aid) -> {
+                    return new ArrayList<String>();
+                },
+                (dno) -> {
+                    return demandService.findByNo(dno).getId();
                 }))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,

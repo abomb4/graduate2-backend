@@ -42,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/myprofile/*").authenticated()
+                .antMatchers("/myProfile/*").authenticated()
                 .anyRequest().permitAll()
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)

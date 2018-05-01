@@ -54,12 +54,12 @@ public interface RoleService {
     BaseServiceResponse<Set<Long>> findUserIdsByRoleId(Long roleId);
 
     /**
-     * 查询某用户id下的所有角色id
+     * 查询某用户id下的所有角色
      *
      * @param userId 用户id
-     * @return 角色id集合
+     * @return 角色集合
      */
-    BaseServiceResponse<Set<Long>> findRoleIdsByUserId(Long userId);
+    BaseServiceResponse<Set<Role>> findRoleIdsByUserId(Long userId);
 
     /**
      * 更新某用户id下的角色id们
