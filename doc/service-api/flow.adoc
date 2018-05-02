@@ -1,4 +1,291 @@
 = 流程相关接口
 
 == 接口列表
--
+- 员工推荐
+- 根据需求id查询流程
+- 查询需要面试的流程
+- 查询该用户下的所有流程信息
+- 查询当前用户的历史处理记录
+- 处理流程任务
+
+=== 推荐
+本接口仅提供给前台页面使用，需要用户认证之后才可使用。
+
+==== URL
+```
+POST /myProfile/flow/recommendTalent
+```
+
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| demandId | 需求id | Number | - | Y
+| name | 推荐人姓名 | String | - | Y
+| sex | 性别 | Number | 0未知1男2女 | Y
+| phoneNo | 手机号 | String | 中国手机号 | Y
+| email | 电子邮箱 | String | - | Y
+| graduateTime | 毕业时间 | String | yyyy-MM-dd | Y
+| degree | 最高学位 | String | - | N
+| workingPlace | 期望工作地点 | String | - | N
+| memo | 备注 | String | - | N
+| attachment | 附件标记 | String | - | N
+|======
+
+==== 返回示例
+```json
+{
+    "success": true,
+    "message": "Create success"
+}
+```
+
+=== 根据需求id查询流程
+查询某需求的所有推荐流程
+
+==== URL
+```
+GET /myProfile/flow/listApplyFlowHr?
+```
+
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| demandId | 需求id | Number | - | Y
+| pageNo | 页码 | Number | 默认1 | N
+| pageSize | 页大小 | Number | 默认10 | N
+|======
+
+==== 返回示例
+```json
+{
+    "success": true,
+    "message": "Create success"
+}
+```
+
+
+=== 查询需要面试的流程
+展示该用户下的所有展示层招聘流程信息表（给面试官用）
+
+==== URL
+```
+GET /myProfile/flow/listApplyFlowInterviewee?
+```
+
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| pageNo | 页码 | Number | 默认1 | N
+| pageSize | 页大小 | Number | 默认10 | N
+|======
+
+==== 返回示例
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| id | - | String | - | Y
+| demandId | 需求id | String | - | Y
+| demandNo | 需求编号 | String | - | Y
+| taskId | 工作流引擎的TaskID | Number | 如果该用户不能操作该流程，返回-1 | Y
+| candidateId | 被推荐人id | String | - | Y
+| candidateName | 被推荐人姓名 | String | - | Y
+| candidateSex | 被推荐人性别 | Number | - | Y
+| hopeWorkingPlace | 期望工作地点 | String | - | Y
+| recommendId | 推荐人id | String | - | Y
+| recommendName | 推荐人姓名 | String | - | Y
+| currentFlowNode | 当前流程节点 | String | 中文名 | Y
+| currentDealer | 当前处理人 | String | 中文名 | Y
+| currentResult | 当前流程结果 | String | 中文 | Y
+| flowStatus | 流程状态 | Number | 1执行中，2异常，3已结束 | Y
+| flowStatusName | 流程状态名 | String | 同上解释 | Y
+| gmtCreate | - | String | yyyy-MM-dd HH:mm:ss | Y
+| gmtModify | - | String | yyyy-MM-dd HH:mm:ss | Y
+| operate | 操作 | List<String> | 中文操作 | Y
+|======
+```json
+{
+    "success": true,
+    "message": "Create success"
+}
+```
+
+
+=== 查询该用户下的所有流程信息
+本接口仅提供给前台页面使用，需要用户认证后才可使用，
+根据Session中的用户id查询该用户的所有推荐。
+
+==== URL
+```
+GET /myProfile/flow/listApplyFlowRecommender?
+```
+
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| pageNo | 页码 | Number | 默认1 | N
+| pageSize | 页大小 | Number | 默认10 | N
+|======
+
+==== 返回示例
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| id | - | String | - | Y
+| demandId | 需求id | String | - | Y
+| demandNo | 需求编号 | String | - | Y
+| taskId | 工作流引擎的TaskID | Number | 如果该用户不能操作该流程，返回-1 | Y
+| candidateId | 被推荐人id | String | - | Y
+| candidateName | 被推荐人姓名 | String | - | Y
+| candidateSex | 被推荐人性别 | Number | - | Y
+| hopeWorkingPlace | 期望工作地点 | String | - | Y
+| recommendId | 推荐人id | String | - | Y
+| recommendName | 推荐人姓名 | String | - | Y
+| currentFlowNode | 当前流程节点 | String | 中文名 | Y
+| currentDealer | 当前处理人 | String | 中文名 | Y
+| currentResult | 当前流程结果 | String | 中文 | Y
+| flowStatus | 流程状态 | Number | 1执行中，2异常，3已结束 | Y
+| flowStatusName | 流程状态名 | String | 同上解释 | Y
+| gmtCreate | - | String | yyyy-MM-dd HH:mm:ss | Y
+| gmtModify | - | String | yyyy-MM-dd HH:mm:ss | Y
+| operate | 操作 | List<String> | 中文操作 | Y
+|======
+
+```json
+{
+    "success": true,
+    "message": "Query success",
+    "pageNo": 1,
+    "pageSize": 10,
+    "total": 20,
+    "datas": [
+        {
+            "id": 123,
+            "demandId": 321,
+            "demandNo": "2112213",
+            "taskId": 123,
+            "candidateId": 321,
+            "candidateName": "动次打次",
+            "candidateSex": 0,
+            "hopeWorkingPlace": "杭州",
+            "recommendId": 321,
+            "recommendName": "推荐人姓名",
+            "currentFlowNode": "当前流程节点",
+            "currentDealer": "当前处理人",
+            "currentResult": "当前流程结果",
+            "flowStatus": 2,
+            "flowStatusName": "异常",
+            "gmtCreate": "yyyy-MM-dd HH:mm:ss",
+            "gmtModify": "yyyy-MM-dd HH:mm:ss",
+            "operate": [ "通过", "未通过" ],
+        }
+    ]
+}
+```
+
+
+=== 查询当前用户的历史处理记录
+查询当前用户的历史处理记录
+
+==== URL
+```
+GET /myProfile/flow/listHistoricFlow?
+```
+
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| pageNo | 页码 | Number | 默认1 | N
+| pageSize | 页大小 | Number | 默认10 | N
+|======
+
+==== 返回示例
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| id | - | String | - | Y
+| demandId | 需求id | String | - | Y
+| demandNo | 需求编号 | String | - | Y
+| taskId | 工作流引擎的TaskID | Number | 如果该用户不能操作该流程，返回-1 | Y
+| candidateId | 被推荐人id | String | - | Y
+| candidateName | 被推荐人姓名 | String | - | Y
+| candidateSex | 被推荐人性别 | Number | - | Y
+| hopeWorkingPlace | 期望工作地点 | String | - | Y
+| recommendId | 推荐人id | String | - | Y
+| recommendName | 推荐人姓名 | String | - | Y
+| currentFlowNode | 当前流程节点 | String | 中文名 | Y
+| currentDealer | 当前处理人 | String | 中文名 | Y
+| currentResult | 当前流程结果 | String | 中文 | Y
+| flowStatus | 流程状态 | Number | 1执行中，2异常，3已结束 | Y
+| flowStatusName | 流程状态名 | String | 同上解释 | Y
+| gmtCreate | - | String | yyyy-MM-dd HH:mm:ss | Y
+| gmtModify | - | String | yyyy-MM-dd HH:mm:ss | Y
+| operate | 操作 | List<String> | 中文操作 | Y
+|======
+
+```json
+{
+    "success": true,
+    "message": "Query success",
+    "pageNo": 1,
+    "pageSize": 10,
+    "total": 20,
+    "datas": [
+        {
+            "id": 123,
+            "demandId": 321,
+            "demandNo": "2112213",
+            "taskId": 123,
+            "candidateId": 321,
+            "candidateName": "动次打次",
+            "candidateSex": 0,
+            "hopeWorkingPlace": "杭州",
+            "recommendId": 321,
+            "recommendName": "推荐人姓名",
+            "currentFlowNode": "当前流程节点",
+            "currentDealer": "当前处理人",
+            "currentResult": "当前流程结果",
+            "flowStatus": 2,
+            "flowStatusName": "异常",
+            "gmtCreate": "yyyy-MM-dd HH:mm:ss",
+            "gmtModify": "yyyy-MM-dd HH:mm:ss",
+            "operate": [ "通过", "未通过" ],
+        }
+    ]
+}
+```
+
+=== 处理流程任务
+吧下一任务的人、结果，
+比如面试官点通过，同时吧下一任务的处理人就是指派为Negev这个秀气的hr，同时给
+nextUserId outCome 中文 通过不通过  operate；result
+
+==== URL
+```
+POST /myProfile/flow/deal?
+```
+
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| outcome | 连线名称（通过or不通过等） | String | 连线名称（通过or不通过等） | Y
+| nextUserId | 下一任务的完成人 | String | 除最后一个节点外，必须，且只能有一个 | N
+| result | 当前流程结果 | String | 中文结果 | Y
+| taskId | 任务id | String | 必须 | Y
+| applyFlowId | ???????????? | ???????????? | ???????????? | ????????????
+|======
+
+==== 返回示例
+
+```json
+{
+    "success": true,
+    "message": "Create success"
+}
+```
+
