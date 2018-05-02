@@ -9,6 +9,7 @@ import java.util.List;
 public class PositionType {
 
     private Long id;
+    private Long parentId;
     private String englishName;
     private String chineseName;
     private List<PositionType> subTypes;
@@ -26,6 +27,14 @@ public class PositionType {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public String getEnglishName() {
@@ -50,5 +59,16 @@ public class PositionType {
 
     public void setSubTypes(List<PositionType> subTypes) {
         this.subTypes = subTypes;
+    }
+
+    @Override
+    public String toString() {
+        return "PositionType{" +
+                "id=" + id +
+                ", parentId=" + parentId +
+                ", englishName='" + englishName + '\'' +
+                ", chineseName='" + chineseName + '\'' +
+                ", subTypes=" + subTypes +
+                '}';
     }
 }
