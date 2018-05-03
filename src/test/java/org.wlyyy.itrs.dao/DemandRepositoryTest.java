@@ -1,21 +1,13 @@
 package org.wlyyy.itrs.dao;
 
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import org.wlyyy.itrs.domain.Demand;
-import org.wlyyy.itrs.request.DemandQuery;
+import org.wlyyy.common.service.CachedSequenceManagementService;
 import org.wlyyy.itrs.spring.ItrsBoot;
-
-import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ItrsBoot.class)
@@ -26,10 +18,7 @@ public class DemandRepositoryTest {
     private DemandRepository dao;
 
     @Autowired
-    RepositoryService repositoryService;
-
-    @Autowired
-    RuntimeService runtimeService;
+    private CachedSequenceManagementService cachedSequenceManagementService;
 
     @Test
     public void test() {
@@ -67,8 +56,17 @@ public class DemandRepositoryTest {
 //
 //        System.out.println(byCondition);
 
-        Demand demand = dao.findByNo("11153");
-        System.out.println(demand);
+//        Demand demand = dao.findByNo("11153");
+//        System.out.println(demand);
 
+//        Long demandNo = SequenceUtils.getSequence("seq_demand_no");
+//        String demandNoStr = demandNo.toString();
+//        System.out.println(demandNoStr);
+
+        // Long demandNo = new JumpedSequenceManagerImpl(1l).getBySequenceType("seq_demand_no");
+        // Long demandNo = sequenceSerivce.getBySequenceType("seq_demand_no");
+
+        String demandNo = cachedSequenceManagementService.getBySequenceType("seq_demand_no").toString();
+        System.out.println(demandNo);
     }
 }
