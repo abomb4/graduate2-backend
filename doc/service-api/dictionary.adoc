@@ -2,3 +2,40 @@
 
 == 接口列表
 - 查询职位类别树
+
+
+=== 查询职位类别树
+
+==== URL
+```
+GET /dict/positionTypeTree
+```
+
+==== 请求参数
+[options="header"]
+|======
+无
+|======
+
+==== 返回示例
+```json
+{
+    "success": true,
+    "message": "查询职位类别树成功!",
+    "data": [
+        {
+            "id": 1,
+            "englishName": "R&D",
+            "chineseName": "yanfa",
+            "subTypes": [
+                {
+                    "id": 11,
+                    "parentId": 1,
+                    "englishName": "Java",
+                    "chineseName": "Java"
+                }
+            ]
+        }
+    ]
+}
+```

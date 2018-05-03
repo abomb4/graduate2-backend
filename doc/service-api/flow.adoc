@@ -36,12 +36,13 @@ POST /myProfile/flow/recommendTalent
 ```json
 {
     "success": true,
-    "message": "Create success"
+    "message": "员工推荐成功"
 }
 ```
 
 === 根据需求id查询流程
-查询某需求的所有推荐流程
+查询某需求的所有推荐流程（hr）
+若该用户不能对该流程进行操作，则taskId为-1，且操作为空
 
 ==== URL
 ```
@@ -61,7 +62,52 @@ GET /myProfile/flow/listApplyFlowHr?
 ```json
 {
     "success": true,
-    "message": "Create success"
+    "message": "查询展示层招聘流程信息表成功!",
+    "datas": [
+        {
+            "id": 1,
+            "demandId": 12,
+            "demandNo": "11153",
+            "taskId": "-1",
+            "candidateId": 1,
+            "candidateName": "翁羚晏",
+            "candidateSex": null,
+            "hopeWorkingPlace": null,
+            "recommendId": 1,
+            "recommendName": "realName",
+            "currentFlowNode": "已结束",
+            "currentDealer": "无",
+            "currentResult": "放弃录用",
+            "flowStatus": 2,
+            "flowStatusName": "结束",
+            "gmtCreate": "2018-04-29",
+            "gmtModify": "2018-04-30",
+            "operate": []
+        },
+        {
+            "id": 2,
+            "demandId": 12,
+            "demandNo": "11153",
+            "taskId": "-1",
+            "candidateId": 2,
+            "candidateName": "翁大宝",
+            "candidateSex": null,
+            "hopeWorkingPlace": null,
+            "recommendId": 2,
+            "recommendName": "realName",
+            "currentFlowNode": "已结束",
+            "currentDealer": "无",
+            "currentResult": "电话面试未通过",
+            "flowStatus": 2,
+            "flowStatusName": "结束",
+            "gmtCreate": "2018-04-29",
+            "gmtModify": "2018-04-30",
+            "operate": []
+        }
+    ],
+    "pageNo": 1,
+    "pageSize": 20,
+    "total": 2
 }
 ```
 
@@ -230,39 +276,41 @@ GET /myProfile/flow/listHistoricFlow?
 ```json
 {
     "success": true,
-    "message": "Query success",
-    "pageNo": 1,
-    "pageSize": 10,
-    "total": 20,
+    "message": "查询历史操作信息成功!",
     "datas": [
         {
-            "id": 123,
-            "demandId": 321,
-            "demandNo": "2112213",
-            "taskId": 123,
-            "candidateId": 321,
-            "candidateName": "动次打次",
-            "candidateSex": 0,
-            "hopeWorkingPlace": "杭州",
-            "recommendId": 321,
-            "recommendName": "推荐人姓名",
-            "currentFlowNode": "当前流程节点",
-            "currentDealer": "当前处理人",
-            "currentResult": "当前流程结果",
-            "flowStatus": 2,
-            "flowStatusName": "异常",
-            "gmtCreate": "yyyy-MM-dd HH:mm:ss",
-            "gmtModify": "yyyy-MM-dd HH:mm:ss",
-            "operate": [ "通过", "未通过" ],
+            "taskId": "27503",
+            "applyFlowId": 2,
+            "demandNo": "11153",
+            "node": "电话面试",
+            "result": "电话面试未通过",
+            "startTime": "2018-04-30 17:40:00",
+            "endTime": "2018-04-30 17:45:14"
+        },
+        {
+            "taskId": "20002",
+            "applyFlowId": 1,
+            "demandNo": "11153",
+            "node": "二面",
+            "result": "",
+            "startTime": "2018-04-30 11:17:56",
+            "endTime": "2018-04-30 12:22:13"
         }
-    ]
+    ],
+    "pageNo": 1,
+    "pageSize": 10,
+    "total": 2
 }
 ```
 
 === 处理流程任务
-吧下一任务的人、结果，
-比如面试官点通过，同时吧下一任务的处理人就是指派为Negev这个秀气的hr，同时给
-nextUserId outCome 中文 通过不通过  operate；result
+用户根据任务id处理任务，同时给出任务结果和下一任务执行人，并更新当前流程节点、当前处理人、当前结果和流程状态
+
+要求传入outcome(必须), nextUserId(除最后一个节点外，必须，且只能有一个), result, taskId(必须), id(必须)
+
+其中，outcome从operate中取；当指派面试官时，nextUserId为被指派的面试官id，当面试官给出结果时，nextUserId为发布该需求的hr id
+
+id（对应applyFlowId字段）和applyFlowId从显示的列表中取即可；result 如面试官给出“电话面试不通过”
 
 ==== URL
 ```
@@ -277,7 +325,7 @@ POST /myProfile/flow/deal?
 | nextUserId | 下一任务的完成人 | String | 除最后一个节点外，必须，且只能有一个 | N
 | result | 当前流程结果 | String | 中文结果 | Y
 | taskId | 任务id | String | 必须 | Y
-| applyFlowId | ???????????? | ???????????? | ???????????? | ????????????
+| id | 招聘流程id | Number | 对应applyFlowId | Y
 |======
 
 ==== 返回示例
@@ -285,7 +333,7 @@ POST /myProfile/flow/deal?
 ```json
 {
     "success": true,
-    "message": "Create success"
+    "message": "完成任务成功!"
 }
 ```
 
