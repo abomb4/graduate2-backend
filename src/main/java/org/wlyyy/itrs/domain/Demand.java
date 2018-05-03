@@ -11,7 +11,7 @@ public class Demand {
     private Long id;
     private String demandNo;
     private Long publisherId;
-    private String positionType;
+    private Long positionType;
     private String jobName;
     private Long departmentId;
     private String hrName;
@@ -48,11 +48,11 @@ public class Demand {
         this.publisherId = publisherId;
     }
 
-    public String getPositionType() {
+    public Long getPositionType() {
         return positionType;
     }
 
-    public void setPositionType(String positionType) {
+    public void setPositionType(Long positionType) {
         this.positionType = positionType;
     }
 

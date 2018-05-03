@@ -25,7 +25,13 @@ public class DemandServiceImpl implements DemandService {
         // Sort sort = new Sort(new Order(Sort.Direction.DESC, "demandNo"), new Order("total"));
         // Sort sort = request.getData().getSort();
         // final Pageable pageable = PageableUtils.getPageable(request, sort);
-        final Pageable pageable = PageableUtils.getPageable(request);
+
+        Pageable pageable = null;
+        if (request.getData().getSort() != null) {
+            pageable = PageableUtils.getPageable(request, request.getData().getSort());
+        } else {
+            pageable = PageableUtils.getPageable(request);
+        }
         final List<Demand> queryResult = dao.findByCondition(request.getData(), pageable);
 
         final long count;

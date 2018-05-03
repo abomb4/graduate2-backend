@@ -1,5 +1,6 @@
 package org.wlyyy.itrs.domain;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,6 +13,8 @@ public class PositionType {
     private Long parentId;
     private String englishName;
     private String chineseName;
+    private Date gmtCreate;
+    private Date gmtModify;
     private List<PositionType> subTypes;
 
     public PositionType(Long id, String englishName, String chineseName) {
@@ -19,6 +22,13 @@ public class PositionType {
         this.englishName = englishName;
         this.chineseName = chineseName;
         subTypes = new LinkedList<>();
+    }
+
+    public PositionType(Long id, Long parentId, String englishName, String chineseName) {
+        this.id = id;
+        this.parentId = parentId;
+        this.englishName = englishName;
+        this.chineseName = chineseName;
     }
 
     public Long getId() {
@@ -59,6 +69,22 @@ public class PositionType {
 
     public void setSubTypes(List<PositionType> subTypes) {
         this.subTypes = subTypes;
+    }
+
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public Date getGmtModify() {
+        return gmtModify;
+    }
+
+    public void setGmtModify(Date gmtModify) {
+        this.gmtModify = gmtModify;
     }
 
     @Override

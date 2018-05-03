@@ -56,4 +56,9 @@ public class PositionServiceImpl implements PositionService {
 
         return rootTypes;
     }
+
+    @Override
+    public PositionType findById(Long id) {
+        return dao.findById(id);
+    }
 }

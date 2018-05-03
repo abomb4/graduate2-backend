@@ -19,12 +19,14 @@ public class DemandListItemVo {
      * @param source                原始Domain对象
      * @param getDepartmentNameById 获取部门名称的方法
      * @param getPublisherNameById  获取发布用户的姓名的方法
+     * @param getPositionCnNameById 获取职务类别中文名
      * @return 视图VO对象
      */
     public static DemandListItemVo buildFromDomain(
             Demand source,
             Function<Long, String> getPublisherNameById,
-            Function<Long, String> getDepartmentNameById
+            Function<Long, String> getDepartmentNameById,
+            Function<Long, String> getPositionCnNameById
     ) {
         final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -32,7 +34,8 @@ public class DemandListItemVo {
         final String demandNo = source.getDemandNo();
         final Long publisherId = source.getPublisherId();
         final String publisherName = getPublisherNameById.apply(source.getPublisherId());
-        final String positionType = source.getPositionType();
+        final Long positionType = source.getPositionType();
+        final String positionTypeCnName = getPositionCnNameById.apply(source.getPositionType());
         final String position = source.getJobName();
         final Long departmentId = source.getDepartmentId();
         final String departmentName = getDepartmentNameById.apply(source.getDepartmentId());
@@ -51,6 +54,7 @@ public class DemandListItemVo {
                 publisherId,
                 publisherName,
                 positionType,
+                positionTypeCnName,
                 position,
                 departmentId,
                 departmentName,
@@ -71,8 +75,8 @@ public class DemandListItemVo {
 
     public DemandListItemVo(
             Long id, String demandNo, Long publisherId,
-            String publisherName, String positionType, String jobName,
-            Long departmentId, String departmentName, String hrName,
+            String publisherName, Long positionType, String positionTypeCnName,
+            String jobName, Long departmentId, String departmentName, String hrName,
             Long total, String workingPlace, String degreeRequest,
             Integer status, String memo, String gmtCreate,
             String gmtModify
@@ -82,6 +86,7 @@ public class DemandListItemVo {
         this.publisherId = publisherId;
         this.publisherName = publisherName;
         this.positionType = positionType;
+        this.positionTypeCnName = positionTypeCnName;
         this.jobName = jobName;
         this.departmentId = departmentId;
         this.departmentName = departmentName;
@@ -99,7 +104,8 @@ public class DemandListItemVo {
     private String demandNo;
     private Long publisherId;
     private String publisherName;
-    private String positionType;
+    private Long positionType;
+    private String positionTypeCnName;
     private String jobName;
     private Long departmentId;
     private String departmentName;
@@ -144,12 +150,20 @@ public class DemandListItemVo {
         this.publisherName = publisherName;
     }
 
-    public String getPositionType() {
+    public Long getPositionType() {
         return positionType;
     }
 
-    public void setPositionType(String positionType) {
+    public void setPositionType(Long positionType) {
         this.positionType = positionType;
+    }
+
+    public String getPositionTypeCnName() {
+        return positionTypeCnName;
+    }
+
+    public void setPositionTypeCnName(String positionTypeCnName) {
+        this.positionTypeCnName = positionTypeCnName;
     }
 
     public String getJobName() {

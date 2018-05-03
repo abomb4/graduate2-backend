@@ -11,7 +11,7 @@ public class DemandQuery {
     private Long id;
     private String demandNo;
     private Long publisherId;
-    private String positionType;
+    private Long positionType;
     private String jobName;
     private Long departmentId;
     private String hrName;
@@ -55,11 +55,11 @@ public class DemandQuery {
         return this;
     }
 
-    public String getPositionType() {
+    public Long getPositionType() {
         return positionType;
     }
 
-    public DemandQuery setPositionType(String positionType) {
+    public DemandQuery setPositionType(Long positionType) {
         this.positionType = positionType;
         return this;
     }
