@@ -36,7 +36,7 @@ public class DemandRepositoryTest {
 //        final Demand demand = new Demand();
 //        demand.setDemandNo("11152");
 //        demand.setPublisherId(2l);
-//        demand.setPosition("开发");
+//        demand.setJobName("开发");
 //        demand.setHrName("吴巧丽");
 //        demand.setPositionType("11");
 //        demand.setTotal(15l);

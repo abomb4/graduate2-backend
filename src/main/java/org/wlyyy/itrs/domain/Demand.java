@@ -12,8 +12,7 @@ public class Demand {
     private String demandNo;
     private Long publisherId;
     private String positionType;
-    private String subPositionType;
-    private String position;
+    private String jobName;
     private Long departmentId;
     private String hrName;
     private Long total;
@@ -57,20 +56,12 @@ public class Demand {
         this.positionType = positionType;
     }
 
-    public String getSubPositionType() {
-        return subPositionType;
+    public String getJobName() {
+        return jobName;
     }
 
-    public void setSubPositionType(String subPositionType) {
-        this.subPositionType = subPositionType;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
     }
 
     public Long getDepartmentId() {
@@ -156,8 +147,7 @@ public class Demand {
                 ", demandNo='" + demandNo + '\'' +
                 ", publisherId=" + publisherId +
                 ", positionType='" + positionType + '\'' +
-                ", subPositionType='" + subPositionType + '\'' +
-                ", position='" + position + '\'' +
+                ", jobName='" + jobName + '\'' +
                 ", departmentId=" + departmentId +
                 ", hrName='" + hrName + '\'' +
                 ", total=" + total +

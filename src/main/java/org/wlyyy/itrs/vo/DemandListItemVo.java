@@ -33,7 +33,7 @@ public class DemandListItemVo {
         final Long publisherId = source.getPublisherId();
         final String publisherName = getPublisherNameById.apply(source.getPublisherId());
         final String positionType = source.getPositionType();
-        final String position = source.getPosition();
+        final String position = source.getJobName();
         final Long departmentId = source.getDepartmentId();
         final String departmentName = getDepartmentNameById.apply(source.getDepartmentId());
         final String hrName = source.getHrName();
@@ -71,7 +71,7 @@ public class DemandListItemVo {
 
     public DemandListItemVo(
             Long id, String demandNo, Long publisherId,
-            String publisherName, String positionType, String position,
+            String publisherName, String positionType, String jobName,
             Long departmentId, String departmentName, String hrName,
             Long total, String workingPlace, String degreeRequest,
             Integer status, String memo, String gmtCreate,
@@ -82,7 +82,7 @@ public class DemandListItemVo {
         this.publisherId = publisherId;
         this.publisherName = publisherName;
         this.positionType = positionType;
-        this.position = position;
+        this.jobName = jobName;
         this.departmentId = departmentId;
         this.departmentName = departmentName;
         this.hrName = hrName;
@@ -100,7 +100,7 @@ public class DemandListItemVo {
     private Long publisherId;
     private String publisherName;
     private String positionType;
-    private String position;
+    private String jobName;
     private Long departmentId;
     private String departmentName;
     private String hrName;
@@ -152,12 +152,12 @@ public class DemandListItemVo {
         this.positionType = positionType;
     }
 
-    public String getPosition() {
-        return position;
+    public String getJobName() {
+        return jobName;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
     }
 
     public Long getDepartmentId() {
