@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.wlyyy.itrs.event.ApplyFlowEvent;
 
 import javax.mail.*;
-import javax.mail.internet.*;
-import java.io.File;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -20,7 +22,7 @@ public class EmailEventListenerService {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
+    @Value("${mail.username}")
     private String sender;
 
     @EventListener()

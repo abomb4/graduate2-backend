@@ -2,8 +2,6 @@ package org.wlyyy.itrs.event;
 
 import org.wlyyy.itrs.domain.ApplyFlow;
 
-import java.util.Date;
-
 /**
  * 流程处理消息
  */
@@ -18,4 +16,5 @@ public class ApplyFlowEvent {
     public ApplyFlow getApplyFlow() {
         return applyFlow;
     }
+
 }
