@@ -4,12 +4,14 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.wlyyy.common.domain.*;
 import org.wlyyy.itrs.dict.EnumFlowStatus;
 import org.wlyyy.itrs.domain.*;
+import org.wlyyy.itrs.event.ApplyFlowEvent;
 import org.wlyyy.itrs.request.ApplyFlowQuery;
 import org.wlyyy.itrs.request.CandidateQuery;
 import org.wlyyy.itrs.request.DemandQuery;
@@ -51,6 +53,9 @@ public class FlowController {
 
     @Autowired
     AuthenticationService authenticationService;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     final String NO_TASK = "-1";
 
@@ -405,6 +410,8 @@ public class FlowController {
         }
 
         applyFlowService.updateApplyFlow(applyFlow);
+
+        this.publisher.publishEvent(new ApplyFlowEvent(applyFlow));
 
         return new BaseRestResponse<>(true, "完成任务成功!", null);
     }
