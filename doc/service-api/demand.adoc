@@ -3,6 +3,7 @@
 == 接口列表
 - 分页复杂条件查询招聘需求
 - 查询最新职位需求
+- 根据招聘需求id查找招聘需求
 - 发布需求
 - 修改需求
 
@@ -18,7 +19,8 @@ GET /demand/list?
 [options="header"]
 |======
 | 字段 | 说明 | 类型 | 备注 | 是否必填
-| pageNo | 页码 | Number | - | N
+| pageNo | 页码 | Number | - | Y
+| pageSize | 分页大小 | Number | - | Y
 | publisherId | 发布者id | String | - | N
 | positionType | 职位类别 | Number | 职位类别代码 | N
 | subPositionType | 职位子类 | Number | 职位子类代码 | N
@@ -63,6 +65,41 @@ GET /demand/list?
     ]
 }
 ```
+
+=== 查询最新职位需求
+本接口仅提供给前台页面使用。
+
+==== URL
+```
+GET /demand/get/id
+```
+
+==== 返回示例
+```json
+{
+    "success": true,
+    "message": "根据招聘需求id查找招聘需求成功",
+    "data": {
+        "id": 123,
+        "demandNo": "sdafhrgfgf433",
+        "publisherId": 123,
+        "publisherName": "publisherName001",
+        "positionType": 211,
+        "jobName": "position001",
+        "departmentId": 121,
+        "departmentName": "departmentName001",
+        "hrName": "hrName001",
+        "total": 3,
+        "workingPlace": "workingPlace001",
+        "degreeRequest": "degreeRequest001",
+        "status": 1,
+        "memo": "memo001",
+        "gmtCreate": "gmtCreate001",
+        "gmtModify": "gmtModify001"
+    }
+}
+```
+
 
 === 查询最新
 本接口仅提供给前台页面使用。

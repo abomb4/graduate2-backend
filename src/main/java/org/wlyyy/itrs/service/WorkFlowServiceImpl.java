@@ -13,7 +13,6 @@ import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.activiti.engine.task.TaskInfoQuery;
 import org.activiti.engine.task.TaskQuery;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -252,7 +251,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
     @Override
     public BaseServiceResponse<List<String>> findCurrentOutcomeListByApplyId(Long id) {
         // 存放连线的名称集合
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         String bussinessKey = EnumTableName.APPLY_FLOW.getCode() + "." + id;
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(bussinessKey)

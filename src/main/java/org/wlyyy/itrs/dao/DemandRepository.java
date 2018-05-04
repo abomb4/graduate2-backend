@@ -159,9 +159,9 @@ public interface DemandRepository {
             packageWhere(demand);
 
             // 不能全都是空
-            if (first) {
-                throw new IllegalArgumentException("One of query condition should be not null");
-            }
+//            if (first) {
+//                throw new IllegalArgumentException("One of query condition should be not null");
+//            }
 
             return builder.toString();
         }
@@ -185,9 +185,9 @@ public interface DemandRepository {
             packageWhere(demand);
 
             // 不能全都是空
-            if (first) {
-                throw new IllegalArgumentException("One of query condition should be not null");
-            }
+//            if (first) {
+//                throw new IllegalArgumentException("One of query condition should be not null");
+//            }
 
             builder.append(getOrder(page));
             builder.append(" ").append(getPage(page));

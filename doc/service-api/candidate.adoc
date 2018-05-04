@@ -1,0 +1,94 @@
+= 候选人接口
+
+== 接口列表
+- 分页复杂条件查询人才库（候选人集合）
+- 根据候选人id查找候选人信息
+
+=== 分页复杂条件查询人才库
+本接口仅提供给前台页面使用。
+
+==== URL
+```
+GET /myProfile/candidate/list?
+```
+
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| pageNo | 页码 | Number | - | Y
+| pageSize | 分页大小 | Number | - | Y
+|======
+
+==== 返回示例
+为空的数据则显示为""
+```json
+{
+    "success": true,
+    "message": "查询人才库列表成功!",
+    "datas": [
+        {
+            "id": 1,
+            "name": "翁羚晏",
+            "sex": 1,
+            "phoneNo": "15279109892",
+            "email": "397055871@qq.com",
+            "graduateTime": "2014-04-29",
+            "degree": "",
+            "workingPlace": "",
+            "memo": "",
+            "attachment": "",
+            "gmtCreate": "2018-04-29",
+            "gmtModify": "2018-04-29"
+        },
+        {
+            "id": 2,
+            "name": "翁大宝",
+            "sex": 1,
+            "phoneNo": "15279109893",
+            "email": "397055871@qq.com",
+            "graduateTime": "",
+            "degree": "本科",
+            "workingPlace": "",
+            "memo": "",
+            "attachment": "",
+            "gmtCreate": "2018-04-29",
+            "gmtModify": "2018-04-29"
+        }
+    ],
+    "pageNo": 1,
+    "pageSize": 10,
+    "total": 2
+}
+```
+
+=== 根据候选人id查找候选人信息
+本接口仅提供给前台页面使用。
+
+==== URL
+```
+GET /myProfile/get/id
+```
+
+==== 返回示例
+为空的数据则显示为""
+```json
+{
+    "success": true,
+    "message": "根据候选人id查找招聘需求成功!",
+    "data": {
+        "id": 1,
+        "name": "翁羚晏",
+        "sex": 1,
+        "phoneNo": "15279109892",
+        "email": "397055871@qq.com",
+        "graduateTime": "2014-04-29",
+        "degree": "",
+        "workingPlace": "",
+        "memo": "",
+        "attachment": "",
+        "gmtCreate": "2018-04-29",
+        "gmtModify": "2018-04-29"
+    }
+}
+```
