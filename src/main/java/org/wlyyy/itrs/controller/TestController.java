@@ -10,7 +10,7 @@ import org.wlyyy.common.domain.BaseRestResponse;
 import org.wlyyy.itrs.dao.UserRepository;
 import org.wlyyy.itrs.domain.PositionType;
 import org.wlyyy.itrs.domain.User;
-import org.wlyyy.itrs.service.event.EmailEventListenerService;
+import org.wlyyy.itrs.service.EmailEventListenerService;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ public class TestController {
     EmailEventListenerService mailser;
     @RequestMapping("mail")
     public String mail() throws Exception {
-        mailser.handleOrderCreatedEvent(null);
+        // mailser.handleOrderCreatedEvent(null);
         return "success";
     }
 

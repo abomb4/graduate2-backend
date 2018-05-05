@@ -46,6 +46,6 @@ public class CandidateController {
     public BaseRestResponse<CandidateListItemVo> findCandidateById(@PathVariable("id") Long id) {
         Candidate candidate = candidateService.findById(id);
         CandidateListItemVo candidateListItemVo = CandidateListItemVo.buildFromDomain(candidate);
-        return new BaseRestResponse<>(true, "根据候选人id查找招聘需求成功!", candidateListItemVo);
+        return new BaseRestResponse<>(true, "根据候选人id查找候选人信息成功!", candidateListItemVo);
     }
 }

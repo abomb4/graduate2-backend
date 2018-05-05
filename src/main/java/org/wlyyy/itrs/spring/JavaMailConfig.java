@@ -51,11 +51,13 @@ public class JavaMailConfig {
         mailSender.setDefaultEncoding(defaultEncoding);
         Properties prop = new Properties();
         // 设定properties
-        prop.put("mail.smtp.auth", "false");
+        prop.put("mail.smtp.auth", true);
         // prop.put("mail.smtp.timeout", "25000");
         // 设置调试模式可以在控制台查看发送过程
         // prop.put("mail.debug", "true");
-        prop.put("mail.smtp.starttls.enable", "true");
+//        prop.put("mail.smtp.ssl.enable", "true");
+//        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        prop.put("mail.smtp.starttls.enable", true);
         mailSender.setJavaMailProperties(prop);
         return mailSender;
     }

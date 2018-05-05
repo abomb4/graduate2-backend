@@ -25,7 +25,7 @@ public class DepartmentServiceImpl implements  DepartmentService{
         final List<Department> queryResult = dao.findByCondition(request.getData(), pageable);
 
         final long count;
-        if (queryResult.size() < request.getPageSize()) {
+        if (request.getPageNo() == 1 && (queryResult.size() < request.getPageSize())) {
             count = queryResult.size();
         } else {
             count = dao.countByCondition(request.getData());

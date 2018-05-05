@@ -16,7 +16,6 @@ import org.wlyyy.itrs.domain.UserRole;
 import org.wlyyy.itrs.request.RoleQuery;
 import org.wlyyy.itrs.request.UserRoleQuery;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +35,7 @@ public class RoleServiceImpl implements  RoleService{
         final List<Role> queryResult = dao.findByCondition(request.getData(), pageable);
 
         final long count;
-        if (queryResult.size() < request.getPageSize()) {
+        if (request.getPageNo() == 1 && (queryResult.size() < request.getPageSize())) {
             count = queryResult.size();
         } else {
             count = dao.countByCondition(request.getData());

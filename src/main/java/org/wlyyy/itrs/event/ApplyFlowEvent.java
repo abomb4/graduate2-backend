@@ -17,4 +17,10 @@ public class ApplyFlowEvent {
         return applyFlow;
     }
 
+    @Override
+    public String toString() {
+        return "ApplyFlowEvent{" +
+                "applyFlow=" + applyFlow +
+                '}';
+    }
 }
