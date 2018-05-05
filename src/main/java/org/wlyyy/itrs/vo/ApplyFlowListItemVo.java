@@ -33,6 +33,7 @@ public class ApplyFlowListItemVo {
             Function<Long, Candidate> getCandidateNameById,         // 根据被推荐人id得到被推荐人信息
             Function<Long, String> getUserNameById,                 // 根据用户id得到用户姓名
             Function<Long, String> getTaskIdById,                   // 根据招聘流程id得到对应的任务id（若无需操作，则id为-1）
+            Function<Long, String> getTaskNameById,               // 根据招聘流程id得到对应的任务名称
             Function<Long, List<String>> getOutcomeListById,        // 根据招聘流程id得到当前流程节点的处理连线
             Function<String, Long> getDemandIdByNo                  // 根据需求No得到需求id
     ) {
@@ -41,6 +42,7 @@ public class ApplyFlowListItemVo {
         final Long demandId = getDemandIdByNo.apply(source.getDemandNo());
         final String demandNo = source.getDemandNo();
         final String taskId = getTaskIdById.apply(source.getId());
+        final String taskName = getTaskNameById.apply(source.getId());
         final Long candidateId = source.getCandidateId();
         final Candidate candidate = getCandidateNameById.apply(source.getCandidateId());
         final String candidateName = candidate.getName();
@@ -58,7 +60,7 @@ public class ApplyFlowListItemVo {
         final String gmtModify = formatter.format(source.getGmtModify());
 
         return new ApplyFlowListItemVo(
-                id, demandId, demandNo, taskId, candidateId, candidateName,
+                id, demandId, demandNo, taskId, taskName, candidateId, candidateName,
                 candidateSex, hopeWorkingPlace, recommendId, recommendName,
                 currentFlowNode, currentDealer, currentResult,
                 flowStatus, flowStatusName, gmtCreate, gmtModify,
@@ -70,7 +72,7 @@ public class ApplyFlowListItemVo {
     }
 
     public ApplyFlowListItemVo(
-            Long id, Long demandId, String demandNo, String taskId, Long candidateId,
+            Long id, Long demandId, String demandNo, String taskId, String taskName, Long candidateId,
             String candidateName, Integer candidateSex, String hopeWorkingPlace,
             Long recommendId, String recommendName, String currentFlowNode,
             String currentDealer, String currentResult, Integer flowStatus,
@@ -81,6 +83,7 @@ public class ApplyFlowListItemVo {
         this.demandId = demandId;
         this.demandNo = demandNo;
         this.taskId = taskId;
+        this.taskName = taskName;
         this.candidateId = candidateId;
         this.candidateName = candidateName;
         this.candidateSex = candidateSex;
@@ -101,6 +104,7 @@ public class ApplyFlowListItemVo {
     private Long demandId;
     private String demandNo;
     private String taskId;
+    private String taskName;
     private Long candidateId;
     private String candidateName;
     private Integer candidateSex;
@@ -146,6 +150,14 @@ public class ApplyFlowListItemVo {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
     public Long getCandidateId() {

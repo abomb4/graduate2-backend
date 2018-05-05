@@ -1,0 +1,147 @@
+= 候选人接口
+
+== 接口列表
+- 分页查询用户积分变动
+- 查询用户当前积分
+- 分页查询积分规则
+
+=== 分页查询用户积分变动
+本接口仅提供给前台页面使用，且只能登陆后使用
+
+==== URL
+```
+GET /myProfile/score/list?
+```
+
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| pageNo | 页码 | Number | - | Y
+| pageSize | 分页大小 | Number | - | Y
+|======
+
+==== 返回示例
+为空的数据则显示为""
+```json
+{
+    "success": true,
+    "message": "查询用户积分流程变动记录成功!",
+    "datas": [
+        {
+            "id": 5,
+            "userId": 4,
+            "score": 10,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 6,
+            "userId": 4,
+            "score": 10,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 8,
+            "userId": 4,
+            "score": 15,
+            "memo": "您推荐的【翁小宝】已上岗",
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 10,
+            "userId": 4,
+            "score": 10,
+            "memo": "您推荐的【翁哈哈】已二面通过",
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        }
+    ],
+    "pageNo": 1,
+    "pageSize": 10,
+    "total": 4
+}
+```
+
+=== 查询用户当前积分
+本接口仅提供给前台页面使用，且只能登陆后使用
+
+==== URL
+```
+GET /myProfile/score/current?
+```
+
+==== 请求参数
+[options="header"]
+
+==== 返回示例
+为空的数据则显示为""
+```json
+{
+    "success": true,
+    "message": "查询用户当前积分成功!",
+    "data": 45
+}
+```
+
+=== 分页查询积分规则
+本接口仅提供给前台页面使用，无需登陆也可使用
+
+==== URL
+```
+GET /score/rule?
+```
+==== 请求参数
+[options="header"]
+|======
+| 字段 | 说明 | 类型 | 备注 | 是否必填
+| pageNo | 页码 | Number | - | Y
+| pageSize | 分页大小 | Number | - | Y
+|======
+
+==== 请求参数
+[options="header"]
+
+==== 返回示例
+为空的数据则显示为""
+```json
+{
+    "success": true,
+    "message": "查询积分规则成功!",
+    "datas": [
+        {
+            "id": 1,
+            "rule": "二面通过",
+            "score": 10,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 2,
+            "rule": "电话面试通过",
+            "score": 5,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 3,
+            "rule": "简历筛选通过",
+            "score": 2,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 4,
+            "rule": "已上岗",
+            "score": 15,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        }
+    ],
+    "pageNo": 1,
+    "pageSize": 10,
+    "total": 4
+}
+```

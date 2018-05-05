@@ -5,6 +5,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,15 +15,12 @@ import org.wlyyy.itrs.domain.*;
 import org.wlyyy.itrs.event.ApplyFlowEvent;
 import org.wlyyy.itrs.request.ApplyFlowQuery;
 import org.wlyyy.itrs.request.CandidateQuery;
-import org.wlyyy.itrs.request.DemandQuery;
 import org.wlyyy.itrs.request.WorkFlowQuery;
 import org.wlyyy.itrs.service.*;
 import org.wlyyy.itrs.vo.ApplyFlowListItemVo;
-import org.wlyyy.itrs.vo.DemandListItemVo;
 import org.wlyyy.itrs.vo.DeploymentListItemVo;
 import org.wlyyy.itrs.vo.HistoricFlowListItemVo;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,13 +104,21 @@ public class FlowController {
      * @param candidate 候选人信息
      * @return 员工推荐成功or失败信息
      */
-    @RequestMapping(value = "/recommendTalent")
+    @Transactional
+    @RequestMapping(value = "/recommendTalent", method = RequestMethod.POST)
     public BaseRestResponse<String> recommendTalent(final Long demandId, final Candidate candidate) {
+        // 获取当前登录用户信息
+        UserAgent userAgent = authenticationService.isLogin().getData();
         // 1. 获取该招聘需求对应的procKey
         Demand demand = demandService.findById(demandId);
         String procKey = demand.getProcKey();
         String demandNo = demand.getDemandNo();
         Long hrId = demand.getPublisherId();
+
+        // 判断推荐人id与发布该条招聘信息的hr id是否相同，若相同，不能进行推荐
+        if (userAgent.getId().equals(hrId)) {
+            return new BaseRestResponse<>(false, "您发布的该招聘需求，无法推荐他人!", null);
+        }
 
         // 2. 放入被推荐人信息到被推荐人信息表中
         // 先根据[被推荐人姓名+手机号]查询该被推荐人是否已存在被推荐人信息表中，若已存在，则查询其是否处于有效的招聘需求处理流程中
@@ -144,8 +150,6 @@ public class FlowController {
         }
 
         // 3. 放入数据到推荐表中
-        // 获取当前登录用户信息
-        UserAgent userAgent = authenticationService.isLogin().getData();
         // 插入推荐表中
         Recommend recommend = new Recommend();
         recommend.setCandidateId(insertCandidateId);
@@ -237,6 +241,14 @@ public class FlowController {
                     }
                 },
                 (aid) -> {
+                    Task currentTask = workFlowService.findCurrentTaskByApplyId(aid).getData();
+                    if (currentTask == null) {
+                        return "无当前任务";
+                    } else {
+                        return currentTask.getName();
+                    }
+                },
+                (aid) -> {
                     if (!source.getCurrentDealer().equals(userAgent.getId())) {
                         return new ArrayList<String>();
                     }
@@ -291,6 +303,14 @@ public class FlowController {
                     }
                 },
                 (aid) -> {
+                    Task currentTask = workFlowService.findCurrentTaskByApplyId(aid).getData();
+                    if (currentTask == null) {
+                        return "无当前任务";
+                    } else {
+                        return currentTask.getName();
+                    }
+                },
+                (aid) -> {
                     if (!source.getCurrentDealer().equals(userAgent.getId())) {
                         return new ArrayList<String>();
                     }
@@ -334,6 +354,14 @@ public class FlowController {
                 },
                 (aid) -> {
                     return NO_TASK;
+                },
+                (aid) -> {
+                    Task currentTask = workFlowService.findCurrentTaskByApplyId(aid).getData();
+                    if (currentTask == null) {
+                        return "无当前任务";
+                    } else {
+                        return currentTask.getName();
+                    }
                 },
                 (aid) -> {
                     return new ArrayList<String>();
@@ -411,11 +439,22 @@ public class FlowController {
 
         applyFlowService.updateApplyFlow(applyFlow);
 
-        this.publisher.publishEvent(new ApplyFlowEvent(applyFlow));
+        // 3. 通知监听ApplyFlowEvent事件的，进行积分变动处理
+        ApplyFlow applyFlowEvent = applyFlowService.findById(workFlow.getId());
+        applyFlowEvent.setCurrentResult(workFlow.getResult());
+        this.publisher.publishEvent(new ApplyFlowEvent(applyFlowEvent));
 
         return new BaseRestResponse<>(true, "完成任务成功!", null);
     }
 
+
+    @RequestMapping(value = "/send", method = RequestMethod.GET)
+    public BaseRestResponse<String> sendScore() {
+        ApplyFlow applyFlow = new ApplyFlow();
+        applyFlow.setFlowStatus(EnumFlowStatus.EXECUTION.getCode());
+        this.publisher.publishEvent(new ApplyFlowEvent(applyFlow));
+        return new BaseRestResponse<>(true, "发送招聘流程成功!", null);
+    }
 
 
     @RequestMapping(value = "/createUser")

@@ -47,6 +47,7 @@ public class MailController {
         Context con = new Context();
         con.setVariable("hehe", strText);
         String emailText = thymeleaf.process("emailmode.html", con);
+        System.out.println(emailText);
 
         try {
             // 设置收件人，寄件人 用数组发送多个邮件

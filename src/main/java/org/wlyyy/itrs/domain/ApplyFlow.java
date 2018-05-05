@@ -136,4 +136,20 @@ public class ApplyFlow {
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
     }
+
+    @Override
+    public String toString() {
+        return "ApplyFlow{" +
+                "id=" + id +
+                ", demandNo='" + demandNo + '\'' +
+                ", candidateId=" + candidateId +
+                ", userId=" + userId +
+                ", currentFlowNode='" + currentFlowNode + '\'' +
+                ", currentDealer=" + currentDealer +
+                ", currentResult='" + currentResult + '\'' +
+                ", flowStatus=" + flowStatus +
+                ", gmtCreate=" + gmtCreate +
+                ", gmtModify=" + gmtModify +
+                '}';
+    }
 }

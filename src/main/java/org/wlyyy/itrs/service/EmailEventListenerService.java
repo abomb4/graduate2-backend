@@ -1,12 +1,10 @@
-package org.wlyyy.itrs.service.event;
+package org.wlyyy.itrs.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.wlyyy.itrs.event.ApplyFlowEvent;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -25,10 +23,10 @@ public class EmailEventListenerService {
     @Value("${mail.username}")
     private String sender;
 
-    @EventListener()
-    public void handleOrderCreatedEvent(ApplyFlowEvent event) throws Exception {
-        mailSender.send(packageMail());
-    }
+//    @EventListener()
+//    public void handleOrderCreatedEvent(ApplyFlowEvent event) throws Exception {
+//        mailSender.send(packageMail());
+//    }
 
     public MimeMessage packageMail() throws Exception {
         MimeMessage message = mailSender.createMimeMessage();

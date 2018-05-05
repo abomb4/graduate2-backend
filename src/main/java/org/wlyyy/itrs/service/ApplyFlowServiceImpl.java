@@ -26,7 +26,7 @@ public class ApplyFlowServiceImpl implements ApplyFlowService{
         final List<ApplyFlow> queryResult = dao.findByCondition(request.getData(), pageable);
 
         final long count;
-        if (queryResult.size() < request.getPageSize()) {
+        if (request.getPageNo() == 1 && (queryResult.size() < request.getPageSize())) {
             count = queryResult.size();
         } else {
             count = dao.countByCondition(request.getData());
