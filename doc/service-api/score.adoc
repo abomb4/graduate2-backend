@@ -24,7 +24,45 @@ GET /myProfile/score/list?
 ==== 返回示例
 为空的数据则显示为""
 ```json
-
+{
+    "success": true,
+    "message": "查询用户积分流程变动记录成功!",
+    "datas": [
+        {
+            "id": 5,
+            "userId": 4,
+            "score": 10,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 6,
+            "userId": 4,
+            "score": 10,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 8,
+            "userId": 4,
+            "score": 15,
+            "memo": "您推荐的【翁小宝】已上岗",
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 10,
+            "userId": 4,
+            "score": 10,
+            "memo": "您推荐的【翁哈哈】已二面通过",
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        }
+    ],
+    "pageNo": 1,
+    "pageSize": 10,
+    "total": 4
+}
 ```
 
 === 查询用户当前积分
@@ -41,7 +79,11 @@ GET /myProfile/score/current?
 ==== 返回示例
 为空的数据则显示为""
 ```json
-
+{
+    "success": true,
+    "message": "查询用户当前积分成功!",
+    "data": 45
+}
 ```
 
 === 分页查询积分规则
@@ -65,5 +107,41 @@ GET /score/rule?
 ==== 返回示例
 为空的数据则显示为""
 ```json
-
+{
+    "success": true,
+    "message": "查询积分规则成功!",
+    "datas": [
+        {
+            "id": 1,
+            "rule": "二面通过",
+            "score": 10,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 2,
+            "rule": "电话面试通过",
+            "score": 5,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 3,
+            "rule": "简历筛选通过",
+            "score": 2,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        },
+        {
+            "id": 4,
+            "rule": "已上岗",
+            "score": 15,
+            "gmtCreate": "2018-05-05",
+            "gmtModify": "2018-05-05"
+        }
+    ],
+    "pageNo": 1,
+    "pageSize": 10,
+    "total": 4
+}
 ```

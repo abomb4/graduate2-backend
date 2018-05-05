@@ -97,7 +97,9 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
         if (deploymentList.size() < request.getPageSize()) {
             count = deploymentList.size();
         } else {
-            count = request.getPageSize();
+            count = repositoryService.createDeploymentQuery()
+                    .orderByDeploymenTime().desc()
+                    .list().size();
         }
 
         return new BaseServicePageableResponse<>(
@@ -140,7 +142,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
         if (taskList.size() < request.getPageSize()) {
             count = taskList.size();
         } else {
-            count = request.getPageSize();
+            count = taskQuery.list().size();
         }
 
         return new BaseServicePageableResponse<>(
@@ -164,7 +166,10 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
         if (historicTaskList.size() < request.getPageSize()) {
             count = historicTaskList.size();
         } else {
-            count = request.getPageSize();
+            count = historyService.createHistoricTaskInstanceQuery()
+                    .orderByTaskCreateTime().desc()
+                    .taskAssignee(userId.toString())
+                    .list().size();
         }
 
         return new BaseServicePageableResponse<>(
