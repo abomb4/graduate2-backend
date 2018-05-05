@@ -23,7 +23,6 @@ GET /demand/list?
 | pageSize | 分页大小 | Number | - | Y
 | publisherId | 发布者id | String | - | N
 | positionType | 职位类别 | Number | 职位类别代码 | N
-| subPositionType | 职位子类 | Number | 职位子类代码 | N
 | jobName | 岗位名 | String | 具体的岗位完整名称 | N
 | departmentId | 所属部门id | Number | - | N
 | hrName | HR姓名 | String | 姓名匹配查询 | N

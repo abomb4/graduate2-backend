@@ -25,26 +25,41 @@ public class PositionServiceImpl implements PositionService {
 
     /**
      * 构造职位类别树
-     * TODO cache
+     * TODO cache this
      *
      * @return tree
      */
     private List<PositionType> getPositionStructure() {
-        final List<PositionType> positionTypes = dao.findAll();
-        final Map<Long, PositionType> positionTypeMap = positionTypes.stream().collect(Collectors.toMap(PositionType::getId, (t) -> t));
 
         final LinkedList<PositionType> rootTypes = new LinkedList<>();
-
+        final Map<Long, PositionType> positionTypeMap = getLongPositionTypeMap();
         positionTypeMap.forEach((key, value) -> {
             if (value.getParentId() == null) {
                 // root node
                 rootTypes.add(value);
-            } else {
+            }
+        });
+
+        return rootTypes;
+    }
+
+    /**
+     * 构造职位类别map，包含子类信息
+     * TODO cache this
+     *
+     * @return map
+     */
+    private Map<Long, PositionType> getLongPositionTypeMap() {
+        final List<PositionType> positionTypes = dao.findAll();
+        final Map<Long, PositionType> positionTypeMap = positionTypes.stream().collect(Collectors.toMap(PositionType::getId, (t) -> t));
+
+        positionTypeMap.forEach((key, value) -> {
+            if (value.getParentId() != null) {
 
                 final PositionType positionType = positionTypeMap.get(value.getParentId());
 
                 if (positionType == null) {
-                    LOG.error("Position type {} 's parent id invalid!", positionType);
+                    LOG.error("Position type {} 's parent id invalid!", value);
                     return;
                 }
                 if (positionType.getSubTypes() == null) {
@@ -53,12 +68,11 @@ public class PositionServiceImpl implements PositionService {
                 positionType.getSubTypes().add(value);
             }
         });
-
-        return rootTypes;
+        return positionTypeMap;
     }
 
     @Override
     public PositionType findById(Long id) {
-        return dao.findById(id);
+        return getLongPositionTypeMap().get(id);
     }
 }

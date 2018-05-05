@@ -80,10 +80,15 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
 
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        final UserDetails userDetail = (UserDetails) auth.getPrincipal();
+        final Object principal = auth.getPrincipal();
+        if (principal instanceof UserDetails) {
+            final UserDetails userDetail = (UserDetails) principal;
 
-        if (auth.isAuthenticated() && !"anonymousUser".equals(userDetail.getUsername())) {
-            return new BaseServiceResponse<UserAgent>(true, "You are logged in.", (UserAgent) userDetail, null);
+            if (auth.isAuthenticated() && !"anonymousUser".equals(userDetail.getUsername())) {
+                return new BaseServiceResponse<UserAgent>(true, "You are logged in.", (UserAgent) userDetail, null);
+            } else {
+                return new BaseServiceResponse<UserAgent>(false, "You are NOT logged in.", null, null);
+            }
         } else {
             return new BaseServiceResponse<UserAgent>(false, "You are NOT logged in.", null, null);
         }

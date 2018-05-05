@@ -89,8 +89,8 @@ dependencies {
 
     // Functional libs
     compile "com.hankcs:hanlp:${hanlp_version}"
-    compile 'javax.mail:javax.mail-api:1.6.1'
-    compile 'javax.mail:mail:1.4.7'
+    compile 'javax.mail:javax.mail-api:1.5.6'
+    // compile 'javax.mail:mail:1.4.7'
 
     // activiti
     compile "org.activiti:activiti-spring-boot-starter-basic:${activiti_spring_boot_version}"
