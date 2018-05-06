@@ -89,6 +89,7 @@ dependencies {
 
     // Functional libs
     compile "com.hankcs:hanlp:${hanlp_version}"
+    compile 'commons-io:commons-io:2.6'
     compile 'javax.mail:javax.mail-api:1.5.6'
     // compile 'javax.mail:mail:1.4.7'
 

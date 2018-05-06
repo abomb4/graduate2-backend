@@ -1,3 +1,6 @@
+
+spring.profiles.active: dev
+
 mybatis:
     type-aliases-package: org.wlyyy.itrs.dao
     type-handlers-package: org.wlyyy.itrs.mybatis
@@ -23,6 +26,13 @@ spring.activiti.check-process-definitions: false
 
 # Rest api don't return null field
 spring.jackson.default-property-inclusion: NON_NULL
+
+# File upload
+spring.servlet.multipart.max-file-size: 1024KB
+spring.servlet.multipart.max-request-size: 1024KB
+spring.http.multipart.enabled: true
+
+storage.location: E:\\upload
 
 # -==--==--=-==-=-=--==-=--==-=-=-
 # custom
