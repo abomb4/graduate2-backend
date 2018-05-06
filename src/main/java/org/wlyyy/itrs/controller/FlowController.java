@@ -442,6 +442,7 @@ public class FlowController {
         // 3. 通知监听ApplyFlowEvent事件的，进行积分变动处理
         ApplyFlow applyFlowEvent = applyFlowService.findById(workFlow.getId());
         applyFlowEvent.setCurrentResult(workFlow.getResult());
+        // 发送事件通知
         this.publisher.publishEvent(new ApplyFlowEvent(applyFlowEvent));
 
         return new BaseRestResponse<>(true, "完成任务成功!", null);
