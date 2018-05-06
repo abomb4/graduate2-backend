@@ -65,50 +65,35 @@ GET /myProfile/flow/listApplyFlowHr?
     "message": "查询展示层招聘流程信息表成功!",
     "datas": [
         {
-            "id": 1,
-            "demandId": 12,
-            "demandNo": "11153",
-            "taskId": "-1",
-            "candidateId": 1,
-            "candidateName": "翁羚晏",
-            "candidateSex": null,
-            "hopeWorkingPlace": null,
-            "recommendId": 1,
-            "recommendName": "realName",
-            "currentFlowNode": "已结束",
-            "currentDealer": "无",
-            "currentResult": "放弃录用",
-            "flowStatus": 2,
-            "flowStatusName": "结束",
-            "gmtCreate": "2018-04-29",
-            "gmtModify": "2018-04-30",
-            "operate": []
-        },
-        {
-            "id": 2,
-            "demandId": 12,
-            "demandNo": "11153",
-            "taskId": "-1",
-            "candidateId": 2,
-            "candidateName": "翁大宝",
-            "candidateSex": null,
-            "hopeWorkingPlace": null,
-            "recommendId": 2,
-            "recommendName": "realName",
-            "currentFlowNode": "已结束",
-            "currentDealer": "无",
-            "currentResult": "电话面试未通过",
-            "flowStatus": 2,
-            "flowStatusName": "结束",
-            "gmtCreate": "2018-04-29",
-            "gmtModify": "2018-04-30",
-            "operate": []
+            "id": 4,
+            "demandId": 17,
+            "demandNo": "401",
+            "taskId": "2509",
+            "taskName": "筛选简历",
+            "candidateId": 4,
+            "candidateName": "翁小宝",
+            "candidateSex": 0,
+            "hopeWorkingPlace": "浙江杭州",
+            "recommendId": 4,
+            "recommendName": "啊啊啊",
+            "currentFlowNode": "筛选简历",
+            "currentDealer": "啊啊啊",
+            "currentResult": "待筛选简历",
+            "flowStatus": 1,
+            "flowStatusName": "执行中",
+            "gmtCreate": "2018-05-04",
+            "gmtModify": "2018-05-04",
+            "operate": [
+               "通过",
+               "未通过"
+            ]
         }
     ],
     "pageNo": 1,
     "pageSize": 20,
-    "total": 2
+    "total": 1
 }
+
 ```
 
 

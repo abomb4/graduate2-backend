@@ -1,18 +1,21 @@
-package org.wlyyy.itrs.request;
+package org.wlyyy.itrs.request.rest;
 
 import org.springframework.data.domain.Sort;
+import org.wlyyy.itrs.request.DemandQuery;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.function.Function;
 
 /**
  * 需求查询对象。
  */
-public class DemandQuery {
+public class DemandQueryRequest {
+
     private Long id;
     private String demandNo;
     private Long publisherId;
-    private Collection<Long> positionType;
+    private Long positionType;
     private String jobName;
     private Long departmentId;
     private String hrName;
@@ -23,61 +26,41 @@ public class DemandQuery {
     private Integer status;
     private String procKey;
     private String memo;
-    private java.util.Date gmtCreateStart;
-    private java.util.Date gmtCreateEnd;
-    private java.util.Date gmtModifyStart;
-    private java.util.Date gmtModifyEnd;
+    private Date gmtCreateStart;
+    private Date gmtCreateEnd;
+    private Date gmtModifyStart;
+    private Date gmtModifyEnd;
     private Sort sort;
 
-    public DemandQuery() {
-    }
-
-    public DemandQuery(
-            Long id,
-            String demandNo,
-            Long publisherId,
-            Collection<Long> positionType,
-            String jobName,
-            Long departmentId,
-            String hrName,
-            Long totalStart,
-            Long totalEnd,
-            String workingPlace,
-            String degreeRequest,
-            Integer status,
-            String procKey,
-            String memo,
-            Date gmtCreateStart,
-            Date gmtCreateEnd,
-            Date gmtModifyStart,
-            Date gmtModifyEnd,
-            Sort sort) {
-        this.id = id;
-        this.demandNo = demandNo;
-        this.publisherId = publisherId;
-        this.positionType = positionType;
-        this.jobName = jobName;
-        this.departmentId = departmentId;
-        this.hrName = hrName;
-        this.totalStart = totalStart;
-        this.totalEnd = totalEnd;
-        this.workingPlace = workingPlace;
-        this.degreeRequest = degreeRequest;
-        this.status = status;
-        this.procKey = procKey;
-        this.memo = memo;
-        this.gmtCreateStart = gmtCreateStart;
-        this.gmtCreateEnd = gmtCreateEnd;
-        this.gmtModifyStart = gmtModifyStart;
-        this.gmtModifyEnd = gmtModifyEnd;
-        this.sort = sort;
+    public DemandQuery buildDemandQuery(Function<Long, Collection<Long>> dealParentPositionType) {
+        return new DemandQuery(
+                id,
+                demandNo,
+                publisherId,
+                dealParentPositionType.apply(positionType),
+                jobName,
+                departmentId,
+                hrName,
+                totalStart,
+                totalEnd,
+                workingPlace,
+                degreeRequest,
+                status,
+                procKey,
+                memo,
+                gmtCreateStart,
+                gmtCreateEnd,
+                gmtModifyStart,
+                gmtModifyEnd,
+                sort
+        );
     }
 
     public Long getId() {
         return id;
     }
 
-    public DemandQuery setId(Long id) {
+    public DemandQueryRequest setId(Long id) {
         this.id = id;
         return this;
     }
@@ -86,7 +69,7 @@ public class DemandQuery {
         return demandNo;
     }
 
-    public DemandQuery setDemandNo(String demandNo) {
+    public DemandQueryRequest setDemandNo(String demandNo) {
         this.demandNo = demandNo;
         return this;
     }
@@ -95,16 +78,16 @@ public class DemandQuery {
         return publisherId;
     }
 
-    public DemandQuery setPublisherId(Long publisherId) {
+    public DemandQueryRequest setPublisherId(Long publisherId) {
         this.publisherId = publisherId;
         return this;
     }
 
-    public Collection<Long> getPositionType() {
+    public Long getPositionType() {
         return positionType;
     }
 
-    public DemandQuery setPositionType(Collection<Long> positionType) {
+    public DemandQueryRequest setPositionType(Long positionType) {
         this.positionType = positionType;
         return this;
     }
@@ -113,7 +96,7 @@ public class DemandQuery {
         return jobName;
     }
 
-    public DemandQuery setJobName(String jobName) {
+    public DemandQueryRequest setJobName(String jobName) {
         this.jobName = jobName;
         return this;
     }
@@ -122,7 +105,7 @@ public class DemandQuery {
         return departmentId;
     }
 
-    public DemandQuery setDepartmentId(Long departmentId) {
+    public DemandQueryRequest setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
         return this;
     }
@@ -131,7 +114,7 @@ public class DemandQuery {
         return hrName;
     }
 
-    public DemandQuery setHrName(String hrName) {
+    public DemandQueryRequest setHrName(String hrName) {
         this.hrName = hrName;
         return this;
     }
@@ -140,7 +123,7 @@ public class DemandQuery {
         return totalStart;
     }
 
-    public DemandQuery setTotalStart(Long totalStart) {
+    public DemandQueryRequest setTotalStart(Long totalStart) {
         this.totalStart = totalStart;
         return this;
     }
@@ -149,7 +132,7 @@ public class DemandQuery {
         return totalEnd;
     }
 
-    public DemandQuery setTotalEnd(Long totalEnd) {
+    public DemandQueryRequest setTotalEnd(Long totalEnd) {
         this.totalEnd = totalEnd;
         return this;
     }
@@ -158,7 +141,7 @@ public class DemandQuery {
         return workingPlace;
     }
 
-    public DemandQuery setWorkingPlace(String workingPlace) {
+    public DemandQueryRequest setWorkingPlace(String workingPlace) {
         this.workingPlace = workingPlace;
         return this;
     }
@@ -167,7 +150,7 @@ public class DemandQuery {
         return degreeRequest;
     }
 
-    public DemandQuery setDegreeRequest(String degreeRequest) {
+    public DemandQueryRequest setDegreeRequest(String degreeRequest) {
         this.degreeRequest = degreeRequest;
         return this;
     }
@@ -176,7 +159,7 @@ public class DemandQuery {
         return status;
     }
 
-    public DemandQuery setStatus(Integer status) {
+    public DemandQueryRequest setStatus(Integer status) {
         this.status = status;
         return this;
     }
@@ -185,7 +168,7 @@ public class DemandQuery {
         return procKey;
     }
 
-    public DemandQuery setProcKey(String procKey) {
+    public DemandQueryRequest setProcKey(String procKey) {
         this.procKey = procKey;
         return this;
     }
@@ -194,7 +177,7 @@ public class DemandQuery {
         return memo;
     }
 
-    public DemandQuery setMemo(String memo) {
+    public DemandQueryRequest setMemo(String memo) {
         this.memo = memo;
         return this;
     }
@@ -203,7 +186,7 @@ public class DemandQuery {
         return gmtCreateStart;
     }
 
-    public DemandQuery setGmtCreateStart(Date gmtCreateStart) {
+    public DemandQueryRequest setGmtCreateStart(Date gmtCreateStart) {
         this.gmtCreateStart = gmtCreateStart;
         return this;
     }
@@ -212,7 +195,7 @@ public class DemandQuery {
         return gmtCreateEnd;
     }
 
-    public DemandQuery setGmtCreateEnd(Date gmtCreateEnd) {
+    public DemandQueryRequest setGmtCreateEnd(Date gmtCreateEnd) {
         this.gmtCreateEnd = gmtCreateEnd;
         return this;
     }
@@ -221,7 +204,7 @@ public class DemandQuery {
         return gmtModifyStart;
     }
 
-    public DemandQuery setGmtModifyStart(Date gmtModifyStart) {
+    public DemandQueryRequest setGmtModifyStart(Date gmtModifyStart) {
         this.gmtModifyStart = gmtModifyStart;
         return this;
     }
@@ -230,7 +213,7 @@ public class DemandQuery {
         return gmtModifyEnd;
     }
 
-    public DemandQuery setGmtModifyEnd(Date gmtModifyEnd) {
+    public DemandQueryRequest setGmtModifyEnd(Date gmtModifyEnd) {
         this.gmtModifyEnd = gmtModifyEnd;
         return this;
     }
@@ -239,7 +222,7 @@ public class DemandQuery {
         return sort;
     }
 
-    public DemandQuery setSort(Sort sort) {
+    public DemandQueryRequest setSort(Sort sort) {
         this.sort = sort;
         return this;
     }

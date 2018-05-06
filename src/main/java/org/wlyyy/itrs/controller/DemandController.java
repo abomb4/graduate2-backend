@@ -11,11 +11,14 @@ import org.wlyyy.common.domain.*;
 import org.wlyyy.common.service.CachedSequenceManagementService;
 import org.wlyyy.itrs.dict.EnumDemandStatus;
 import org.wlyyy.itrs.domain.Demand;
+import org.wlyyy.itrs.domain.PositionType;
 import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.request.DemandQuery;
+import org.wlyyy.itrs.request.rest.DemandQueryRequest;
 import org.wlyyy.itrs.service.*;
 import org.wlyyy.itrs.vo.DemandListItemVo;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,13 +48,27 @@ public class DemandController {
     /**
      * 分页复杂条件查询招聘需求
      *
-     * @param demandQuery 查询对象
-     * @param pageNo 页码
-     * @param pageSize 分页大小
+     * @param demandQueryRequest 查询对象
+     * @param pageNo             页码
+     * @param pageSize           分页大小
      * @return 分页展示层招聘需求列表
      */
     @RequestMapping(value = "/demand/list", method = RequestMethod.GET)
-    public BaseRestPageableResponse<DemandListItemVo> queryDemandList(DemandQuery demandQuery, int pageNo, int pageSize) {
+    public BaseRestPageableResponse<DemandListItemVo> queryDemandList(DemandQueryRequest demandQueryRequest, int pageNo, int pageSize) {
+
+        final DemandQuery demandQuery = demandQueryRequest.buildDemandQuery(
+                id -> {
+                    if (id == null) {
+                        return null;
+                    }
+                    final PositionType positionType = positionService.findById(id);
+                    if (positionType == null || positionType.getSubTypes() == null || positionType.getSubTypes().size() <= 0) {
+                        return Collections.singletonList(id);
+                    } else {
+                        return positionType.getSubTypes().stream().map(PositionType::getId).collect(Collectors.toList());
+                    }
+                }
+        );
 
         Sort sort = new Sort(new Order(Sort.Direction.DESC, "gmt_modify"));
         BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize, demandQuery.setSort(sort));

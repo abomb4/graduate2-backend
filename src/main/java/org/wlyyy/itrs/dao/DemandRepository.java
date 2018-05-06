@@ -8,8 +8,8 @@ import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.Demand;
 import org.wlyyy.itrs.request.DemandQuery;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * 增删查改招聘需求表
@@ -143,6 +143,18 @@ public interface DemandRepository {
             }
         }
 
+        private void tryAppendWhere(Object o, Supplier<String> forAppend) {
+            if (Objects.nonNull(o) && !"".equals(o)) {
+                if (!first) {
+                    builder.append(DELIMITER);
+                } else {
+                    builder.append(" where ");
+                }
+                first = false;
+                builder.append(forAppend.get());
+            }
+        }
+
         /**
          * 获取查询条件count sql
          *
@@ -202,7 +214,25 @@ public interface DemandRepository {
             tryAppendWhere(demand.getId(), "id = #{demand.id}");
             tryAppendWhere(demand.getDemandNo(), "demand_no = #{demand.demandNo}");
             tryAppendWhere(demand.getPublisherId(), "publisher_id = #{demand.publisherId}");
-            tryAppendWhere(demand.getPositionType(), "position_type = #{demand.positionType}");
+
+            tryAppendWhere(demand.getPositionType(), () -> {
+                final Collection<Long> positionType = demand.getPositionType();
+                final Iterator<Long> iterator = positionType.iterator();
+
+                if (positionType.isEmpty()) {
+                    return "";
+                } else if (positionType.size() > 1) {
+                    final StringJoiner joiner = new StringJoiner(", ");
+                    while(iterator.hasNext()) {
+                        final Long id = iterator.next();
+                        joiner.add(String.valueOf(id));
+                    }
+                    return St.r("position_type in ({})", joiner.toString());
+                } else {
+                    return St.r("position_type = {}", iterator.next());
+                }
+            });
+
             tryAppendWhere(demand.getJobName(), "job_name = #{demand.jobName}");
             tryAppendWhere(demand.getDepartmentId(), "department_id = #{demand.departmentId}");
             tryAppendWhere(demand.getHrName(), "hr_name like " + hrName);
