@@ -17,6 +17,35 @@ public class Candidate {
     private Date gmtCreate;
     private Date gmtModify;
 
+    public Candidate() {
+    }
+
+    public Candidate(Long id,
+                     String name,
+                     Integer sex,
+                     String phoneNo,
+                     String email,
+                     Date graduateTime,
+                     String degree,
+                     String workingPlace,
+                     String memo,
+                     String attachment,
+                     Date gmtCreate,
+                     Date gmtModify) {
+        this.id = id;
+        this.name = name;
+        this.sex = sex;
+        this.phoneNo = phoneNo;
+        this.email = email;
+        this.graduateTime = graduateTime;
+        this.degree = degree;
+        this.workingPlace = workingPlace;
+        this.memo = memo;
+        this.attachment = attachment;
+        this.gmtCreate = gmtCreate;
+        this.gmtModify = gmtModify;
+    }
+
     public Long getId() {
         return id;
     }

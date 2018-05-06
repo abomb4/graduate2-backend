@@ -3,23 +3,28 @@ package org.wlyyy.itrs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import org.springframework.stereotype.Service;
+import org.wlyyy.common.domain.BaseServicePageableRequest;
+import org.wlyyy.common.domain.BaseServicePageableResponse;
 import org.wlyyy.common.domain.BaseServiceResponse;
+import org.wlyyy.itrs.dao.UserRepository;
 import org.wlyyy.itrs.domain.Role;
 import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.domain.UserAgent;
+import org.wlyyy.itrs.request.UserQuery;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -29,10 +34,12 @@ import java.util.stream.Collectors;
  * @author wly
  */
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService, AuthenticationProvider {
+public class AuthenticationServiceImpl implements AuthenticationService, AuthenticationProvider, UserDetailsService {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private RoleService roleService;
@@ -133,5 +140,18 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
     @Override
     public boolean supports(Class<?> authentication) {
         return true;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        final User user = this.userRepository.findFullByUserName(username);
+        if (user == null) {
+            return null;
+        } else {
+            final BaseServiceResponse<Set<Role>> roleIdsByUserId = roleService.findRoleIdsByUserId(user.getId());
+            final Optional<Set<Role>> roles = Optional.ofNullable(roleIdsByUserId.getData());
+            return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(), roles.orElse(new HashSet<>(0)));
+        }
     }
 }

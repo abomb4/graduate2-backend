@@ -3,6 +3,7 @@ package org.wlyyy.itrs.spring;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +15,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -37,17 +40,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     @Autowired
+    private BeanFactory beanFactory;
+
+    @Autowired
     private Environment env;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/myProfile/*").authenticated()
-                .anyRequest().permitAll()
+                .antMatchers("/myProfile/**").rememberMe()
+                .antMatchers("/auth/login").permitAll()
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                .and().rememberMe()
+                .and()
+                    .rememberMe()
+                    .rememberMeCookieName("javasampleapproach-remember-me")
+                    .userDetailsService(beanFactory.getBean(UserDetailsService.class))
+                    .tokenValiditySeconds(24 * 60 * 60) // expired time = 1 day
+                // .tokenRepository(persistentTokenRepository())
                 .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout")).logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                 .and().csrf().disable()
         // .addFilterAfter(new CsrfGrantingFilter(), SessionManagementFilter.class)
@@ -66,7 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             configuration.setAllowedOrigins(Arrays.asList(split));
             configuration.setAllowCredentials(true);
             configuration.setAllowedMethods(Arrays.asList("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"));
-            configuration.setAllowedHeaders(Arrays.asList("x-requested-with"));
+            configuration.setAllowedHeaders(Arrays.asList("x-requested-with", "content-type"));
             UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
             source.registerCorsConfiguration("/**", configuration);
             return source;
