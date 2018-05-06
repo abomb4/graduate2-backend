@@ -15,7 +15,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -30,6 +32,10 @@ import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.service.AuthenticationServiceImpl;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 
 @Configuration
@@ -48,21 +54,44 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers("/myProfile/**").rememberMe()
-                .antMatchers("/auth/login").permitAll()
+                .authorizeRequests().antMatchers("/myProfile/**").authenticated()
+                .and()
+                .authorizeRequests().anyRequest().permitAll()
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
+                    .formLogin()
+                    .loginPage("/auth/login")
+                    .successHandler((request, response, authentication) -> {
+                        final UserAgent userAgent = (UserAgent) authentication.getPrincipal();
+                        final String sessionKey = userAgent.getSessionKey();
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().print(St.r("{ \"status\": 200, \"sessionKey\": \"{}\", \"userName\": \"{}\"" +
+                                        ", \"realName\": \"{}\", \"sex\": \"{}\" }",
+                                sessionKey,
+                                userAgent.getUserName(),
+                                userAgent.getRealName(),
+                                userAgent.getSex()));
+                        response.setStatus(200);
+                        response.setHeader("Content-Type", "application/json;charset=UTF-8");
+                    })
+                .and()
                     .rememberMe()
-                    .rememberMeCookieName("javasampleapproach-remember-me")
+                    .rememberMeCookieName("remember-me")
                     .userDetailsService(beanFactory.getBean(UserDetailsService.class))
                     .tokenValiditySeconds(24 * 60 * 60) // expired time = 1 day
-                // .tokenRepository(persistentTokenRepository())
+                    // .tokenRepository(persistentTokenRepository())
                 .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout")).logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                 .and().csrf().disable()
+
         // .addFilterAfter(new CsrfGrantingFilter(), SessionManagementFilter.class)
         ;
+        http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
+            if (authException != null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().print("Unauthorizated");
+            }
+        });
     }
 
     @Bean
