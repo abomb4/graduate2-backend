@@ -16,6 +16,7 @@ import org.wlyyy.itrs.event.ApplyFlowEvent;
 import org.wlyyy.itrs.request.ApplyFlowQuery;
 import org.wlyyy.itrs.request.CandidateQuery;
 import org.wlyyy.itrs.request.WorkFlowQuery;
+import org.wlyyy.itrs.request.rest.CandidateRequest;
 import org.wlyyy.itrs.service.*;
 import org.wlyyy.itrs.vo.ApplyFlowListItemVo;
 import org.wlyyy.itrs.vo.DeploymentListItemVo;
@@ -101,12 +102,13 @@ public class FlowController {
      * 员工给某一招聘需求推荐人才
      *
      * @param demandId 招聘需求id
-     * @param candidate 候选人信息
+     * @param candidateRequest 候选人信息
      * @return 员工推荐成功or失败信息
      */
     @Transactional
     @RequestMapping(value = "/recommendTalent", method = RequestMethod.POST)
-    public BaseRestResponse<String> recommendTalent(final Long demandId, final Candidate candidate) {
+    public BaseRestResponse<String> recommendTalent(final Long demandId, final CandidateRequest candidateRequest) {
+        final Candidate candidate = candidateRequest.buildCandidate();
         // 获取当前登录用户信息
         UserAgent userAgent = authenticationService.isLogin().getData();
         // 1. 获取该招聘需求对应的procKey

@@ -166,7 +166,7 @@ public interface UserRepository {
                         getPage(page)
                 );
             }
-            builder.append("select id, user_name, email, sex, department_id, real_name, gmt_create, gmt_modify from user where ");
+            builder.append("select id, user_name, email, sex, department_id, real_name, gmt_create, gmt_modify from user ");
 
             packageWhere(user);
 
