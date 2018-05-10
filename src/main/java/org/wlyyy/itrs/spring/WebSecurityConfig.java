@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -74,6 +75,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                 userAgent.getSex()));
                         response.setStatus(200);
                         response.setHeader("Content-Type", "application/json;charset=UTF-8");
+                    })
+                    .failureHandler((request, response, exception) -> {
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().print("{ \"status\": 200, \"message\": \"Login failed\"}");
+                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                        LOG.info("Login failed with exception {}", exception.getMessage());
                     })
                 .and()
                     .rememberMe()
