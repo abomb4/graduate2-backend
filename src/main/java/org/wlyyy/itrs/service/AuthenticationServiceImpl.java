@@ -3,33 +3,28 @@ package org.wlyyy.itrs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
-import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import org.springframework.stereotype.Service;
-import org.wlyyy.common.domain.BaseServicePageableRequest;
-import org.wlyyy.common.domain.BaseServicePageableResponse;
 import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.dao.UserRepository;
 import org.wlyyy.itrs.domain.Role;
 import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.domain.UserAgent;
-import org.wlyyy.itrs.request.UserQuery;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * 认证服务实现，既实现了管理系统的认证接口，又实现了Spring Security认证服务接口，
- * 可以直接被Spring Security调用。
+ * 可以直接被Spring Securf0ity调用。
  *
  * @author wly
  */
@@ -38,11 +33,15 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private DepartmentService departmentService;
 
     /**
      * 登录验证方法。
@@ -68,10 +67,10 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
                     .setUserName(user.getUserName())
                     .setSex(user.getSex())
                     .setDepartmentId(user.getDepartmentId())
+                    .setDepartmentName(departmentService.findById(user.getDepartmentId()).getDepartmentName())
                     .setRealName(user.getRealName())
                     .setLoginTime(LocalDateTime.now())
-                    .setRefreshTime(LocalDateTime.now())
-                    ;
+                    .setRefreshTime(LocalDateTime.now());
 
             // Put to distributed cache
             // cache.put(sessionKey, userAgent, UserAgent.class);
@@ -133,7 +132,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
             );
             return authenticationToken;
         } else {
-            throw new RememberMeAuthenticationException("Cannot authenticate " + authentication.getPrincipal());
+            // throw new RememberMeAuthenticationException("Cannot authenticate " + authentication.getPrincipal());
+            return null;
         }
     }
 

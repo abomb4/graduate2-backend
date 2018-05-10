@@ -1,5 +1,6 @@
 package org.wlyyy.itrs.spring;
 
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,14 +66,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/auth/login")
                     .successHandler((request, response, authentication) -> {
                         final UserAgent userAgent = (UserAgent) authentication.getPrincipal();
-                        final String sessionKey = userAgent.getSessionKey();
                         response.setCharacterEncoding("UTF-8");
-                        response.getWriter().print(St.r("{ \"status\": 200, \"sessionKey\": \"{}\", \"userName\": \"{}\"" +
-                                        ", \"realName\": \"{}\", \"sex\": \"{}\" }",
-                                sessionKey,
-                                userAgent.getUserName(),
-                                userAgent.getRealName(),
-                                userAgent.getSex()));
+                        response.getWriter().print(new Gson().toJson(userAgent));
                         response.setStatus(200);
                         response.setHeader("Content-Type", "application/json;charset=UTF-8");
                     })
