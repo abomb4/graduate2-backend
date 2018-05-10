@@ -25,6 +25,8 @@ target
 .settings
 .project
 build
+.gradle
+out
 
 # config
 application-dev.yml
