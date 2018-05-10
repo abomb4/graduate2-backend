@@ -21,6 +21,7 @@ public class UserAgent implements UserDetails, Serializable {
     private Set<Role> roles;
     private Integer sex;
     private Long departmentId;
+    private String departmentName;
     private String realName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginTime;
@@ -100,6 +101,15 @@ public class UserAgent implements UserDetails, Serializable {
         return this;
     }
 
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public UserAgent setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+        return this;
+    }
+
     public String getRealName() {
         return realName;
     }
@@ -137,6 +147,7 @@ public class UserAgent implements UserDetails, Serializable {
                 ", roles=" + roles +
                 ", sex=" + sex +
                 ", departmentId=" + departmentId +
+                ", departmentName='" + departmentName + '\'' +
                 ", realName='" + realName + '\'' +
                 ", loginTime=" + loginTime +
                 ", refreshTime=" + refreshTime +
