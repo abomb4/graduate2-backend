@@ -21,7 +21,7 @@ public class ScoreEventListenerService {
     @Autowired
     private CandidateService candidateService;
 
-    @EventListener()
+    @EventListener
     public void handleScoreEvent(ApplyFlowEvent event) throws Exception {
         ApplyFlow applyFlow = event.getApplyFlow();
         String rule = applyFlow.getCurrentResult();

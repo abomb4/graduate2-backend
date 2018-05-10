@@ -10,7 +10,6 @@ import org.wlyyy.common.domain.BaseRestResponse;
 import org.wlyyy.itrs.dao.UserRepository;
 import org.wlyyy.itrs.domain.PositionType;
 import org.wlyyy.itrs.domain.User;
-import org.wlyyy.itrs.service.EmailEventListenerService;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -26,15 +25,6 @@ public class TestController {
 
     @Autowired
     private UserRepository dao;
-
-    @Autowired
-    private
-    EmailEventListenerService mailser;
-    @RequestMapping("mail")
-    public String mail() throws Exception {
-        // mailser.handleOrderCreatedEvent(null);
-        return "success";
-    }
 
     @RequestMapping("positions")
     public BaseRestResponse<List<PositionType>> getJobs() {
