@@ -285,7 +285,7 @@ public interface ApplyFlowRepository {
         }
 
         private void packageNotIn(List<String> demandNoList) {
-            if (demandNoList == null && demandNoList.size() == 0) {
+            if (demandNoList == null || demandNoList.isEmpty()) {
                 return;
             } else {
                 int count = 0;

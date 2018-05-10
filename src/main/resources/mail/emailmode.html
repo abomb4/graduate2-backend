@@ -1,10 +1,11 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>hello</title>
+    <title>企业人才内推系统-邮件通知</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<p th:text="'Hello！, ' + ${hehe} + '!'" ></p>
+    <p th:text="${receivedName} + '您好:'" ></p>
+    <p th:text="'您推荐的【' + ${candidateName} + '】' + ${currentResult}" ></p>
 </body>
 </html>

@@ -1,6 +1,5 @@
 package org.wlyyy.itrs.spring;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.ViewResolver;
@@ -13,25 +12,25 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 @Configuration
 public class JavaMailConfig {
 
-    private static final int PORT = 465; // 587/465
+//    private static final int PORT = 465; // 587/465
 
-    @Value("${mail.host}")
-    private String host;
-
-    @Value("${mail.smtp}")
-    private String smtp;
-
-    @Value("${mail.port}")
-    private int port;
-
-    @Value("${mail.username}")
-    private String username;
-
-    @Value("${mail.password}")
-    private String password;
-
-    @Value("${mail.defaultEncoding}")
-    private String defaultEncoding;
+//    @Value("${mail.host}")
+//    private String host;
+//
+//    @Value("${mail.smtp}")
+//    private String smtp;
+//
+//    @Value("${mail.port}")
+//    private int port;
+//
+//    @Value("${mail.username}")
+//    private String username;
+//
+//    @Value("${mail.password}")
+//    private String password;
+//
+//    @Value("${mail.defaultEncoding}")
+//    private String defaultEncoding;
 
 
     // 邮件发送器
@@ -63,7 +62,7 @@ public class JavaMailConfig {
     @Bean
     public ViewResolver viewResolver(SpringTemplateEngine springTemplateEngine)
     {
-        System.out.println("初始化viewResolver成功");
+        System.out.println("初始化ViewResolver成功");
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(springTemplateEngine);
         return viewResolver;
@@ -73,7 +72,7 @@ public class JavaMailConfig {
     @Bean
     public ClassLoaderTemplateResolver emailTemplateResolver()
     {
-        System.err.println("ClassLoaderTemplateResolver");
+        System.out.println("初始化ClassLoaderTemplateResolver成功");
         ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
         resolver.setPrefix("mail/");
         resolver.setTemplateMode("HTML5");
