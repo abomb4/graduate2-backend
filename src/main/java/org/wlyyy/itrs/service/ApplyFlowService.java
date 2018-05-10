@@ -6,6 +6,8 @@ import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.domain.ApplyFlow;
 import org.wlyyy.itrs.request.ApplyFlowQuery;
 
+import java.util.List;
+
 
 /**
  * 招聘流程信息表基本管理服务
@@ -19,6 +21,15 @@ public interface ApplyFlowService {
      * @return 查询结果
      */
     BaseServicePageableResponse<ApplyFlow> findByCondition(BaseServicePageableRequest<ApplyFlowQuery> request);
+
+    /**
+     * 分页查询不在demandNoList中的复合条件的对象列表
+     *
+     * @param request 分页查询条件
+     * @param demandNoList 招聘需求No列表
+     * @return 查询结果
+     */
+    BaseServicePageableResponse<ApplyFlow> findNotInDemandNo(BaseServicePageableRequest<ApplyFlowQuery> request, List<String> demandNoList);
 
     /**
      * 根据招聘流程id查询

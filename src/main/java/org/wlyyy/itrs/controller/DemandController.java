@@ -71,7 +71,8 @@ public class DemandController {
         );
 
         Sort sort = new Sort(new Order(Sort.Direction.DESC, "gmt_modify"));
-        BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize, demandQuery.setSort(sort));
+        BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
+                demandQuery.setStatus(EnumDemandStatus.NORMAL.getCode()).setSort(sort));
         BaseServicePageableResponse<Demand> demandResult =  demandService.findByCondition(request);
 
         if (!demandResult.isSuccess()) {
@@ -81,7 +82,7 @@ public class DemandController {
 
         List<Demand> demandList = demandResult.getDatas();
         List<DemandListItemVo> datas = demandList.stream().map(source -> DemandListItemVo.buildFromDomain(source,
-                (pid) -> userService.findById(pid).getUserName(),
+                (pid) -> userService.findById(pid).getRealName(),
                 (did) -> departmentService.findById(did).getDepartmentName(),
                 (ptid) -> positionService.findById(ptid).getChineseName()
                 )).collect(Collectors.toList());
@@ -90,18 +91,50 @@ public class DemandController {
     }
 
     /**
+     * 分页查找当前用户发布的所有招聘需求
+     *
+     * @param pageNo 页码
+     * @param pageSize 分页大小
+     * @return 分页展示层招聘需求列表
+     */
+    @RequestMapping(value = "/myProfile/mydemand/list", method = RequestMethod.GET)
+    public BaseRestPageableResponse<DemandListItemVo> queryMyDemandList(int pageNo, int pageSize) {
+        // 获取当前登录用户信息
+        UserAgent userAgent = authenticationService.isLogin().getData();
+
+        Sort sort = new Sort( new Order(Sort.Direction.DESC, "status"), new Order(Sort.Direction.DESC, "gmt_modify"));
+        BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
+                new DemandQuery().setPublisherId(userAgent.getId()).setSort(sort));
+        BaseServicePageableResponse<Demand> demandResult =  demandService.findByCondition(request);
+
+        if (!demandResult.isSuccess()) {
+            return new BaseRestPageableResponse<>(false, "查询招聘需求列表失败!", null,
+                    demandResult.getPageNo(), demandResult.getPageSize(), demandResult.getTotal());
+        }
+
+        List<Demand> demandList = demandResult.getDatas();
+        List<DemandListItemVo> datas = demandList.stream().map(source -> DemandListItemVo.buildFromDomain(source,
+                (pid) -> userService.findById(pid).getRealName(),
+                (did) -> departmentService.findById(did).getDepartmentName(),
+                (ptid) -> positionService.findById(ptid).getChineseName()
+        )).collect(Collectors.toList());
+        return new BaseRestPageableResponse<>(true, "查询招聘需求列表成功!", datas,
+                demandResult.getPageNo(), demandResult.getPageSize(), demandResult.getTotal());
+    }
+
+    /**
      * 查询最新职位需求
      *
-     * @param demandQuery 查询对象
-     * @param pageNo 页码
-     * @param pageSize 分页代销
      * @return 最新展示层招聘需求列表
      */
     @RequestMapping(value = "/demand/new", method = RequestMethod.GET)
-    public BaseRestPageableResponse<DemandListItemVo> queryDemandListNew(DemandQuery demandQuery, int pageNo, int pageSize) {
+    public BaseRestPageableResponse<DemandListItemVo> queryDemandListNew() {
 
         Sort sort = new Sort(new Order(Sort.Direction.DESC, "gmt_modify"));
-        BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize, demandQuery.setSort(sort));
+        int pageNo = 1;
+        int pageSize = 8;
+        BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
+                new DemandQuery().setStatus(EnumDemandStatus.NORMAL.getCode()).setSort(sort));
         BaseServicePageableResponse<Demand> demandResult =  demandService.findByCondition(request);
 
         if (!demandResult.isSuccess()) {
@@ -111,7 +144,7 @@ public class DemandController {
 
         List<Demand> demandList = demandResult.getDatas();
         List<DemandListItemVo> datas = demandList.stream().map(source -> DemandListItemVo.buildFromDomain(source,
-                (pid) -> userService.findById(pid).getUserName(),
+                (pid) -> userService.findById(pid).getRealName(),
                 (did) -> departmentService.findById(did).getDepartmentName(),
                 (ptid) -> positionService.findById(ptid).getChineseName()
         )).collect(Collectors.toList());
@@ -169,5 +202,20 @@ public class DemandController {
                 (did) -> departmentService.findById(did).getDepartmentName(),
                 (ptid) -> positionService.findById(ptid).getChineseName());
         return new BaseRestResponse<>(true, "根据招聘需求id查找招聘需求成功!", demandListItemVo);
+    }
+
+    /**
+     * 根据招聘需求id逻辑删除该需求
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/myProfile/demand/delete/{id}", method = RequestMethod.GET)
+    public BaseRestResponse<String> deleteDemand(@PathVariable("id") Long id) {
+        BaseServiceResponse<Integer> deleteResult = demandService.deleteDemandLogically(id);
+        if (!deleteResult.isSuccess()) {
+            new BaseRestResponse<>(false, "下架该招聘需求失败!", null);
+        }
+        return new BaseRestResponse<>(true, "下架该招聘需求成功!", null);
     }
 }

@@ -21,7 +21,13 @@ public class ScoreFlowServiceImpl implements ScoreFlowService{
 
     @Override
     public BaseServicePageableResponse<ScoreFlow> findByCondition(BaseServicePageableRequest<ScoreFlowQuery> request) {
-        final Pageable pageable = PageableUtils.getPageable(request);
+        Pageable pageable = null;
+        if (request.getData().getSort() != null) {
+            pageable = PageableUtils.getPageable(request, request.getData().getSort());
+        } else {
+            pageable = PageableUtils.getPageable(request);
+        }
+
         final List<ScoreFlow> queryResult = dao.findByCondition(request.getData(), pageable);
 
         final long count;

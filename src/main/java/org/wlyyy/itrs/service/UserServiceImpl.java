@@ -3,6 +3,7 @@ package org.wlyyy.itrs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.wlyyy.common.domain.BaseServicePageableRequest;
 import org.wlyyy.common.domain.BaseServicePageableResponse;
 import org.wlyyy.common.domain.BaseServiceResponse;
@@ -51,12 +52,12 @@ public class UserServiceImpl implements UserService {
             return new BaseServiceResponse<>(false, "User not found.", null, null);
         }
 
-        // 将用户对象的密码和盐置为null，避免泄露密码和盐
         final String realPassword = fullUserInfo.getPassword();
         final String salt = fullUserInfo.getSalt();
 
         final String encrypt = SecurityUtils.encrypyPassword(password, salt);
 
+        // 将用户对象的密码和盐置为null，避免泄露密码和盐
         fullUserInfo.setPassword(null);
         fullUserInfo.setSalt(null);
 
@@ -74,5 +75,32 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encrypyPassword);
         dao.insert(user);
         return new BaseServiceResponse<>(true, "Create user successfully.", null, null);
+    }
+
+    @Override
+    @Transactional
+    public BaseServiceResponse<User> modifyPassword(String oldPassword, String newPassword, String userName) {
+        final User fullUserInfo = dao.findFullByUserName(userName);
+        if (fullUserInfo == null) {
+            return new BaseServiceResponse<>(false, "User not found.", null, null);
+        }
+
+        final String realPassword = fullUserInfo.getPassword();
+        final String salt = fullUserInfo.getSalt();
+        final String encrypt = SecurityUtils.encrypyPassword(oldPassword, salt);
+
+        if (encrypt.equals(realPassword)) {
+            // 旧密码正确，更新密码
+            final String modifyEncrypt = SecurityUtils.encrypyPassword(newPassword, salt);
+            fullUserInfo.setPassword(modifyEncrypt);
+            dao.updateById(fullUserInfo);
+
+            // 将用户对象的密码和盐置为null，避免泄露密码和盐
+            fullUserInfo.setPassword(null);
+            fullUserInfo.setSalt(null);
+            return new BaseServiceResponse<>(true, "Modify password successful.", fullUserInfo, null);
+        } else {
+            return new BaseServiceResponse<>(false, "Old password incorrect.", null, null);
+        }
     }
 }

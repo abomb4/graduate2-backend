@@ -2,6 +2,8 @@ package org.wlyyy.itrs.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,8 +46,9 @@ public class ScoreController {
     public BaseRestPageableResponse<ScoreFlowListItemVo> queryScoreFlowList(int pageNo, int pageSize) {
         // 获取当前登录用户信息
         UserAgent userAgent = authenticationService.isLogin().getData();
+        Sort sort = new Sort(new Order(Sort.Direction.DESC, "gmt_modify"));
         BaseServicePageableRequest<ScoreFlowQuery> scoreFlowRequest = new BaseServicePageableRequest<>(pageNo, pageSize,
-                new ScoreFlowQuery().setUserId(userAgent.getId()));
+                new ScoreFlowQuery().setUserId(userAgent.getId()).setSort(sort));
         BaseServicePageableResponse<ScoreFlow> scoreFlowResult = scoreFlowService.findByCondition(scoreFlowRequest);
         List<ScoreFlow> scoreFlowList = scoreFlowResult.getDatas();
         List<ScoreFlowListItemVo> datas = scoreFlowList.stream().map(source -> ScoreFlowListItemVo.buildFromDomain(source))

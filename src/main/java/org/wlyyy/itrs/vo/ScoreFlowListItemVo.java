@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 public class ScoreFlowListItemVo {
 
     public static ScoreFlowListItemVo buildFromDomain(ScoreFlow source) {
-        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         final Long id = source.getId();
         final Long userId = source.getUserId();
         final Integer score = source.getScore();

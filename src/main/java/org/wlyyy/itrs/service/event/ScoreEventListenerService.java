@@ -1,4 +1,4 @@
-package org.wlyyy.itrs.service;
+package org.wlyyy.itrs.service.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.ApplyFlow;
 import org.wlyyy.itrs.event.ApplyFlowEvent;
+import org.wlyyy.itrs.service.CandidateService;
+import org.wlyyy.itrs.service.ScoreService;
 
 /**
  * 监听ApplyFlowEvent的变化，进行积分处理

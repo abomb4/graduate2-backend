@@ -1,5 +1,6 @@
 package org.wlyyy.itrs.vo;
 
+import org.wlyyy.itrs.dict.EnumDemandStatus;
 import org.wlyyy.itrs.domain.Demand;
 
 import java.text.SimpleDateFormat;
@@ -44,6 +45,7 @@ public class DemandListItemVo {
         final String workingPlace = source.getWorkingPlace();
         final String degreeRequest = source.getDegreeRequest();
         final int status = source.getStatus();
+        final String statusName = EnumDemandStatus.getDescByCode(source.getStatus());
         final String memo = source.getMemo();
         final String gmtCreate = formatter.format(source.getGmtCreate());
         final String gmtModify = formatter.format(source.getGmtModify());
@@ -63,6 +65,7 @@ public class DemandListItemVo {
                 workingPlace,
                 degreeRequest,
                 status,
+                statusName,
                 memo,
                 gmtCreate,
                 gmtModify
@@ -78,7 +81,7 @@ public class DemandListItemVo {
             String publisherName, Long positionType, String positionTypeCnName,
             String jobName, Long departmentId, String departmentName, String hrName,
             Long total, String workingPlace, String degreeRequest,
-            Integer status, String memo, String gmtCreate,
+            Integer status, String statusName, String memo, String gmtCreate,
             String gmtModify
     ) {
         this.id = id;
@@ -95,6 +98,7 @@ public class DemandListItemVo {
         this.workingPlace = workingPlace;
         this.degreeRequest = degreeRequest;
         this.status = status;
+        this.statusName = statusName;
         this.memo = memo;
         this.gmtCreate = gmtCreate;
         this.gmtModify = gmtModify;
@@ -114,6 +118,7 @@ public class DemandListItemVo {
     private String workingPlace;
     private String degreeRequest;
     private Integer status;
+    private String statusName;
     private String memo;
     private String gmtCreate;
     private String gmtModify;
@@ -228,6 +233,14 @@ public class DemandListItemVo {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 
     public String getMemo() {

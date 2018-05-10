@@ -8,8 +8,7 @@ package org.wlyyy.itrs.dict;
 public enum EnumDemandStatus implements IDictionary<Integer> {
 
     NORMAL(1, "normal", "正常"),
-    FULL(2, "full", "人数已满"),
-    DELETED(3, "deleted", "已删除"),
+    DELETED(0, "deleted", "已下架"),
     ;
 
     private final Integer code;
@@ -35,5 +34,15 @@ public enum EnumDemandStatus implements IDictionary<Integer> {
     @Override
     public String getDesc() {
         return desc;
+    }
+
+    public static String getDescByCode(Integer code) {
+        EnumDemandStatus[] values = EnumDemandStatus.values();
+        for (EnumDemandStatus enumDemandStatus : values) {
+            if (enumDemandStatus.getCode().equals(code)) {
+                return enumDemandStatus.getDesc();
+            }
+        }
+        return "";
     }
 }

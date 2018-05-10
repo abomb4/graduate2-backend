@@ -47,4 +47,14 @@ public interface UserService {
      * @return 创建结果，通过{@link BaseServiceResponse#isSuccess()}来判断结果
      */
     BaseServiceResponse<User> createUser(User user);
+
+    /**
+     * 修改用户密码
+     *
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @param userName 用户名
+     * @return
+     */
+    BaseServiceResponse<User> modifyPassword(String oldPassword, String newPassword, String userName);
 }

@@ -40,6 +40,15 @@ public interface ApplyFlowRepository {
     @SelectProvider(type = ApplyFlowQueryProvider.class, method = "count")
     long countByCondition(@Param("applyFlow") ApplyFlowQuery queryObject);
 
+    /**
+     * 分页查询不在demandNoList中的复合条件的对象列表
+     */
+    @SelectProvider(type = ApplyFlowQueryNotProvider.class, method = "select")
+    List<ApplyFlow> findNotInDemandNo(@Param("applyFlow") ApplyFlowQuery queryObject, Pageable page, List<String> demandNoList);
+
+    @SelectProvider(type = ApplyFlowQueryNotProvider.class, method = "count")
+    long countNotInDemandNo(@Param("applyFlow") ApplyFlowQuery queryObject, List<String> demandNoList);
+
     @UpdateProvider(type = ApplyFlowUpdateByIdProvider.class, method = "myMethod")
     int updateById(ApplyFlow applyFlow);
 
@@ -131,11 +140,6 @@ public interface ApplyFlowRepository {
 
             packageWhere(applyFlow);
 
-            // 不能全都是空
-            if (first) {
-                throw new IllegalArgumentException("One of query condition should be not null");
-            }
-
             return builder.toString();
         }
 
@@ -156,11 +160,6 @@ public interface ApplyFlowRepository {
             builder.append("select id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, current_result, flow_status, gmt_create, gmt_modify from apply_flow");
 
             packageWhere(applyFlow);
-
-            // 不能全都是空
-            if (first) {
-                throw new IllegalArgumentException("One of query condition should be not null");
-            }
 
             builder.append(getOrder(page));
             builder.append(" ").append(getPage(page));
@@ -183,6 +182,124 @@ public interface ApplyFlowRepository {
             tryAppendWhere(applyFlow.getGmtCreateEnd(), "gmt_create <= #{applyFlow.gmtCreateEnd}");
             tryAppendWhere(applyFlow.getGmtModifyStart(), "gmt_modify >= #{applyFlow.gmtModifyStart}");
             tryAppendWhere(applyFlow.getGmtModifyEnd(), "gmt_modify <= #{applyFlow.gmtModifyEnd}");
+        }
+
+        private String getOrder(Pageable page) {
+            final StringBuilder sortBuilder = new StringBuilder();
+            if (page.getSort() != null) {
+                Sort sort = page.getSort();
+                int count = 0;
+                for (Sort.Order order : sort) {
+                    if (count == 0) {
+                        // 第一个order
+                        sortBuilder.append(" order by ");
+                        sortBuilder.append(order.getProperty()).append(" ").append(order.getDirection());
+                    } else {
+                        sortBuilder.append(", ").append(order.getProperty()).append(" ").append(order.getDirection());
+                    }
+                    count++;
+                }
+            }
+            return sortBuilder.toString();
+        }
+
+        private String getPage(Pageable page) {
+            return St.r("limit {}, {}", page.getOffset(), page.getPageSize());
+        }
+    }
+
+    class ApplyFlowQueryNotProvider {
+        public static String select(@Param("applyFlow") ApplyFlowQuery applyFlow, Pageable page, List<String> demandNoList) {
+            return new ApplyFlowQueryNotProvider().getSelect(applyFlow, page, demandNoList);
+        }
+        public static String count(@Param("applyFlow") ApplyFlowQuery applyFlow, List<String> demandNoList) {
+            return new ApplyFlowQueryNotProvider().getCount(applyFlow, demandNoList);
+        }
+
+        static String DELIMITER = " and ";
+
+        boolean first = true;
+        final StringBuilder builder = new StringBuilder();
+
+        private void tryAppendWhere(Object o, String forAppend) {
+            if (Objects.nonNull(o) && !"".equals(o)) {
+                if (!first) {
+                    builder.append(DELIMITER);
+                } else {
+                    builder.append(" where ");
+                }
+                first = false;
+                builder.append(forAppend);
+            }
+        }
+
+        /**
+         * 获取查询条件count sql
+         *
+         * @param applyFlow 招聘流程查询对象
+         * @return sql语句
+         */
+        private String getCount(ApplyFlowQuery applyFlow, List<String> demandNoList) {
+            builder.append("select count(*) from apply_flow");
+
+            packageWhere(applyFlow);
+            packageNotIn(demandNoList);
+
+            return builder.toString();
+        }
+
+        /**
+         * 获取查询条件sql
+         *
+         * @param applyFlow 招聘流程查询对象
+         * @param page 分页对象
+         * @return sql语句
+         */
+        private String getSelect(ApplyFlowQuery applyFlow, Pageable page, List<String> demandNoList) {
+            builder.append("select id, demand_no, candidate_id, user_id, current_flow_node, current_dealer, current_result, flow_status, gmt_create, gmt_modify from apply_flow");
+
+            packageWhere(applyFlow);
+            packageNotIn(demandNoList);
+
+            builder.append(getOrder(page));
+            builder.append(" ").append(getPage(page));
+
+            return builder.toString();
+        }
+
+        private void packageWhere(ApplyFlowQuery applyFlow) {
+            String currentFlowNode = "concat('%', #{applyFlow.currentFlowNode}, '%')";
+
+            tryAppendWhere(applyFlow.getId(), "id = #{id}");
+            tryAppendWhere(applyFlow.getDemandNo(), "demand_no = #{applyFlow.demandNo}");
+            tryAppendWhere(applyFlow.getCandidateId(), "candidate_id = #{applyFlow.candidateId}");
+            tryAppendWhere(applyFlow.getUserId(), "user_id = #{applyFlow.userId}");
+            tryAppendWhere(applyFlow.getCurrentFlowNode(), "current_flow_node like " + currentFlowNode);
+            tryAppendWhere(applyFlow.getCurrentDealer(), "current_dealer = #{applyFlow.currentDealer}");
+            tryAppendWhere(applyFlow.getCurrentResult(), "current_result = #{currentResult}");
+            tryAppendWhere(applyFlow.getFlowStatus(), "flow_status = #{applyFlow.flowStatus}");
+            tryAppendWhere(applyFlow.getGmtCreateStart(), "gmt_create >= #{applyFlow.gmtCreateStart}");
+            tryAppendWhere(applyFlow.getGmtCreateEnd(), "gmt_create <= #{applyFlow.gmtCreateEnd}");
+            tryAppendWhere(applyFlow.getGmtModifyStart(), "gmt_modify >= #{applyFlow.gmtModifyStart}");
+            tryAppendWhere(applyFlow.getGmtModifyEnd(), "gmt_modify <= #{applyFlow.gmtModifyEnd}");
+        }
+
+        private void packageNotIn(List<String> demandNoList) {
+            if (demandNoList == null && demandNoList.size() == 0) {
+                return;
+            } else {
+                int count = 0;
+                for (String demandNo : demandNoList) {
+                    if (count == 0) {
+                        builder.append(DELIMITER).append("demand_no not in (");
+                        builder.append(demandNo);
+                    } else {
+                        builder.append(", ").append(demandNo);
+                    }
+                    count++;
+                }
+                builder.append(")");
+            }
         }
 
         private String getOrder(Pageable page) {

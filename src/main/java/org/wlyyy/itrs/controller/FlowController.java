@@ -5,16 +5,20 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.wlyyy.common.domain.*;
+import org.wlyyy.itrs.dict.EnumDemandStatus;
 import org.wlyyy.itrs.dict.EnumFlowStatus;
 import org.wlyyy.itrs.domain.*;
 import org.wlyyy.itrs.event.ApplyFlowEvent;
 import org.wlyyy.itrs.request.ApplyFlowQuery;
 import org.wlyyy.itrs.request.CandidateQuery;
+import org.wlyyy.itrs.request.DemandQuery;
 import org.wlyyy.itrs.request.WorkFlowQuery;
 import org.wlyyy.itrs.request.rest.CandidateRequest;
 import org.wlyyy.itrs.service.*;
@@ -215,8 +219,9 @@ public class FlowController {
         String demandNo = demand.getDemandNo();
 
         // 1. 根据招聘需求id找到其下的招聘流程列表
+        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
         BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
-                new ApplyFlowQuery().setDemandNo(demandNo));
+                new ApplyFlowQuery().setDemandNo(demandNo).setSort(sort));
         BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
         List<ApplyFlow> applyFlowList = applyFlowResult.getDatas();
 
@@ -257,7 +262,7 @@ public class FlowController {
                     return workFlowService.findCurrentOutcomeListByApplyId(aid).getData();
                 },
                 (dno) -> {
-                    return demandService.findByNo(dno).getId();
+                    return demandService.findByNo(dno);
                 }))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
@@ -277,9 +282,18 @@ public class FlowController {
         UserAgent userAgent = authenticationService.isLogin().getData();
 
         // 1. 根据用户id找到其下的招聘流程列表
+        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
+        // 需要排除掉该用户发布的招聘需求No
+        // 因为hr也可以作为面试官，但规定其不得指派自己为自己发布的招聘需求的面试官
         BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
-                new ApplyFlowQuery().setCurrentDealer(userAgent.getId()));
-        BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
+                new ApplyFlowQuery().setCurrentDealer(userAgent.getId()).setSort(sort));
+        // 该用户发布的招聘需求No列表
+        BaseServicePageableRequest<DemandQuery> requestDemand = new BaseServicePageableRequest<>(1, Integer.MAX_VALUE,
+                new DemandQuery().setPublisherId(userAgent.getId()).setStatus(EnumDemandStatus.NORMAL.getCode()));
+        List<Demand> demandList = demandService.findByCondition(requestDemand).getDatas();
+        List<String> demandNoList = demandList.stream().map(item -> item.getDemandNo()).collect(Collectors.toList());
+
+        BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findNotInDemandNo(request, demandNoList);
         List<ApplyFlow> applyFlowList = applyFlowResult.getDatas();
 
         // 2. 转化成的展示层招聘流程信息表
@@ -319,7 +333,7 @@ public class FlowController {
                     return workFlowService.findCurrentOutcomeListByApplyId(aid).getData();
                 },
                 (dno) -> {
-                    return demandService.findByNo(dno).getId();
+                    return demandService.findByNo(dno);
                 }))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
@@ -339,8 +353,9 @@ public class FlowController {
         UserAgent userAgent = authenticationService.isLogin().getData();
 
         // 1. 根据用户id找到其下的招聘流程列表
+        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
         BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
-                new ApplyFlowQuery().setUserId(userAgent.getId()));
+                new ApplyFlowQuery().setUserId(userAgent.getId()).setSort(sort));
         BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
         List<ApplyFlow> applyFlowList = applyFlowResult.getDatas();
 
@@ -369,7 +384,7 @@ public class FlowController {
                     return new ArrayList<String>();
                 },
                 (dno) -> {
-                    return demandService.findByNo(dno).getId();
+                    return demandService.findByNo(dno);
                 }))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
@@ -406,6 +421,7 @@ public class FlowController {
      * @param workFlow workFlow对象
      * @return 成功or失败信息
      */
+    @Transactional
     @RequestMapping(value = "/deal")
     BaseRestResponse<String> dealApplyFlow(final WorkFlow workFlow) {
         // 获取当前登录用户信息
@@ -413,6 +429,10 @@ public class FlowController {
 
         // 1. 用户完成任务
         // 只能有一个下一任务执行人
+        // 且hr指派的面试官不能为推荐员工
+        if (workFlow.getNextUserId().equals(workFlow.getPublisherId())) {
+            return new BaseRestResponse<>(false, "不得指派推荐该被推荐人的员工作为面试官!", null);
+        }
         BaseServiceResponse<String> completeTaskResult = workFlowService.completeTaskByTaskId(workFlow);
         // 完成任务不成功，返回失败
         if (!completeTaskResult.isSuccess()) {

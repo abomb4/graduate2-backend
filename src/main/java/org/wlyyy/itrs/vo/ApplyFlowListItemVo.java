@@ -3,6 +3,7 @@ package org.wlyyy.itrs.vo;
 import org.wlyyy.itrs.dict.EnumFlowStatus;
 import org.wlyyy.itrs.domain.ApplyFlow;
 import org.wlyyy.itrs.domain.Candidate;
+import org.wlyyy.itrs.domain.Demand;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -25,7 +26,7 @@ public class ApplyFlowListItemVo {
      * @param getUserNameById      根据用户id获取用户姓名
      * @param getTaskIdById        根据招聘流程id得到对应的任务id（若无需操作，则id为-1）
      * @param getOutcomeListById   根据招聘流程id得到当前流程节点的处理连线
-     * @param getDemandIdByNo      根据需求No得到需求id
+     * @param getDemandByNo        根据需求No得到需求对象
      * @return 视图VO对象
      */
     public static ApplyFlowListItemVo buildFromDomain(
@@ -33,14 +34,16 @@ public class ApplyFlowListItemVo {
             Function<Long, Candidate> getCandidateNameById,         // 根据被推荐人id得到被推荐人信息
             Function<Long, String> getUserNameById,                 // 根据用户id得到用户姓名
             Function<Long, String> getTaskIdById,                   // 根据招聘流程id得到对应的任务id（若无需操作，则id为-1）
-            Function<Long, String> getTaskNameById,               // 根据招聘流程id得到对应的任务名称
+            Function<Long, String> getTaskNameById,                 // 根据招聘流程id得到对应的任务名称
             Function<Long, List<String>> getOutcomeListById,        // 根据招聘流程id得到当前流程节点的处理连线
-            Function<String, Long> getDemandIdByNo                  // 根据需求No得到需求id
+            Function<String, Demand> getDemandByNo                  // 根据需求No得到需求对象
     ) {
         final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         final Long id = source.getId();
-        final Long demandId = getDemandIdByNo.apply(source.getDemandNo());
+        final Demand demand = getDemandByNo.apply(source.getDemandNo());
+        final Long demandId = demand.getId();
         final String demandNo = source.getDemandNo();
+        final Long publisherId = demand.getPublisherId();
         final String taskId = getTaskIdById.apply(source.getId());
         final String taskName = getTaskNameById.apply(source.getId());
         final Long candidateId = source.getCandidateId();
@@ -60,7 +63,7 @@ public class ApplyFlowListItemVo {
         final String gmtModify = formatter.format(source.getGmtModify());
 
         return new ApplyFlowListItemVo(
-                id, demandId, demandNo, taskId, taskName, candidateId, candidateName,
+                id, demandId, demandNo, publisherId, taskId, taskName, candidateId, candidateName,
                 candidateSex, hopeWorkingPlace, recommendId, recommendName,
                 currentFlowNode, currentDealer, currentResult,
                 flowStatus, flowStatusName, gmtCreate, gmtModify,
@@ -72,7 +75,7 @@ public class ApplyFlowListItemVo {
     }
 
     public ApplyFlowListItemVo(
-            Long id, Long demandId, String demandNo, String taskId, String taskName, Long candidateId,
+            Long id, Long demandId, String demandNo, Long publisherId, String taskId, String taskName, Long candidateId,
             String candidateName, Integer candidateSex, String hopeWorkingPlace,
             Long recommendId, String recommendName, String currentFlowNode,
             String currentDealer, String currentResult, Integer flowStatus,
@@ -82,6 +85,7 @@ public class ApplyFlowListItemVo {
         this.id = id;
         this.demandId = demandId;
         this.demandNo = demandNo;
+        this.publisherId = publisherId;
         this.taskId = taskId;
         this.taskName = taskName;
         this.candidateId = candidateId;
@@ -103,6 +107,7 @@ public class ApplyFlowListItemVo {
     private Long id;
     private Long demandId;
     private String demandNo;
+    private Long publisherId;
     private String taskId;
     private String taskName;
     private Long candidateId;
@@ -142,6 +147,14 @@ public class ApplyFlowListItemVo {
 
     public void setDemandNo(String demandNo) {
         this.demandNo = demandNo;
+    }
+
+    public Long getPublisherId() {
+        return publisherId;
+    }
+
+    public void setPublisherId(Long publisherId) {
+        this.publisherId = publisherId;
     }
 
     public String getTaskId() {

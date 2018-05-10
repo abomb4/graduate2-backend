@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 /**
- * 需求查询对象。
+ * 招聘需求查询对象。
  */
 public class DemandQueryRequest {
 

@@ -32,36 +32,52 @@ GET /myProfile/score/list?
             "id": 5,
             "userId": 4,
             "score": 10,
-            "gmtCreate": "2018-05-05",
-            "gmtModify": "2018-05-05"
+            "gmtCreate": "2018-05-05 13:14",
+            "gmtModify": "2018-05-05 13:14"
         },
         {
             "id": 6,
             "userId": 4,
             "score": 10,
-            "gmtCreate": "2018-05-05",
-            "gmtModify": "2018-05-05"
+            "gmtCreate": "2018-05-05 13:16",
+            "gmtModify": "2018-05-05 13:16"
         },
         {
             "id": 8,
             "userId": 4,
             "score": 15,
             "memo": "您推荐的【翁小宝】已上岗",
-            "gmtCreate": "2018-05-05",
-            "gmtModify": "2018-05-05"
+            "gmtCreate": "2018-05-05 14:05",
+            "gmtModify": "2018-05-05 14:05"
         },
         {
             "id": 10,
             "userId": 4,
             "score": 10,
             "memo": "您推荐的【翁哈哈】已二面通过",
-            "gmtCreate": "2018-05-05",
-            "gmtModify": "2018-05-05"
+            "gmtCreate": "2018-05-05 14:19",
+            "gmtModify": "2018-05-05 14:19"
+        },
+        {
+            "id": 11,
+            "userId": 4,
+            "score": 5,
+            "memo": "您推荐的【翁宝宝】电话面试通过",
+            "gmtCreate": "2018-05-09 01:29",
+            "gmtModify": "2018-05-09 01:29"
+        },
+        {
+            "id": 12,
+            "userId": 4,
+            "score": 10,
+            "memo": "您推荐的【翁宝宝】二面通过",
+            "gmtCreate": "2018-05-09 01:34",
+            "gmtModify": "2018-05-09 01:34"
         }
     ],
     "pageNo": 1,
     "pageSize": 10,
-    "total": 4
+    "total": 6
 }
 ```
 
@@ -100,9 +116,6 @@ GET /score/rule?
 | pageNo | 页码 | Number | - | Y
 | pageSize | 分页大小 | Number | - | Y
 |======
-
-==== 请求参数
-[options="header"]
 
 ==== 返回示例
 为空的数据则显示为""

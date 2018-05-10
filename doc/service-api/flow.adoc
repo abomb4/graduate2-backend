@@ -118,8 +118,9 @@ GET /myProfile/flow/listApplyFlowInterviewee?
 |======
 | 字段 | 说明 | 类型 | 备注 | 是否必填
 | id | - | String | - | Y
-| demandId | 需求id | String | - | Y
+| demandId | 需求id | Number | - | Y
 | demandNo | 需求编号 | String | - | Y
+| publisherId | 发布招聘需求的hr id| Number | - | Y
 | taskId | 工作流引擎的TaskID | Number | 如果该用户不能操作该流程，返回-1 | Y
 | candidateId | 被推荐人id | String | - | Y
 | candidateName | 被推荐人姓名 | String | - | Y
@@ -139,7 +140,62 @@ GET /myProfile/flow/listApplyFlowInterviewee?
 ```json
 {
     "success": true,
-    "message": "Create success"
+    "message": "查询展示层招聘流程信息表成功!",
+    "datas": [
+        {
+            "id": 8,
+            "demandId": 10,
+            "demandNo": "11158",
+            "publisherId": 2,
+            "taskId": "22506",
+            "taskName": "电话面试",
+            "candidateId": 8,
+            "candidateName": "aqq1",
+            "candidateSex": 1,
+            "hopeWorkingPlace": "杭州",
+            "recommendId": 8,
+            "recommendName": "翁嘻嘻",
+            "currentFlowNode": "电话面试",
+            "currentDealer": "翁啦啦",
+            "currentResult": "筛选简历通过",
+            "flowStatus": 1,
+            "flowStatusName": "执行中",
+            "gmtCreate": "2018-05-07",
+            "gmtModify": "2018-05-08",
+            "operate": [
+                "未通过",
+                "通过"
+            ]
+        },
+        {
+            "id": 9,
+            "demandId": 10,
+            "demandNo": "11158",
+            "publisherId": 2,
+            "taskId": "25016",
+            "taskName": "电话面试",
+            "candidateId": 9,
+            "candidateName": "翁宝宝",
+            "candidateSex": 2,
+            "hopeWorkingPlace": "杭州",
+            "recommendId": 9,
+            "recommendName": "翁嘻嘻",
+            "currentFlowNode": "电话面试",
+            "currentDealer": "翁啦啦",
+            "currentResult": "筛选简历通过",
+            "flowStatus": 1,
+            "flowStatusName": "执行中",
+            "gmtCreate": "2018-05-08",
+            "gmtModify": "2018-05-08",
+            "operate": [
+                "未通过",
+                "通过"
+            ]
+        }
+    ],
+    "pageNo": 1,
+    "pageSize": 20,
+    "total": 2
 }
 ```
 

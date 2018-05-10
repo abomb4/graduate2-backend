@@ -8,6 +8,7 @@ import org.wlyyy.common.domain.BaseServicePageableResponse;
 import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.common.utils.PageableUtils;
 import org.wlyyy.itrs.dao.DemandRepository;
+import org.wlyyy.itrs.dict.EnumDemandStatus;
 import org.wlyyy.itrs.domain.Demand;
 import org.wlyyy.itrs.request.DemandQuery;
 
@@ -72,6 +73,10 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public BaseServiceResponse<Integer> deleteDemandLogically(Long id) {
-        return null;
+        Demand demand = new Demand();
+        demand.setId(id);
+        demand.setStatus(EnumDemandStatus.DELETED.getCode());
+        int deleteCount = dao.updateById(demand);
+        return new BaseServiceResponse<>(true, "Logically deleted demand success!", deleteCount, null);
     }
 }

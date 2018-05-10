@@ -3,7 +3,7 @@ package org.wlyyy.common.utils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- *
+ * Servlet工具类
  */
 public class ServletUtils {
 

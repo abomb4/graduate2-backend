@@ -22,7 +22,12 @@ public class ApplyFlowServiceImpl implements ApplyFlowService{
     @Override
     public BaseServicePageableResponse<ApplyFlow> findByCondition(BaseServicePageableRequest<ApplyFlowQuery> request) {
 
-        final Pageable pageable = PageableUtils.getPageable(request);
+        Pageable pageable = null;
+        if (request.getData().getSort() != null) {
+            pageable = PageableUtils.getPageable(request, request.getData().getSort());
+        } else {
+            pageable = PageableUtils.getPageable(request);
+        }
         final List<ApplyFlow> queryResult = dao.findByCondition(request.getData(), pageable);
 
         final long count;
@@ -30,6 +35,29 @@ public class ApplyFlowServiceImpl implements ApplyFlowService{
             count = queryResult.size();
         } else {
             count = dao.countByCondition(request.getData());
+        }
+
+        return new BaseServicePageableResponse<>(
+                true, "Query apply_flow success", queryResult,
+                request.getPageNo(), request.getPageSize(), count
+        );
+    }
+
+    @Override
+    public BaseServicePageableResponse<ApplyFlow> findNotInDemandNo(BaseServicePageableRequest<ApplyFlowQuery> request, List<String> demandNoList) {
+        Pageable pageable = null;
+        if (request.getData().getSort() != null) {
+            pageable = PageableUtils.getPageable(request, request.getData().getSort());
+        } else {
+            pageable = PageableUtils.getPageable(request);
+        }
+        final List<ApplyFlow> queryResult = dao.findNotInDemandNo(request.getData(), pageable, demandNoList);
+
+        final long count;
+        if (request.getPageNo() == 1 && (queryResult.size() < request.getPageSize())) {
+            count = queryResult.size();
+        } else {
+            count = dao.countNotInDemandNo(request.getData(), demandNoList);
         }
 
         return new BaseServicePageableResponse<>(

@@ -67,7 +67,7 @@ GET /myProfile/candidate/list?
 
 ==== URL
 ```
-GET /myProfile/get/id
+GET /myProfile/candidate/get/id
 ```
 
 ==== 返回示例
