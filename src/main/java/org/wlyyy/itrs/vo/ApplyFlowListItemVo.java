@@ -36,13 +36,15 @@ public class ApplyFlowListItemVo {
             Function<Long, String> getTaskIdById,                   // 根据招聘流程id得到对应的任务id（若无需操作，则id为-1）
             Function<Long, String> getTaskNameById,                 // 根据招聘流程id得到对应的任务名称
             Function<Long, List<String>> getOutcomeListById,        // 根据招聘流程id得到当前流程节点的处理连线
-            Function<String, Demand> getDemandByNo                  // 根据需求No得到需求对象
+            Function<String, Demand> getDemandByNo                 // 根据需求No得到需求对象
     ) {
         final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         final Long id = source.getId();
         final Demand demand = getDemandByNo.apply(source.getDemandNo());
         final Long demandId = demand.getId();
         final String demandNo = source.getDemandNo();
+        final String jobName = demand.getJobName();
+        final Long positionType = demand.getPositionType();
         final Long publisherId = demand.getPublisherId();
         final String taskId = getTaskIdById.apply(source.getId());
         final String taskName = getTaskNameById.apply(source.getId());
@@ -63,11 +65,11 @@ public class ApplyFlowListItemVo {
         final String gmtModify = formatter.format(source.getGmtModify());
 
         return new ApplyFlowListItemVo(
-                id, demandId, demandNo, publisherId, taskId, taskName, candidateId, candidateName,
-                candidateSex, hopeWorkingPlace, recommendId, recommendName,
-                currentFlowNode, currentDealer, currentResult,
-                flowStatus, flowStatusName, gmtCreate, gmtModify,
-                operate
+                id, demandId, demandNo, jobName, positionType, publisherId,
+                taskId, taskName, candidateId, candidateName, candidateSex,
+                hopeWorkingPlace, recommendId, recommendName, currentFlowNode,
+                currentDealer, currentResult, flowStatus, flowStatusName,
+                gmtCreate, gmtModify, operate
         );
     }
 
@@ -75,16 +77,17 @@ public class ApplyFlowListItemVo {
     }
 
     public ApplyFlowListItemVo(
-            Long id, Long demandId, String demandNo, Long publisherId, String taskId, String taskName, Long candidateId,
-            String candidateName, Integer candidateSex, String hopeWorkingPlace,
-            Long recommendId, String recommendName, String currentFlowNode,
-            String currentDealer, String currentResult, Integer flowStatus,
-            String flowStatusName, String gmtCreate, String gmtModify,
-            List<String> operate
+            Long id, Long demandId, String demandNo, String jobName, Long positionType, Long publisherId,
+            String taskId, String taskName, Long candidateId, String candidateName, Integer candidateSex,
+            String hopeWorkingPlace, Long recommendId, String recommendName, String currentFlowNode,
+            String currentDealer, String currentResult, Integer flowStatus, String flowStatusName,
+            String gmtCreate, String gmtModify, List<String> operate
     ) {
         this.id = id;
         this.demandId = demandId;
         this.demandNo = demandNo;
+        this.jobName = jobName;
+        this.positionType = positionType;
         this.publisherId = publisherId;
         this.taskId = taskId;
         this.taskName = taskName;
@@ -107,6 +110,8 @@ public class ApplyFlowListItemVo {
     private Long id;
     private Long demandId;
     private String demandNo;
+    private String jobName;
+    private Long positionType;
     private Long publisherId;
     private String taskId;
     private String taskName;
@@ -147,6 +152,22 @@ public class ApplyFlowListItemVo {
 
     public void setDemandNo(String demandNo) {
         this.demandNo = demandNo;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public Long getPositionType() {
+        return positionType;
+    }
+
+    public void setPositionType(Long positionType) {
+        this.positionType = positionType;
     }
 
     public Long getPublisherId() {
