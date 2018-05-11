@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/myProfile/flow")
 public class FlowController {
 
+    @SuppressWarnings("unused")
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FlowController.class);
 
     @Autowired
@@ -51,24 +52,24 @@ public class FlowController {
     private UserService userService;
 
     @Autowired
-    ApplyFlowService applyFlowService;
+    private ApplyFlowService applyFlowService;
 
     @Autowired
-    AuthenticationService authenticationService;
+    private AuthenticationService authenticationService;
 
     @Autowired
-    PositionService positionService;
+    private PositionService positionService;
 
     @Autowired
-    DepartmentService departmentService;
+    private DepartmentService departmentService;
 
     @Autowired
     private ApplicationEventPublisher publisher;
 
-    final String NO_TASK = "-1";
+    private final String NO_TASK = "-1";
 
     @RequestMapping("/deployFile")
-    public BaseRestResponse<Deployment> deployWorkFlow_file(){
+    public BaseRestResponse<Deployment> deployWorkFlow_file() {
         // TODO
         return null;
     }
@@ -77,8 +78,8 @@ public class FlowController {
      * 根据classpath下的zip文件以及部署名称进行部署
      *
      * @param zipName 部署zip文件名（zip文件中包含.bpmn和.png）
-     * @param deployName
-     * @return
+     * @param deployName 流程名
+     * @return 部署结果
      */
     @RequestMapping(value = "/deployZip", method = RequestMethod.GET)
     public BaseRestResponse<Deployment> deployWorkFlow_zip(String zipName, String deployName){
@@ -100,10 +101,10 @@ public class FlowController {
      */
     @RequestMapping(value = "/listDeploy", method = RequestMethod.GET)
     BaseRestPageableResponse<DeploymentListItemVo> listDeploy(final int pageNo, final int pageSize) {
-        BaseServicePageableResponse<Deployment> deploymentResult = workFlowService.findAllDeploy(new BaseServicePageableRequest<WorkFlowQuery>(pageNo, pageSize,
+        BaseServicePageableResponse<Deployment> deploymentResult = workFlowService.findAllDeploy(new BaseServicePageableRequest<>(pageNo, pageSize,
                 new WorkFlowQuery()));
         List<Deployment> deploymentList = deploymentResult.getDatas();
-        List<DeploymentListItemVo> datas = deploymentList.stream().map(source -> DeploymentListItemVo.buildFromDomain(source)).collect(Collectors.toList());
+        List<DeploymentListItemVo> datas = deploymentList.stream().map(DeploymentListItemVo::buildFromDomain).collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询部署流程成功!", datas, pageNo, pageSize, deploymentResult.getTotal());
     }
 
@@ -134,7 +135,7 @@ public class FlowController {
         // 2. 放入被推荐人信息到被推荐人信息表中
         // 先根据[被推荐人姓名+手机号]查询该被推荐人是否已存在被推荐人信息表中，若已存在，则查询其是否处于有效的招聘需求处理流程中
         // 若处于，则返回推荐失败；若不处于，则更新其在被推荐人信息表中的信息
-        Long insertCandidateId = 0l;
+        Long insertCandidateId;
         BaseServicePageableResponse<Candidate> recommendResult = candidateService.findByCondition(
                 new BaseServicePageableRequest<>(1,1,
                         new CandidateQuery().setName(candidate.getName()).setPhoneNo(candidate.getPhoneNo())));
@@ -165,7 +166,7 @@ public class FlowController {
         Recommend recommend = new Recommend();
         recommend.setCandidateId(insertCandidateId);
         recommend.setUserId(userAgent.getId());
-        recommendService.insertRecommend(recommend).getData();
+        recommendService.insertRecommend(recommend);
 
         // 4. 放入数据到招聘流程信息表中
         ApplyFlow applyFlow = new ApplyFlow();
@@ -234,7 +235,7 @@ public class FlowController {
         List<ApplyFlowListItemVo> datas = applyFlowList.stream().map(source -> ApplyFlowListItemVo.buildFromDomain(source,
                 (cid) -> candidateService.findById(cid),
                 (uid) -> {
-                    if (uid == 0l) {
+                    if (uid == 0L) {
                         return "无";
                     }
                     return userService.findById(uid).getRealName();
@@ -265,9 +266,7 @@ public class FlowController {
                     }
                     return workFlowService.findCurrentOutcomeListByApplyId(aid).getData();
                 },
-                (dno) -> {
-                    return demandService.findByNo(dno);
-                },
+                (dno) -> demandService.findByNo(dno),
                 (pt) -> positionService.getPositionTypeCnName(pt)))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
@@ -296,7 +295,7 @@ public class FlowController {
         BaseServicePageableRequest<DemandQuery> requestDemand = new BaseServicePageableRequest<>(1, Integer.MAX_VALUE,
                 new DemandQuery().setPublisherId(userAgent.getId()));
         List<Demand> demandList = demandService.findByCondition(requestDemand).getDatas();
-        List<String> demandNoList = demandList.stream().map(item -> item.getDemandNo()).collect(Collectors.toList());
+        List<String> demandNoList = demandList.stream().map(Demand::getDemandNo).collect(Collectors.toList());
 
         BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findNotInDemandNo(request, demandNoList);
         List<ApplyFlow> applyFlowList = applyFlowResult.getDatas();
@@ -306,7 +305,7 @@ public class FlowController {
         List<ApplyFlowListItemVo> datas = applyFlowList.stream().map(source -> ApplyFlowListItemVo.buildFromDomain(source,
                 (cid) -> candidateService.findById(cid),
                 (uid) -> {
-                    if (uid == 0l) {
+                    if (uid == 0L) {
                         return "无";
                     }
                     return userService.findById(uid).getRealName();
@@ -337,9 +336,7 @@ public class FlowController {
                     }
                     return workFlowService.findCurrentOutcomeListByApplyId(aid).getData();
                 },
-                (dno) -> {
-                    return demandService.findByNo(dno);
-                },
+                (dno) -> demandService.findByNo(dno),
                 (pt) -> positionService.getPositionTypeCnName(pt)))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
@@ -370,14 +367,12 @@ public class FlowController {
         List<ApplyFlowListItemVo> datas = applyFlowList.stream().map(source -> ApplyFlowListItemVo.buildFromDomain(source,
                 (cid) -> candidateService.findById(cid),
                 (uid) -> {
-                    if (uid == 0l) {
+                    if (uid == 0L) {
                         return "无";
                     }
                     return userService.findById(uid).getRealName();
                 },
-                (aid) -> {
-                    return NO_TASK;
-                },
+                (aid) -> NO_TASK,
                 (aid) -> {
                     Task currentTask = workFlowService.findCurrentTaskByApplyId(aid).getData();
                     if (currentTask == null) {
@@ -386,12 +381,8 @@ public class FlowController {
                         return currentTask.getName();
                     }
                 },
-                (aid) -> {
-                    return new ArrayList<String>();
-                },
-                (dno) -> {
-                    return demandService.findByNo(dno);
-                },
+                (aid) -> new ArrayList<String>(),
+                (dno) -> demandService.findByNo(dno),
                 (pt) -> positionService.getPositionTypeCnName(pt)))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
@@ -437,15 +428,12 @@ public class FlowController {
     @Transactional
     @RequestMapping(value = "/deal", method = RequestMethod.POST)
     BaseRestResponse<String> dealApplyFlow(final WorkFlow workFlow) {
-        // 获取当前登录用户信息
-        UserAgent userAgent = authenticationService.isLogin().getData();
-
         // 1. 用户完成任务
         // 只能有一个下一任务执行人
         // 且hr指派的面试官不能为推荐员工
-        if (workFlow.getNextUserId().equals(workFlow.getRecommendId())) {
-            return new BaseRestResponse<>(false, "不得指派推荐该被推荐人的员工作为面试官!", null);
-        }
+//        if (workFlow.getRecommendId().equals(workFlow.getNextUserId())) {
+//            return new BaseRestResponse<>(false, "不得指派推荐该被推荐人的员工作为面试官!", null);
+//        }
         BaseServiceResponse<String> completeTaskResult = workFlowService.completeTaskByTaskId(workFlow);
         // 完成任务不成功，返回失败
         if (!completeTaskResult.isSuccess()) {
@@ -461,7 +449,7 @@ public class FlowController {
         if (isFinish) {
             applyFlow.setFlowStatus(EnumFlowStatus.FINISH.getCode());
             applyFlow.setCurrentFlowNode("已结束");
-            applyFlow.setCurrentDealer(0l);
+            applyFlow.setCurrentDealer(0L);
         } else {
             // 根据招聘流程id找到当前正在处理的Task
             BaseServiceResponse<Task> taskResult = workFlowService.findCurrentTaskByApplyId(workFlow.getId());
@@ -518,12 +506,12 @@ public class FlowController {
     }
 
     /**
-     * 根据招聘需求编号展示其下的展示层招聘流程信息表（这个相应速度太慢了啊！）
+     * 根据招聘需求编号展示其下的展示层招聘流程信息表（这个写法太sb了）
      *
      * @param demandId 招聘需求id
-     * @return
+     * @return 结果
      */
-    public BaseRestPageableResponse<ApplyFlowSimpleListItemVo> findApplyFlowListByDemandId(Long demandId){
+    private BaseRestPageableResponse<ApplyFlowSimpleListItemVo> findApplyFlowListByDemandId(Long demandId){
         int pageNo = 1;
         int pageSize = Integer.MAX_VALUE;
         // 获取当前登录用户信息
@@ -543,7 +531,7 @@ public class FlowController {
         List<ApplyFlowSimpleListItemVo> datas = applyFlowList.stream().map(source -> ApplyFlowSimpleListItemVo.buildFromDomain(source,
                 (cid) -> candidateService.findById(cid),
                 (uid) -> {
-                    if (uid == 0l) {
+                    if (uid == 0L) {
                         return "无";
                     }
                     return userService.findById(uid).getRealName();
@@ -596,7 +584,7 @@ public class FlowController {
         user.setEmail("397055871@qq.com");
         user.setSex(1);
         user.setRealName("翁啦啦");
-        user.setDepartmentId(1l);
+        user.setDepartmentId(1L);
         userService.createUser(user);
         return "Create user success!";
     }
