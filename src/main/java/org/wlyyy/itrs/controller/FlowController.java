@@ -435,7 +435,7 @@ public class FlowController {
      * @return 成功or失败信息
      */
     @Transactional
-    @RequestMapping(value = "/deal")
+    @RequestMapping(value = "/deal", method = RequestMethod.POST)
     BaseRestResponse<String> dealApplyFlow(final WorkFlow workFlow) {
         // 获取当前登录用户信息
         UserAgent userAgent = authenticationService.isLogin().getData();
@@ -443,7 +443,7 @@ public class FlowController {
         // 1. 用户完成任务
         // 只能有一个下一任务执行人
         // 且hr指派的面试官不能为推荐员工
-        if (workFlow.getNextUserId().equals(workFlow.getPublisherId())) {
+        if (workFlow.getNextUserId().equals(workFlow.getRecommendId())) {
             return new BaseRestResponse<>(false, "不得指派推荐该被推荐人的员工作为面试官!", null);
         }
         BaseServiceResponse<String> completeTaskResult = workFlowService.completeTaskByTaskId(workFlow);
