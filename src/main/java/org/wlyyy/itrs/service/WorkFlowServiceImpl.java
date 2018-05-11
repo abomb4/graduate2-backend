@@ -94,7 +94,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
                 .listPage(firstResult, maxResults);
 
         final long count;
-        if (deploymentList.size() < request.getPageSize()) {
+        if (request.getPageNo() == 1 && deploymentList.size() < request.getPageSize()) {
             count = deploymentList.size();
         } else {
             count = repositoryService.createDeploymentQuery()
@@ -139,7 +139,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
                 .listPage(firstResult, maxResults);
 
         final long count;
-        if (taskList.size() < request.getPageSize()) {
+        if (request.getPageNo() == 1 && taskList.size() < request.getPageSize()) {
             count = taskList.size();
         } else {
             count = taskQuery.list().size();
@@ -163,7 +163,7 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
                 .listPage(firstResult, maxResults);
 
         final long count;
-        if (historicTaskList.size() < request.getPageSize()) {
+        if (request.getPageNo() == 1 && historicTaskList.size() < request.getPageSize()) {
             count = historicTaskList.size();
         } else {
             count = historyService.createHistoricTaskInstanceQuery()

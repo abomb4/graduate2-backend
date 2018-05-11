@@ -3,16 +3,17 @@ package org.wlyyy.itrs.controller;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.task.Task;
+import org.codehaus.plexus.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.wlyyy.common.domain.*;
-import org.wlyyy.itrs.dict.EnumDemandStatus;
 import org.wlyyy.itrs.dict.EnumFlowStatus;
 import org.wlyyy.itrs.domain.*;
 import org.wlyyy.itrs.event.ApplyFlowEvent;
@@ -22,9 +23,7 @@ import org.wlyyy.itrs.request.DemandQuery;
 import org.wlyyy.itrs.request.WorkFlowQuery;
 import org.wlyyy.itrs.request.rest.CandidateRequest;
 import org.wlyyy.itrs.service.*;
-import org.wlyyy.itrs.vo.ApplyFlowListItemVo;
-import org.wlyyy.itrs.vo.DeploymentListItemVo;
-import org.wlyyy.itrs.vo.HistoricFlowListItemVo;
+import org.wlyyy.itrs.vo.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +55,12 @@ public class FlowController {
 
     @Autowired
     AuthenticationService authenticationService;
+
+    @Autowired
+    PositionService positionService;
+
+    @Autowired
+    DepartmentService departmentService;
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -206,13 +211,12 @@ public class FlowController {
     /**
      * 根据招聘需求编号展示其下的展示层招聘流程信息表（给hr用）
      *
-     * @param demandId 招聘需求id
-     * @param pageNo 页码
-     * @param pageSize 分页大小
      * @return ApplyFlowListItemVo列表
      */
-    @RequestMapping(value = "/listApplyFlowHr", method = RequestMethod.GET)
-    BaseRestPageableResponse<ApplyFlowListItemVo> queryApplyFlowListByDemandIdForHr(final Long demandId, final int pageNo, final int pageSize) {
+    @RequestMapping(value = "/listApplyFlowHr/{demandId}", method = RequestMethod.GET)
+    BaseRestPageableResponse<ApplyFlowListItemVo> queryApplyFlowListByDemandIdForHr(@PathVariable("demandId") final Long demandId) {
+        int pageNo = 1;
+        int pageSize = Integer.MAX_VALUE;
         // 获取当前登录用户信息
         UserAgent userAgent = authenticationService.isLogin().getData();
         Demand demand = demandService.findById(demandId);
@@ -263,7 +267,8 @@ public class FlowController {
                 },
                 (dno) -> {
                     return demandService.findByNo(dno);
-                }))
+                },
+                (pt) -> positionService.getPositionTypeCnName(pt)))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
                 applyFlowResult.getPageNo(), applyFlowResult.getPageSize(), applyFlowResult.getTotal());
@@ -289,7 +294,7 @@ public class FlowController {
                 new ApplyFlowQuery().setCurrentDealer(userAgent.getId()).setSort(sort));
         // 该用户发布的招聘需求No列表
         BaseServicePageableRequest<DemandQuery> requestDemand = new BaseServicePageableRequest<>(1, Integer.MAX_VALUE,
-                new DemandQuery().setPublisherId(userAgent.getId()).setStatus(EnumDemandStatus.NORMAL.getCode()));
+                new DemandQuery().setPublisherId(userAgent.getId()));
         List<Demand> demandList = demandService.findByCondition(requestDemand).getDatas();
         List<String> demandNoList = demandList.stream().map(item -> item.getDemandNo()).collect(Collectors.toList());
 
@@ -334,7 +339,8 @@ public class FlowController {
                 },
                 (dno) -> {
                     return demandService.findByNo(dno);
-                }))
+                },
+                (pt) -> positionService.getPositionTypeCnName(pt)))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
                 applyFlowResult.getPageNo(), applyFlowResult.getPageSize(), applyFlowResult.getTotal());
@@ -385,7 +391,8 @@ public class FlowController {
                 },
                 (dno) -> {
                     return demandService.findByNo(dno);
-                }))
+                },
+                (pt) -> positionService.getPositionTypeCnName(pt)))
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
                 applyFlowResult.getPageNo(), applyFlowResult.getPageSize(), applyFlowResult.getTotal());
@@ -406,7 +413,13 @@ public class FlowController {
         BaseServicePageableResponse<HistoricTaskInstance> historicTaskResult = workFlowService.findHistoricTaskByAssignee(request, userAgent);
         List<HistoricTaskInstance> historicTaskList = historicTaskResult.getDatas();
         List<HistoricFlowListItemVo> datas = historicTaskList.stream().map(source -> HistoricFlowListItemVo.buildFromDomain(source,
-                (taskId) -> workFlowService.findVarValueByTaskIdAndVarName(taskId, "currentResult").getData(),
+                (taskId) -> {
+                    String result = workFlowService.findVarValueByTaskIdAndVarName(taskId, "currentResult").getData();
+                    if (StringUtils.isBlank(result)) {
+                        return "无";
+                    }
+                    return result;
+                },
                 (pid) -> workFlowService.findApplyIdByProcInstanceId(pid).getData(),
                 (aid) -> applyFlowService.findById(aid).getDemandNo()))
                 .collect(Collectors.toList());
@@ -470,6 +483,102 @@ public class FlowController {
         return new BaseRestResponse<>(true, "完成任务成功!", null);
     }
 
+    /**
+     * 分页查找当前用户发布的所有招聘需求以及其下的招聘流程们（给hr用）
+     *
+     * @param pageNo 页码
+     * @param pageSize 分页大小
+     * @return 分页展示层招聘需求列表
+     */
+    @RequestMapping(value = "/listAllDemandApplyFlow", method = RequestMethod.GET)
+    public BaseRestPageableResponse<DemandApplyFlowListItemVo> queryMyDemandListAllApplyFlow(int pageNo, int pageSize) {
+        // 获取当前登录用户信息
+        UserAgent userAgent = authenticationService.isLogin().getData();
+
+        Sort sort = new Sort( new Order(Sort.Direction.DESC, "status"), new Order(Sort.Direction.DESC, "gmt_modify"));
+        BaseServicePageableRequest<DemandQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
+                new DemandQuery().setPublisherId(userAgent.getId()).setSort(sort));
+        BaseServicePageableResponse<Demand> demandResult =  demandService.findByCondition(request);
+
+        if (!demandResult.isSuccess()) {
+            return new BaseRestPageableResponse<>(false, "查询招聘需求列表失败!", null,
+                    demandResult.getPageNo(), demandResult.getPageSize(), demandResult.getTotal());
+        }
+
+        List<Demand> demandList = demandResult.getDatas();
+        List<DemandApplyFlowListItemVo> datas = demandList.stream().map(source -> DemandApplyFlowListItemVo.buildFromDomain(source,
+                (pid) -> userService.findById(pid).getRealName(),
+                (did) -> departmentService.findById(did).getDepartmentName(),
+                (ptid) -> positionService.findById(ptid).getChineseName(),
+                (id) -> this.findApplyFlowListByDemandId(id).getDatas()
+        )).collect(Collectors.toList());
+
+        return new BaseRestPageableResponse<>(true, "查询招聘需求列表成功!", datas,
+                demandResult.getPageNo(), demandResult.getPageSize(), demandResult.getTotal());
+    }
+
+    /**
+     * 根据招聘需求编号展示其下的展示层招聘流程信息表（这个相应速度太慢了啊！）
+     *
+     * @param demandId 招聘需求id
+     * @return
+     */
+    public BaseRestPageableResponse<ApplyFlowSimpleListItemVo> findApplyFlowListByDemandId(Long demandId){
+        int pageNo = 1;
+        int pageSize = Integer.MAX_VALUE;
+        // 获取当前登录用户信息
+        UserAgent userAgent = authenticationService.isLogin().getData();
+        Demand demand = demandService.findById(demandId);
+        String demandNo = demand.getDemandNo();
+
+        // 1. 根据招聘需求id找到其下的招聘流程列表
+        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
+        BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
+                new ApplyFlowQuery().setDemandNo(demandNo).setSort(sort));
+        BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
+        List<ApplyFlow> applyFlowList = applyFlowResult.getDatas();
+
+        // 2. 转化成的展示层招聘流程信息表
+        // 在根据招聘流程id得到任务id和操作的过程中，若当前处理人不是该登录用户，则置任务id为-1，操作为空
+        List<ApplyFlowSimpleListItemVo> datas = applyFlowList.stream().map(source -> ApplyFlowSimpleListItemVo.buildFromDomain(source,
+                (cid) -> candidateService.findById(cid),
+                (uid) -> {
+                    if (uid == 0l) {
+                        return "无";
+                    }
+                    return userService.findById(uid).getRealName();
+                },
+                (aid) -> {
+                    if (!source.getCurrentDealer().equals(userAgent.getId())) {
+                        return NO_TASK;
+                    } else {
+                        Task currentTask = workFlowService.findCurrentTaskByApplyId(aid).getData();
+                        if (currentTask == null) {
+                            return NO_TASK;
+                        } else {
+                            return currentTask.getId();
+                        }
+                    }
+                },
+                (aid) -> {
+                    Task currentTask = workFlowService.findCurrentTaskByApplyId(aid).getData();
+                    if (currentTask == null) {
+                        return "无当前任务";
+                    } else {
+                        return currentTask.getName();
+                    }
+                },
+                (aid) -> {
+                    if (!source.getCurrentDealer().equals(userAgent.getId())) {
+                        return new ArrayList<String>();
+                    }
+                    return workFlowService.findCurrentOutcomeListByApplyId(aid).getData();
+                }))
+                .collect(Collectors.toList());
+        return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
+                applyFlowResult.getPageNo(), applyFlowResult.getPageSize(), applyFlowResult.getTotal());
+    }
+
 
     @RequestMapping(value = "/send", method = RequestMethod.GET)
     public BaseRestResponse<String> sendScore() {
@@ -478,7 +587,6 @@ public class FlowController {
         this.publisher.publishEvent(new ApplyFlowEvent(applyFlow));
         return new BaseRestResponse<>(true, "发送招聘流程成功!", null);
     }
-
 
     @RequestMapping(value = "/createUser")
     String createUser(String username, String password) {

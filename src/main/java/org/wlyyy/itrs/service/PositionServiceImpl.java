@@ -75,4 +75,10 @@ public class PositionServiceImpl implements PositionService {
     public PositionType findById(Long id) {
         return getLongPositionTypeMap().get(id);
     }
+
+    @Override
+    public String getPositionTypeCnName(Long positionType) {
+        String positionTypeCnName = dao.findPositionTypeCnName(positionType);
+        return positionTypeCnName;
+    }
 }

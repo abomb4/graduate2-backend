@@ -20,4 +20,12 @@ public interface PositionService {
      * @return 职位类别，没有的话返回null
      */
     PositionType findById(Long id);
+
+    /**
+     * 根据职位类别获取职位类别名
+     *
+     * @param positionType 职位类别
+     * @return 职位类别名
+     */
+    String getPositionTypeCnName(Long positionType);
 }

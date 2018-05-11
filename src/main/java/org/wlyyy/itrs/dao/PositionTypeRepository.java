@@ -33,6 +33,9 @@ public interface PositionTypeRepository {
     @Select("select id, parent_id, chinese_name, english_name from position_type")
     List<PositionType> findAll();
 
+    @Select("select chinese_name from position_type where id = #{positionType}")
+    String findPositionTypeCnName(@Param("positionType") Long positionType);
+
     /**
      * 删除职位
      *

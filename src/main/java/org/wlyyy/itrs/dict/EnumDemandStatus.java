@@ -8,7 +8,7 @@ package org.wlyyy.itrs.dict;
 public enum EnumDemandStatus implements IDictionary<Integer> {
 
     NORMAL(1, "normal", "正常"),
-    DELETED(0, "deleted", "已下架"),
+    DELETED(0, "deleted", "已停招"),
     ;
 
     private final Integer code;
