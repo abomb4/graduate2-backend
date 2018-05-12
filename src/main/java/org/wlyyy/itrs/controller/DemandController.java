@@ -12,8 +12,10 @@ import org.wlyyy.common.service.CachedSequenceManagementService;
 import org.wlyyy.itrs.dict.EnumDemandStatus;
 import org.wlyyy.itrs.domain.Demand;
 import org.wlyyy.itrs.domain.PositionType;
+import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.request.DemandQuery;
+import org.wlyyy.itrs.request.UserQuery;
 import org.wlyyy.itrs.request.rest.DemandQueryRequest;
 import org.wlyyy.itrs.service.*;
 import org.wlyyy.itrs.vo.DemandListItemVo;
@@ -123,6 +125,40 @@ public class DemandController {
     }
 
     /**
+     * 分页查找当前用户同部门的所有招聘需求（给部门领导用）
+     *
+     * @param pageNo 页码
+     * @param pageSize 分页大小
+     * @return 分页展示层招聘需求列表
+     */
+    @RequestMapping(value = "/myProfile/mydemandFollowing/list", method = RequestMethod.GET)
+    public BaseRestPageableResponse<DemandListItemVo> queryMyDemandFollowingList(int pageNo, int pageSize) {
+        // 获取当前登录用户信息
+        UserAgent userAgent = authenticationService.isLogin().getData();
+
+        // 获取同部门的用户id
+        Long departmentId = userService.findById(userAgent.getId()).getDepartmentId();
+        BaseServicePageableRequest<UserQuery> requestUser = new BaseServicePageableRequest<>(1, Integer.MAX_VALUE,
+                new UserQuery().setDepartmentId(departmentId));
+        List<User> followingUserList = userService.findByCondition(requestUser).getDatas();
+        List<Long> followingUserId = followingUserList.stream().map(user -> user.getId()).collect(Collectors.toList());
+
+        Sort sort = new Sort( new Order(Sort.Direction.DESC, "status"), new Order(Sort.Direction.DESC, "gmt_modify"));
+        BaseServicePageableRequest<DemandQuery> requestDemand = new BaseServicePageableRequest<>(pageNo, pageSize,
+                new DemandQuery().setSort(sort));
+        BaseServicePageableResponse<Demand> demandResult =  demandService.findByFollowing(requestDemand, followingUserId);
+        List<Demand> demandList = demandResult.getDatas();
+        List<DemandListItemVo> datas = demandList.stream().map(source -> DemandListItemVo.buildFromDomain(source,
+                (pid) -> userService.findById(pid).getRealName(),
+                (did) -> departmentService.findById(did).getDepartmentName(),
+                (ptid) -> positionService.findById(ptid).getChineseName()
+        )).collect(Collectors.toList());
+
+        return new BaseRestPageableResponse<>(true, "查询招聘需求列表成功!", datas,
+                demandResult.getPageNo(), demandResult.getPageSize(), demandResult.getTotal());
+    }
+
+    /**
      * 查询最新职位需求
      *
      * @return 最新展示层招聘需求列表
@@ -186,6 +222,13 @@ public class DemandController {
      */
     @RequestMapping(value = "myProfile/demand", method = RequestMethod.PUT)
     public BaseRestResponse<DemandListItemVo> updateDemand(Demand demand) {
+        // 获取当前登录用户信息
+        UserAgent userAgent = authenticationService.isLogin().getData();
+        // 非发布的hr不能修改该需求
+        if (!userAgent.getId().equals(demand.getPublisherId())) {
+            return new BaseRestResponse<>(false, "修改招聘需求失败!非发布的hr不能修改该需求!", null);
+        }
+
         BaseServiceResponse<Integer> updateDemandResult = demandService.updateDemand(demand);
         if (!updateDemandResult.isSuccess()) {
             return new BaseRestResponse<>(false, "Update fail", null);

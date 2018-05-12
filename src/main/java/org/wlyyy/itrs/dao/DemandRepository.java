@@ -59,6 +59,13 @@ public interface DemandRepository {
     @SelectKey(statement = "select last_insert_id()", keyProperty = "id", before = false, resultType = Long.class)
     void insert(Demand demand);
 
+    // 分页查找publisher_id在某集合中的招聘需求列表
+    @SelectProvider(type = DemandQueryFollowingProvider.class, method = "selectFollowing")
+    List<Demand> findByFollowing(@Param("userIds") List<Long> userIds, Pageable page);
+
+    @SelectProvider(type = DemandQueryFollowingProvider.class, method = "countFollowing")
+    long countByFollowing(@Param("userIds") List<Long> userIds);
+
     @UpdateProvider(type = DemandUpdateByIdProvider.class, method = "updateMethod")
     int updateById(Demand demand);
 
@@ -272,4 +279,79 @@ public interface DemandRepository {
             return St.r("limit {}, {}", page.getOffset(), page.getPageSize());
         }
     }
+    /**
+     * 动态集合查询
+     */
+    class DemandQueryFollowingProvider {
+        public static String selectFollowing(@Param("userIds") List<Long> publisherIds, Pageable page) {
+            return new DemandQueryFollowingProvider().getFollowingSelect(publisherIds, page);
+        }
+        public static String countFollowing(@Param("userIds") List<Long> publisherIds) {
+            return new DemandQueryFollowingProvider().getFollowingCount(publisherIds);
+        }
+
+        private String getFollowingSelect(List<Long> publisherIds, Pageable page) {
+            if (publisherIds == null || publisherIds.isEmpty()) {
+                return "select * from demand where 1 = 2";
+            }
+            else {
+                final StringBuilder builder = new StringBuilder();
+                builder.append("select * from demand where publisher_id in ");
+                tryAppend(publisherIds, builder);
+                builder.append(getOrder(page));
+                builder.append(" ").append(getPage(page));
+                return builder.toString();
+            }
+        }
+
+        private String getFollowingCount(List<Long> publisherIds) {
+            if (publisherIds == null || publisherIds.isEmpty()) {
+                return "select count(*) from demand where 1 = 2";
+            }
+            else {
+                final StringBuilder builder = new StringBuilder();
+                builder.append("select count(*) from demand where publisher_id in ");
+                tryAppend(publisherIds, builder);
+                return builder.toString();
+            }
+        }
+
+        private void tryAppend(List<Long> publisherIds, StringBuilder builder) {
+            builder.append("(");
+            int count = 0;
+            for (Long publisherId : publisherIds) {
+                if (count == 0) {
+                    builder.append(publisherId);
+                } else {
+                    builder.append(", ").append(publisherId);
+                }
+                count++;
+            }
+            builder.append(")");
+        }
+
+        private String getPage(Pageable page) {
+            return St.r("limit {}, {}", page.getOffset(), page.getPageSize());
+        }
+
+        private String getOrder(Pageable page) {
+            final StringBuilder sortBuilder =  new StringBuilder();
+            if (page.getSort() != null) {
+                Sort sort = page.getSort();
+                int count = 0;
+                for (Order order: sort) {
+                    if (count == 0) {
+                        // 第一个order
+                        sortBuilder.append(" order by ");
+                        sortBuilder.append(order.getProperty()).append(" ").append(order.getDirection());
+                    } else {
+                        sortBuilder.append(", ").append(order.getProperty()).append(" ").append(order.getDirection());
+                    }
+                    count++;
+                }
+            }
+            return sortBuilder.toString();
+        }
+    }
+
 }

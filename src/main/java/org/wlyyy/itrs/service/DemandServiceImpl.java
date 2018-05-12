@@ -49,6 +49,28 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
+    public BaseServicePageableResponse<Demand> findByFollowing(BaseServicePageableRequest<DemandQuery> request, List<Long> publisherIds) {
+        Pageable pageable = null;
+        if (request.getData().getSort() != null) {
+            pageable = PageableUtils.getPageable(request, request.getData().getSort());
+        } else {
+            pageable = PageableUtils.getPageable(request);
+        }
+        final List<Demand> queryResult = dao.findByFollowing(publisherIds, pageable);
+
+        final long count;
+        if (request.getPageNo() == 1 && (queryResult.size() < request.getPageSize())) {
+            count = queryResult.size();
+        } else {
+            count = dao.countByFollowing(publisherIds);
+        }
+        return new BaseServicePageableResponse<>(
+                true, "Query demand success", queryResult,
+                request.getPageNo(), request.getPageSize(), count
+        );
+    }
+
+    @Override
     public Demand findById(Long id) {
         return dao.findById(id);
     }
