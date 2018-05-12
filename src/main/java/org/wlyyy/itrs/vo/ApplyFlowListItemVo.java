@@ -56,7 +56,7 @@ public class ApplyFlowListItemVo {
         final String candidateName = candidate.getName();
         final Integer candidateSex = candidate.getSex();
         final String hopeWorkingPlace = candidate.getWorkingPlace();
-        final Long recommendId = source.getId();
+        final Long recommendId = source.getUserId();
         final String recommendName = getUserNameById.apply(source.getUserId());
         final String currentFlowNode = source.getCurrentFlowNode();
         final String currentDealer = getUserNameById.apply(source.getCurrentDealer());

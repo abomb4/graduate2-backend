@@ -362,9 +362,9 @@ POST /myProfile/flow/deal?
 [options="header"]
 |======
 | 字段 | 说明 | 类型 | 备注 | 是否必填
-| outcome | 连线名称（通过or不通过等） | String | 连线名称（通过or不通过等） | Y
+| outcome | 连线名称（通过or不通过等） | String | 连线名称（通过or不通过等） | N 给出通过or不通过结果时需要
 | nextUserId | 下一任务的完成人 | String | 除最后一个节点外，必须，且只能有一个 | N
-| result | 当前流程结果 | String | 中文结果 | Y
+| result | 当前流程结果 | String | 中文结果 | N 给出通过or不通过结果时需要
 | taskId | 任务id | String | 必须 | Y
 | id | 招聘流程id | Number | 对应applyFlowId | Y
 |======
