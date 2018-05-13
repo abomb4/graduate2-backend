@@ -214,6 +214,7 @@ public class FlowController {
     /**
      * 根据招聘需求编号展示其下的展示层招聘流程信息表（给hr用）
      *
+     * @param demandId 招聘需求id
      * @return ApplyFlowListItemVo列表
      */
     @RequestMapping(value = "/listApplyFlowHr/{demandId}", method = RequestMethod.GET)
@@ -283,7 +284,7 @@ public class FlowController {
      * @return ApplyFlowListItemVo列表
      */
     @RequestMapping(value = "/listApplyFlowInterviewee", method = RequestMethod.GET)
-    BaseRestPageableResponse<ApplyFlowListItemVo> queryApplyFlowListByDemandIdForInterviewee(final int pageNo, final int pageSize) {
+    BaseRestPageableResponse<ApplyFlowListItemVo> queryApplyFlowListForInterviewee(final int pageNo, final int pageSize) {
         // 获取当前登录用户信息
         UserAgent userAgent = authenticationService.isLogin().getData();
 
@@ -353,7 +354,7 @@ public class FlowController {
      * @return ApplyFlowListItemVo列表
      */
     @RequestMapping(value = "/listApplyFlowRecommender", method = RequestMethod.GET)
-    BaseRestPageableResponse<ApplyFlowListItemVo> queryApplyFlowListByDemandIdForRecommender(final int pageNo, final int pageSize) {
+    BaseRestPageableResponse<ApplyFlowListItemVo> queryApplyFlowListForRecommender(final int pageNo, final int pageSize) {
         // 获取当前登录用户信息
         UserAgent userAgent = authenticationService.isLogin().getData();
 
@@ -390,6 +391,54 @@ public class FlowController {
         return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
                 applyFlowResult.getPageNo(), applyFlowResult.getPageSize(), applyFlowResult.getTotal());
     }
+
+    /**
+     * 根据招聘需求编号展示其下的展示层招聘流程信息表（给部门经理用）
+     *
+     * @param demandId 招聘需求id
+     * @return ApplyFlowListItemVo列表
+     */
+    @RequestMapping(value = "/listApplyFlowManager/{demandId}", method = RequestMethod.GET)
+    BaseRestPageableResponse<ApplyFlowListItemVo> queryApplyFlowListByDemandIdForManager(@PathVariable("demandId") final Long demandId) {
+        int pageNo = 1;
+        int pageSize = Integer.MAX_VALUE;
+        Demand demand = demandService.findById(demandId);
+        String demandNo = demand.getDemandNo();
+
+        // 1. 根据招聘需求id找到其下的招聘流程列表
+        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
+        BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
+                new ApplyFlowQuery().setDemandNo(demandNo).setSort(sort));
+        BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
+        List<ApplyFlow> applyFlowList = applyFlowResult.getDatas();
+
+        // 2. 转化成的展示层招聘流程信息表
+        // 在根据招聘流程id得到任务id和操作的过程中，若当前处理人不是该登录用户，则置任务id为-1，操作为空
+        List<ApplyFlowListItemVo> datas = applyFlowList.stream().map(source -> ApplyFlowListItemVo.buildFromDomain(source,
+                (cid) -> candidateService.findById(cid),
+                (uid) -> {
+                    if (uid == 0L) {
+                        return "无";
+                    }
+                    return userService.findById(uid).getRealName();
+                },
+                (aid) -> NO_TASK,
+                (aid) -> {
+                    Task currentTask = workFlowService.findCurrentTaskByApplyId(aid).getData();
+                    if (currentTask == null) {
+                        return "无当前任务";
+                    } else {
+                        return currentTask.getName();
+                    }
+                },
+                (aid) -> new ArrayList<String>(),
+                (dno) -> demandService.findByNo(dno),
+                (pt) -> positionService.getPositionTypeCnName(pt)))
+                .collect(Collectors.toList());
+        return new BaseRestPageableResponse<>(true, "查询展示层招聘流程信息表成功!", datas,
+                applyFlowResult.getPageNo(), applyFlowResult.getPageSize(), applyFlowResult.getTotal());
+    }
+
 
     /**
      * 查询当前用户的历史处理记录

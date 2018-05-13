@@ -6,6 +6,8 @@ import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.domain.Demand;
 import org.wlyyy.itrs.request.DemandQuery;
 
+import java.util.List;
+
 /**
  * 招聘需求服务，提供基本查询增加删除功能以及状态修改接口。
  */
@@ -18,6 +20,15 @@ public interface DemandService {
      * @return 查询结果
      */
     BaseServicePageableResponse<Demand> findByCondition(BaseServicePageableRequest<DemandQuery> request);
+
+    /**
+     * 分页查找publisher_id在某集合中的招聘需求列表
+     *
+     * @param request 分页查询条件
+     * @param publisherIds 招聘需求发布者id集合
+     * @return 查询结果
+     */
+    BaseServicePageableResponse<Demand> findByFollowing(BaseServicePageableRequest<DemandQuery> request, List<Long> publisherIds);
 
     /**
      * 根据招聘需求id查询
