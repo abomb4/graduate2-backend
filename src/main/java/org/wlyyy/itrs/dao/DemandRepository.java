@@ -216,6 +216,7 @@ public interface DemandRepository {
 
         private void packageWhere(DemandQuery demand) {
             String hrName = "concat('%', #{demand.hrName}, '%')";
+            String jobName = "concat('%', #{demand.jobName}, '%')";
             String workingPlace = "concat('%', #{demand.workingPlace}, '%')";
 
             tryAppendWhere(demand.getId(), "id = #{demand.id}");
@@ -240,7 +241,7 @@ public interface DemandRepository {
                 }
             });
 
-            tryAppendWhere(demand.getJobName(), "job_name = #{demand.jobName}");
+            tryAppendWhere(demand.getJobName(), "job_name like " + jobName);
             tryAppendWhere(demand.getDepartmentId(), "department_id = #{demand.departmentId}");
             tryAppendWhere(demand.getHrName(), "hr_name like " + hrName);
             tryAppendWhere(demand.getTotalStart(), "total >= #{demand.totalStart}");
@@ -253,7 +254,7 @@ public interface DemandRepository {
             tryAppendWhere(demand.getGmtCreateStart(), "gmt_create >= #{demand.gmtCreateStart}");
             tryAppendWhere(demand.getGmtCreateEnd(), "gmt_create <= #{demand.gmtCreateEnd}");
             tryAppendWhere(demand.getGmtModifyStart(), "gmt_modify >= #{demand.gmtModifyStart}");
-            tryAppendWhere(demand.getGmtModifyEnd(), "gmt_modify <= #{demand.gmtModifyEnd}");
+             tryAppendWhere(demand.getGmtModifyEnd(), "gmt_modify <= #{demand.gmtModifyEnd}");
         }
 
         private String getOrder(Pageable page) {
