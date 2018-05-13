@@ -54,7 +54,7 @@ public interface UserService {
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      * @param userName 用户名
-     * @return
+     * @return Modified
      */
     BaseServiceResponse<User> modifyPassword(String oldPassword, String newPassword, String userName);
 }

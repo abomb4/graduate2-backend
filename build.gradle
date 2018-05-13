@@ -73,6 +73,7 @@ dependencies {
     compile "org.springframework.session:spring-session-data-redis:${spring_session_version}"
     // DB
     compile "mysql:mysql-connector-java:${mysql_connector_version}"
+    compile 'com.zaxxer:HikariCP:3.1.0'
 
     // Caching
     // compile "io.lettuce:lettuce-core:${lettuce_5_version}"

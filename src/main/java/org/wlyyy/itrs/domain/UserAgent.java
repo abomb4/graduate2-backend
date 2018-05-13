@@ -14,6 +14,7 @@ import java.util.Set;
  * 用户登录信息
  */
 public class UserAgent implements UserDetails, Serializable {
+    private boolean success;
     private String sessionKey;
     private Long id;
     private String userName;
@@ -36,6 +37,15 @@ public class UserAgent implements UserDetails, Serializable {
      */
     public boolean haveRole(Role role) {
         return roles.contains(role);
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public UserAgent setSuccess(boolean success) {
+        this.success = success;
+        return this;
     }
 
     public String getSessionKey() {

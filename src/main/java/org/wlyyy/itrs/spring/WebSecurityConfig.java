@@ -39,6 +39,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableRedisHttpSession
@@ -66,6 +69,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/auth/login")
                     .successHandler((request, response, authentication) -> {
                         final UserAgent userAgent = (UserAgent) authentication.getPrincipal();
+                        final Map<String, Object> returnMap = new HashMap<>();
+
                         response.setCharacterEncoding("UTF-8");
                         response.getWriter().print(new Gson().toJson(userAgent));
                         response.setStatus(200);
@@ -105,7 +110,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             LOG.info("Read web.crossorigin.domains [{}]", domains);
             final String[] split = domains.split(",");
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(Arrays.asList(split));
+            configuration.setAllowedOrigins(Arrays.stream(split).map(String::trim).collect(Collectors.toList()));
             configuration.setAllowCredentials(true);
             configuration.setAllowedMethods(Arrays.asList("GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"));
             configuration.setAllowedHeaders(Arrays.asList("x-requested-with", "content-type"));

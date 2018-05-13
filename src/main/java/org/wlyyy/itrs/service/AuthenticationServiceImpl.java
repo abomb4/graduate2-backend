@@ -61,6 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
             // final String sessionKey = SecurityUtils.generateSessionKey(user, clientIp, LocalDateTime.now());
             final Set<Role> roles = roleService.findRoleIdsByUserId(user.getId()).getData();
             final UserAgent userAgent = new UserAgent()
+                    .setSuccess(true)
                     .setId(user.getId())
                     .setEmail(user.getEmail())
                     .setRoles(roles)

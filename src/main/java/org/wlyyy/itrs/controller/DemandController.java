@@ -169,6 +169,7 @@ public class DemandController {
         demand.setHrName(userAgent.getRealName());
         demand.setDepartmentId(userAgent.getDepartmentId());
         demand.setStatus(EnumDemandStatus.NORMAL.getCode());
+        demand.setProcKey("twoInterviews");
 
         BaseServiceResponse<Long> insertDemandResult = demandService.insertDemand(demand);
         if (!insertDemandResult.isSuccess()) {
@@ -197,11 +198,15 @@ public class DemandController {
     @RequestMapping(value = "/demand/get/{id}", method = RequestMethod.GET)
     public BaseRestResponse<DemandListItemVo> findDemandById(@PathVariable("id") Long id) {
         Demand demand = demandService.findById(id);
-        DemandListItemVo demandListItemVo = DemandListItemVo.buildFromDomain(demand,
-                (pid) -> userService.findById(pid).getUserName(),
-                (did) -> departmentService.findById(did).getDepartmentName(),
-                (ptid) -> positionService.findById(ptid).getChineseName());
-        return new BaseRestResponse<>(true, "根据招聘需求id查找招聘需求成功!", demandListItemVo);
+        if (demand == null) {
+            return new BaseRestResponse<>(false, "未找到该需求", null);
+        } else {
+            DemandListItemVo demandListItemVo = DemandListItemVo.buildFromDomain(demand,
+                    (pid) -> userService.findById(pid).getUserName(),
+                    (did) -> departmentService.findById(did).getDepartmentName(),
+                    (ptid) -> positionService.findById(ptid).getChineseName());
+            return new BaseRestResponse<>(true, "根据招聘需求id查找招聘需求成功!", demandListItemVo);
+        }
     }
 
     /**

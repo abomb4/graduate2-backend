@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.wlyyy.common.domain.BaseRestPageableResponse;
-import org.wlyyy.common.domain.BaseRestResponse;
-import org.wlyyy.common.domain.BaseServicePageableRequest;
-import org.wlyyy.common.domain.BaseServicePageableResponse;
+import org.wlyyy.common.domain.*;
 import org.wlyyy.itrs.domain.User;
 import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.request.UserQuery;
@@ -73,5 +70,21 @@ public class UserController {
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "按条件分页查询用户成功!", datas,
                 userQueryResult.getPageNo(), userQueryResult.getPageSize(), userQueryResult.getTotal());
+    }
+
+    /**
+     * 创建用户
+     *
+     * @param user 用户信息，需要包含userName, email, password, salt, sex, departmentId, realName
+     * @return ID
+     */
+    @RequestMapping(value = "/myProfile/user/new", method = RequestMethod.PUT)
+    public BaseRestResponse<Long> createUser(final User user) {
+        final BaseServiceResponse<User> user1 = userService.createUser(user);
+        if (user1.isSuccess()) {
+            return new BaseRestResponse<Long>(user1.isSuccess(), user1.getMessage(), user1.getData().getId());
+        } else {
+            return new BaseRestResponse<Long>(user1.isSuccess(), user1.getMessage(), null);
+        }
     }
 }
