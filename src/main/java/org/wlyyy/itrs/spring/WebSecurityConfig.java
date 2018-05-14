@@ -61,7 +61,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/myProfile/user/**").hasRole("ADMIN")
+                .antMatchers("/myProfile/mydemandFollowing/**").hasAnyRole("MANAGER")
                 .antMatchers("/myProfile/mydemand/**").hasAnyRole("HR", "MANAGER")
+                .antMatchers("/myProfile/flow/listHistoricFlow").permitAll()
                 .antMatchers("/myProfile/flow/**").hasAnyRole("HR", "MANAGER", "INTERVIEWEE")
                 .antMatchers("/myProfile/**").permitAll()
                 .and()
