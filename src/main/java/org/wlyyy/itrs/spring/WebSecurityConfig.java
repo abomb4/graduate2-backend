@@ -59,16 +59,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests().antMatchers("/myProfile/**").authenticated()
+                .authorizeRequests()
+                .antMatchers("/myProfile/user/**").hasRole("ADMIN")
+                .antMatchers("/myProfile/mydemand/**").hasAnyRole("HR", "MANAGER")
+                .antMatchers("/myProfile/flow/**").hasAnyRole("HR", "MANAGER", "INTERVIEWEE")
+                .antMatchers("/myProfile/**").permitAll()
                 .and()
-                .authorizeRequests().anyRequest().permitAll()
+                .authorizeRequests()
+                .anyRequest().permitAll()
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
                     .formLogin()
                     .loginPage("/auth/login")
                     .successHandler((request, response, authentication) -> {
-                        final UserAgent userAgent = (UserAgent) authentication.getPrincipal();
+                        // @{link AuthenticationServiceImpl}
+                        final UserAgent userAgent = (UserAgent) authentication.getDetails();
                         final Map<String, Object> returnMap = new HashMap<>();
 
                         response.setCharacterEncoding("UTF-8");
@@ -82,12 +88,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         response.setStatus(HttpStatus.UNAUTHORIZED.value());
                         LOG.info("Login failed with exception {}", exception.getMessage());
                     })
-                .and()
-                    .rememberMe()
-                    .rememberMeCookieName("remember-me")
-                    .userDetailsService(beanFactory.getBean(UserDetailsService.class))
-                    .tokenValiditySeconds(24 * 60 * 60) // expired time = 1 day
-                    // .tokenRepository(persistentTokenRepository())
+//                .and()
+//                    .rememberMe()
+//                    .rememberMeCookieName("remember-me")
+//                    .userDetailsService(beanFactory.getBean(UserDetailsService.class))
+//                    .tokenValiditySeconds(24 * 60 * 60) // expired time = 1 day
+//                    // .tokenRepository(persistentTokenRepository())
                 .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout")).logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                 .and().csrf().disable()
 

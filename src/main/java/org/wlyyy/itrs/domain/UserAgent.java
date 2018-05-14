@@ -24,6 +24,7 @@ public class UserAgent implements UserDetails, Serializable {
     private Long departmentId;
     private String departmentName;
     private String realName;
+    private String remoteIp;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -46,6 +47,14 @@ public class UserAgent implements UserDetails, Serializable {
     public UserAgent setSuccess(boolean success) {
         this.success = success;
         return this;
+    }
+
+    public String getRemoteIp() {
+        return remoteIp;
+    }
+
+    public void setRemoteIp(String remoteIp) {
+        this.remoteIp = remoteIp;
     }
 
     public String getSessionKey() {

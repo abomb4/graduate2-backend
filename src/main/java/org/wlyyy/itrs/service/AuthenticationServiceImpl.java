@@ -3,6 +3,7 @@ package org.wlyyy.itrs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -87,11 +88,11 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
 
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        final Object principal = auth.getPrincipal();
-        if (principal instanceof UserDetails) {
-            final UserDetails userDetail = (UserDetails) principal;
+        final Object detail = auth.getDetails();
+        if (detail instanceof UserDetails) {
+            final UserDetails userDetail = (UserDetails) detail;
 
-            if (auth.isAuthenticated() && !"anonymousUser".equals(userDetail.getUsername())) {
+            if (auth.isAuthenticated() && !"anonymousUser".equals(userDetail.getUsername()) && userDetail instanceof UserAgent) {
                 return new BaseServiceResponse<UserAgent>(true, "You are logged in.", (UserAgent) userDetail, null);
             } else {
                 return new BaseServiceResponse<UserAgent>(false, "You are NOT logged in.", null, null);
@@ -125,12 +126,14 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
         if (login.isSuccess()) {
             final UserAgent userAgent = login.getData();
             userAgent.setSessionKey(sessionKey);
+            userAgent.setRemoteIp(ip);
 
-            final RememberMeAuthenticationToken authenticationToken = new RememberMeAuthenticationToken(
+            final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     userAgent.getSessionKey(),
                     userAgent,
                     userAgent.getRoles()
             );
+            authenticationToken.setDetails(userAgent);
             return authenticationToken;
         } else {
             // throw new RememberMeAuthenticationException("Cannot authenticate " + authentication.getPrincipal());
