@@ -11,6 +11,7 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
@@ -93,6 +94,9 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
                 .orderByDeploymenTime().desc()
                 .listPage(firstResult, maxResults);
 
+        List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery()
+                .listPage(firstResult, maxResults);
+
         final long count;
         if (request.getPageNo() == 1 && deploymentList.size() < request.getPageSize()) {
             count = deploymentList.size();
@@ -106,6 +110,14 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
                 true, "DeploymentList query success!", deploymentList,
                 request.getPageNo(), request.getPageSize(),  count
                 );
+    }
+
+    @Override
+    public BaseServiceResponse<ProcessDefinition> findKeyByDeploymentId(String deploymentId) {
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                .deploymentId(deploymentId)
+                .singleResult();
+        return new BaseServiceResponse<>(true, "Find key by deploymentId success!", processDefinition, null);
     }
 
     @Override

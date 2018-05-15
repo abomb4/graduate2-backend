@@ -2,7 +2,6 @@ package org.wlyyy.itrs.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -60,7 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
             final User user = validateResponse.getData();
 
             // final String sessionKey = SecurityUtils.generateSessionKey(user, clientIp, LocalDateTime.now());
-            final Set<Role> roles = roleService.findRoleIdsByUserId(user.getId()).getData();
+            final Set<Role> roles = roleService.findRolesByUserId(user.getId()).getData();
             final UserAgent userAgent = new UserAgent()
                     .setSuccess(true)
                     .setId(user.getId())
@@ -153,7 +152,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Authent
         if (user == null) {
             return null;
         } else {
-            final BaseServiceResponse<Set<Role>> roleIdsByUserId = roleService.findRoleIdsByUserId(user.getId());
+            final BaseServiceResponse<Set<Role>> roleIdsByUserId = roleService.findRolesByUserId(user.getId());
             final Optional<Set<Role>> roles = Optional.ofNullable(roleIdsByUserId.getData());
             return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(), roles.orElse(new HashSet<>(0)));
         }

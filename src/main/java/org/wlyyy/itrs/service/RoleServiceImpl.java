@@ -75,7 +75,7 @@ public class RoleServiceImpl implements  RoleService{
     }
 
     @Override
-    public BaseServiceResponse<Set<Role>> findRoleIdsByUserId(Long userId) {
+    public BaseServiceResponse<Set<Role>> findRolesByUserId(Long userId) {
         final List<UserRole> queryResult = userRoleDao.findByCondition(new UserRoleQuery().setUserId(userId),
                 new PageRequest(0, Integer.MAX_VALUE));
         final Set<Long> querySet = queryResult.stream().map(userRole -> userRole.getRoleId()).collect(Collectors.toSet());

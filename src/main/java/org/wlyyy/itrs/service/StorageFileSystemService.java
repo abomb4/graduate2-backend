@@ -32,6 +32,7 @@ public class StorageFileSystemService implements StorageService {
     @Override
     public String store(MultipartFile file) {
         final String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+        // final String generatedFileName = baseName + "?" + generateFileName() + '.' + ext;
         final String generatedFileName = generateFileName() + '.' + ext;
         try {
             if (file.isEmpty()) {

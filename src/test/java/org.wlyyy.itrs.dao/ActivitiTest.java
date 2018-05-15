@@ -3,6 +3,7 @@ package org.wlyyy.itrs.dao;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.wlyyy.itrs.service.WorkFlowService;
 import org.wlyyy.itrs.spring.ItrsBoot;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.zip.ZipInputStream;
 
 
@@ -59,5 +61,13 @@ public class ActivitiTest {
         } else {
             System.out.println("部署失败");
         }
+    }
+
+    @Test
+    public void listProcessDefinition() {
+        List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery()
+                .list();
+
+        System.out.println(processDefinitionList.get(0).getName() + " " + processDefinitionList.get(0).getKey());
     }
 }

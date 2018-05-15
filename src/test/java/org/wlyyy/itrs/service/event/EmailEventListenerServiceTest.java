@@ -15,8 +15,11 @@ import org.wlyyy.itrs.spring.ItrsBoot;
 // @Transactional
 public class EmailEventListenerServiceTest {
 
+//    @Autowired
+//    EmailEventListenerService es;
+
     @Autowired
-    EmailEventListenerService es;
+    RoleEventListenerService roleEventListenerService;
 
     @Autowired
     ApplyFlowService applyFlowService;
@@ -28,7 +31,14 @@ public class EmailEventListenerServiceTest {
 //        applyFlow.setUserId(4l);
 //        applyFlow.setCurrentResult("二面通过");
 //        applyFlow.setCandidateId(9l);
-        ApplyFlowEvent event  = new ApplyFlowEvent(applyFlow);
-        es.handleMailEvent(event);
+//        ApplyFlow applyFlow = new ApplyFlow();
+
+        applyFlow.setCurrentResult("");
+        applyFlow.setCurrentDealer(7l);
+        String otherMessage = "指派";
+
+        ApplyFlowEvent event  = new ApplyFlowEvent(applyFlow, otherMessage);
+        roleEventListenerService.assignIntervieweeRole(event);
+        // es.handleMailEvent(event);
     }
 }

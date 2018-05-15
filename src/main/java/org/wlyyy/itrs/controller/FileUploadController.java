@@ -15,6 +15,8 @@ import org.wlyyy.itrs.exception.StorageFileNotFoundException;
 import org.wlyyy.itrs.service.StorageService;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,13 +41,15 @@ public class FileUploadController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/files/{filename:.+}")
+    @GetMapping("/files/{filename:.+}/{aliasFileName}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+    public ResponseEntity<Resource> serveFile(@PathVariable("filename") String filename, @PathVariable("aliasFileName") String aliasFileName) throws UnsupportedEncodingException {
 
+        final String extension = FilenameUtils.getExtension(filename);
         Resource file = storageService.loadAsResource(filename);
+        final String encode = URLEncoder.encode(aliasFileName, "UTF-8");
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+                "attachment; filename=\"" + encode + "." + extension + "\"").body(file);
     }
 
     @PostMapping(value = "", consumes = {"multipart/form-data"})
@@ -56,7 +60,9 @@ public class FileUploadController {
             response.put("message", St.r("不支持的扩展名 {}.", FilenameUtils.getExtension(file.getName())));
             return response;
         }
-        final String fileName = storageService.store(file);
+        final String baseName = FilenameUtils.getBaseName(file.getOriginalFilename());
+        // 在数据库中的存储形式为： 简历?UUID.docx
+        final String fileName = baseName + "?" + storageService.store(file);
         response.put("message", St.r("Success upload {}.", file.getOriginalFilename()));
         response.put("fileName", fileName);
         return response;
@@ -68,8 +74,9 @@ public class FileUploadController {
     }
 
     private boolean checkFileExtension(String fileName) {
-        final String extension = FilenameUtils.getExtension(fileName);
-        return FILE_EXTENSIONS.contains(fileName);
+//        final String extension = FilenameUtils.getExtension(fileName);
+//        return FILE_EXTENSIONS.contains(fileName);
+        return true;
     }
 
 }

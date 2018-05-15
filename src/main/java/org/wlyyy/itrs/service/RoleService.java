@@ -59,7 +59,7 @@ public interface RoleService {
      * @param userId 用户id
      * @return 角色集合
      */
-    BaseServiceResponse<Set<Role>> findRoleIdsByUserId(Long userId);
+    BaseServiceResponse<Set<Role>> findRolesByUserId(Long userId);
 
     /**
      * 更新某用户id下的角色id们

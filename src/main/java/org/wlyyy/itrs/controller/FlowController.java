@@ -106,7 +106,9 @@ public class FlowController {
         BaseServicePageableResponse<Deployment> deploymentResult = workFlowService.findAllDeploy(new BaseServicePageableRequest<>(pageNo, pageSize,
                 new WorkFlowQuery()));
         List<Deployment> deploymentList = deploymentResult.getDatas();
-        List<DeploymentListItemVo> datas = deploymentList.stream().map(DeploymentListItemVo::buildFromDomain).collect(Collectors.toList());
+        List<DeploymentListItemVo> datas = deploymentList.stream().map(deployment -> DeploymentListItemVo.buildFromDomain(deployment,
+                id -> workFlowService.findKeyByDeploymentId(id).getData().getKey()))
+                .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询部署流程成功!", datas, pageNo, pageSize, deploymentResult.getTotal());
     }
 
@@ -517,7 +519,8 @@ public class FlowController {
         ApplyFlow applyFlowEvent = applyFlowService.findById(workFlow.getId());
         applyFlowEvent.setCurrentResult(workFlow.getResult());
         // 发送事件通知
-        this.publisher.publishEvent(new ApplyFlowEvent(applyFlowEvent));
+        String otherMessage = workFlow.getOutcome(); // 其他携带的信息
+        this.publisher.publishEvent(new ApplyFlowEvent(applyFlowEvent, otherMessage));
 
         return new BaseRestResponse<>(true, "完成任务成功!", null);
     }
@@ -526,7 +529,7 @@ public class FlowController {
     @RequestMapping(value = "/send", method = RequestMethod.GET)
     public BaseRestResponse<String> sendScore() {
         ApplyFlow applyFlow = applyFlowService.findById(9l);
-        ApplyFlowEvent event  = new ApplyFlowEvent(applyFlow);
+        ApplyFlowEvent event  = new ApplyFlowEvent(applyFlow, "otherMessage");
         this.publisher.publishEvent(event);
         return new BaseRestResponse<>(true, "发送招聘流程成功!", null);
     }

@@ -205,7 +205,6 @@ public class DemandController {
         demand.setHrName(userAgent.getRealName());
         demand.setDepartmentId(userAgent.getDepartmentId());
         demand.setStatus(EnumDemandStatus.NORMAL.getCode());
-        demand.setProcKey("twoInterviews");
 
         BaseServiceResponse<Long> insertDemandResult = demandService.insertDemand(demand);
         if (!insertDemandResult.isSuccess()) {

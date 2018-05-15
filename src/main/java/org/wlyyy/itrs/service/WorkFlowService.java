@@ -1,8 +1,8 @@
 package org.wlyyy.itrs.service;
 
 import org.activiti.engine.history.HistoricTaskInstance;
-import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.wlyyy.common.domain.BaseServicePageableRequest;
@@ -45,6 +45,14 @@ public interface WorkFlowService {
      * @return 分页部署信息
      */
     BaseServicePageableResponse<Deployment> findAllDeploy(BaseServicePageableRequest<WorkFlowQuery> request);
+
+    /**
+     * 根据部署id查找流程定义的key
+     *
+     * @param deploymentId
+     * @return
+     */
+    BaseServiceResponse<ProcessDefinition> findKeyByDeploymentId(String deploymentId);
 
     /**
      *  启动流程实例

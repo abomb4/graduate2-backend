@@ -46,7 +46,7 @@ public class EmailEventListenerService {
     private EmailLogService emailLogService;
 
     @Autowired
-    protected TemplateEngine thymeleaf;
+    private TemplateEngine thymeleaf;
 
     public EmailEventListenerService(MailProperties mailProperties) {
         this.protocol = mailProperties.getProtocol();
@@ -70,7 +70,7 @@ public class EmailEventListenerService {
     }
 
     @Transactional
-    public void sendMail(ApplyFlowEvent event, Properties properties, String address)  throws MessagingException, IOException {
+    private void sendMail(ApplyFlowEvent event, Properties properties, String address)  throws MessagingException, IOException {
         ApplyFlow applyFlow = event.getApplyFlow();
         // 创建连接会话
         Session session = Session.getInstance(properties, null);
@@ -91,10 +91,11 @@ public class EmailEventListenerService {
         // 创建内容
         MimeBodyPart part01 = new MimeBodyPart();
         // 发送邮件模板的内容
-        Context con = setContext(event);
-
+        Context con = new Context();
+        String content = setContext(event, con);
         String emailText = thymeleaf.process("emailmode.html", con);
         // System.out.println(emailText);
+        // System.out.println(content);
         part01.setContent(emailText, "text/html;charset=utf-8");
         mimeMultipart.addBodyPart(part01);
 
@@ -111,26 +112,23 @@ public class EmailEventListenerService {
             // 记录发送邮件的情况
             Long applyFlowId = applyFlow.getId();
             String sendEmail = properties.get("mail.smtp.from").toString();
-            String receiveEmail = address;
             String status = t.getLastServerResponse();
-            String content = emailText;
-            EmailLog emailLog = new EmailLog(applyFlowId, sendEmail, receiveEmail, status, content);
+            EmailLog emailLog = new EmailLog(applyFlowId, sendEmail, address, status, content);
             emailLogService.insertEmailLog(emailLog);
 
             t.close();
         }
     }
 
-    public String getAddress(ApplyFlowEvent event) {
+    private String getAddress(ApplyFlowEvent event) {
         // 得到推荐人id
         Long recommendId = event.getApplyFlow().getUserId();
         // 得到推荐人的邮件地址
-        String email = userService.findById(recommendId).getEmail();
-        return email;
+        return userService.findById(recommendId).getEmail();
     }
 
-    // 设置模板引擎中的变量
-    public Context setContext(ApplyFlowEvent event) {
+    // 设置模板引擎中的变量，并返回拼接好的邮件内容
+    private String setContext(ApplyFlowEvent event, Context context) {
         ApplyFlow applyFlow = event.getApplyFlow();
         // 得到推荐人id
         Long recommendId = applyFlow.getUserId();
@@ -143,10 +141,10 @@ public class EmailEventListenerService {
         String currentResult = applyFlow.getCurrentResult();
 
         // 塞入模板引擎中变量值
-        Context con = new Context();
-        con.setVariable("receivedName", receivedName);
-        con.setVariable("candidateName", candidateName);
-        con.setVariable("currentResult", currentResult);
-        return con;
+        context.setVariable("receivedName", receivedName);
+        context.setVariable("candidateName", candidateName);
+        context.setVariable("currentResult", currentResult);
+
+        return receivedName + "您好: 您推荐的【" + candidateName + "】" + currentResult;
     }
 }
