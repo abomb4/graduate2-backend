@@ -82,9 +82,25 @@ public class UserController {
     public BaseRestResponse<Long> createUser(final User user) {
         final BaseServiceResponse<User> user1 = userService.createUser(user);
         if (user1.isSuccess()) {
-            return new BaseRestResponse<Long>(user1.isSuccess(), user1.getMessage(), user1.getData().getId());
+            return new BaseRestResponse<>(user1.isSuccess(), user1.getMessage(), user1.getData().getId());
         } else {
-            return new BaseRestResponse<Long>(user1.isSuccess(), user1.getMessage(), null);
+            return new BaseRestResponse<>(user1.isSuccess(), user1.getMessage(), null);
+        }
+    }
+
+    /**
+     * 修改用户
+     *
+     * @param user 用户信息，需要包含id
+     * @return ID
+     */
+    @RequestMapping(value = "/myProfile/user/modify", method = RequestMethod.POST)
+    public BaseRestResponse<Integer> modifyUser(final User user) {
+        final BaseServiceResponse<Integer> response = userService.modifyUser(user);
+        if (response.isSuccess()) {
+            return new BaseRestResponse<>(response.isSuccess(), response.getMessage(), response.getData());
+        } else {
+            return new BaseRestResponse<>(response.isSuccess(), response.getMessage(), null);
         }
     }
 }
