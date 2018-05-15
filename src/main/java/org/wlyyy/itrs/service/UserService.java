@@ -57,4 +57,12 @@ public interface UserService {
      * @return Modified
      */
     BaseServiceResponse<User> modifyPassword(String oldPassword, String newPassword, String userName);
+
+    /**
+     * 修改用户信息
+     *
+     * @param user 用户信息
+     * @return 修改后
+     */
+    BaseServiceResponse<Integer> modifyUser(User user);
 }

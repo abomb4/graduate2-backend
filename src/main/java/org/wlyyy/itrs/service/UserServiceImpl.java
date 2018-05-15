@@ -103,4 +103,12 @@ public class UserServiceImpl implements UserService {
             return new BaseServiceResponse<>(false, "Old password incorrect.", null, null);
         }
     }
+
+    @Override
+    public BaseServiceResponse<Integer> modifyUser(User user) {
+        user.setPassword(null);
+        user.setSalt(null);
+        final int i = dao.updateById(user);
+        return new BaseServiceResponse<>(true, "Update sucessful.", i, null);
+    }
 }
