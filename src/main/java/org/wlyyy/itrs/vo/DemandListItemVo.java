@@ -47,6 +47,7 @@ public class DemandListItemVo {
         final int status = source.getStatus();
         final String statusName = EnumDemandStatus.getDescByCode(source.getStatus());
         final String memo = source.getMemo();
+        final String procKey = source.getProcKey();
         final String gmtCreate = formatter.format(source.getGmtCreate());
         final String gmtModify = formatter.format(source.getGmtModify());
 
@@ -67,6 +68,7 @@ public class DemandListItemVo {
                 status,
                 statusName,
                 memo,
+                procKey,
                 gmtCreate,
                 gmtModify
         );
@@ -81,7 +83,7 @@ public class DemandListItemVo {
             String publisherName, Long positionType, String positionTypeCnName,
             String jobName, Long departmentId, String departmentName, String hrName,
             Long total, String workingPlace, String degreeRequest,
-            Integer status, String statusName, String memo, String gmtCreate,
+            Integer status, String statusName, String memo, String procKey, String gmtCreate,
             String gmtModify
     ) {
         this.id = id;
@@ -100,6 +102,7 @@ public class DemandListItemVo {
         this.status = status;
         this.statusName = statusName;
         this.memo = memo;
+        this.procKey = procKey;
         this.gmtCreate = gmtCreate;
         this.gmtModify = gmtModify;
     }
@@ -120,6 +123,7 @@ public class DemandListItemVo {
     private Integer status;
     private String statusName;
     private String memo;
+    private String procKey;
     private String gmtCreate;
     private String gmtModify;
 
@@ -249,6 +253,14 @@ public class DemandListItemVo {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getProcKey() {
+        return procKey;
+    }
+
+    public void setProcKey(String procKey) {
+        this.procKey = procKey;
     }
 
     public String getGmtCreate() {

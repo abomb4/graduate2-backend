@@ -225,9 +225,9 @@ public class DemandController {
         // 获取当前登录用户信息
         UserAgent userAgent = authenticationService.isLogin().getData();
         // 非发布的hr不能修改该需求
-        if (!userAgent.getId().equals(demand.getPublisherId())) {
-            return new BaseRestResponse<>(false, "修改招聘需求失败!非发布的hr不能修改该需求!", null);
-        }
+//        if (!userAgent.getId().equals(demand.getPublisherId())) {
+//            return new BaseRestResponse<>(false, "修改招聘需求失败!非发布的hr不能修改该需求!", null);
+//        }
 
         BaseServiceResponse<Integer> updateDemandResult = demandService.updateDemand(demand);
         if (!updateDemandResult.isSuccess()) {

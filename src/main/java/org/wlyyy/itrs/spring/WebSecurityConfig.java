@@ -17,16 +17,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,10 +29,7 @@ import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.UserAgent;
 import org.wlyyy.itrs.service.AuthenticationServiceImpl;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/myProfile/mydemandFollowing/**").hasAnyRole("MANAGER")
                 .antMatchers("/myProfile/mydemand/**").hasAnyRole("HR", "MANAGER")
                 .antMatchers("/myProfile/flow/listHistoricFlow").permitAll()
+                .antMatchers("/myProfile/flow/deploy/**").hasAnyRole("ADMIN")
                 .antMatchers("/myProfile/flow/**").hasAnyRole("HR", "MANAGER", "INTERVIEWEE")
                 .antMatchers("/myProfile/**").permitAll()
                 .and()

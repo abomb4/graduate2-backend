@@ -83,7 +83,7 @@ public class FlowController {
      * @param deployName 流程名
      * @return 部署结果
      */
-    @RequestMapping(value = "/deployZip", method = RequestMethod.GET)
+    @RequestMapping(value = "/deploy/deployZip", method = RequestMethod.GET)
     public BaseRestResponse<Deployment> deployWorkFlow_zip(String zipName, String deployName){
         BaseServiceResponse<Deployment> deploymentResult = workFlowService.deployWorkFlow_zip(zipName, deployName);
         if (deploymentResult.isSuccess()) {
@@ -101,7 +101,7 @@ public class FlowController {
      * @param pageSize 页数
      * @return 分页部署信息
      */
-    @RequestMapping(value = "/listDeploy", method = RequestMethod.GET)
+    @RequestMapping(value = "/deploy/listDeploy", method = RequestMethod.GET)
     BaseRestPageableResponse<DeploymentListItemVo> listDeploy(final int pageNo, final int pageSize) {
         BaseServicePageableResponse<Deployment> deploymentResult = workFlowService.findAllDeploy(new BaseServicePageableRequest<>(pageNo, pageSize,
                 new WorkFlowQuery()));

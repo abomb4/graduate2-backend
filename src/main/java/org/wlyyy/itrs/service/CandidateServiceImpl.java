@@ -21,7 +21,12 @@ public class CandidateServiceImpl implements CandidateService{
 
     @Override
     public BaseServicePageableResponse<Candidate> findByCondition(BaseServicePageableRequest<CandidateQuery> request) {
-        final Pageable pageable = PageableUtils.getPageable(request);
+        Pageable pageable = null;
+        if (request.getData().getSort() != null) {
+            pageable = PageableUtils.getPageable(request, request.getData().getSort());
+        } else {
+            pageable = PageableUtils.getPageable(request);
+        }
         final List<Candidate> queryResult = dao.findByCondition(request.getData(), pageable);
 
         final long count;

@@ -46,7 +46,7 @@ public class CandidateListItemVo {
                 degree,  workingPlace, memo, attachment, gmtCreate, gmtModify);
     }
 
-    public static String checkIsNull(String filed) {
+    private static String checkIsNull(String filed) {
         Optional<String> option = Optional.ofNullable(filed);
         String value = option.orElse("");
 

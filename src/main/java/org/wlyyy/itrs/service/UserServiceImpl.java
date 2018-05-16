@@ -111,4 +111,18 @@ public class UserServiceImpl implements UserService {
         final int i = dao.updateById(user);
         return new BaseServiceResponse<>(true, "Update sucessful.", i, null);
     }
+
+    @Override
+    public BaseServiceResponse<String> resetPassword(Long id) {
+        User user = new User();
+        final String password = "123456";
+        final String salt = SecurityUtils.generateSalt();
+        final String encrypyPassword = SecurityUtils.encrypyPassword(password, salt);
+        user.setSalt(salt);
+        user.setPassword(encrypyPassword);
+        user.setId(id);
+
+        dao.updateById(user);
+        return new BaseServiceResponse<>(true, "Reset password success!", null, null);
+    }
 }

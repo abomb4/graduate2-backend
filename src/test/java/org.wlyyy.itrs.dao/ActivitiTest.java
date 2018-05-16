@@ -70,4 +70,21 @@ public class ActivitiTest {
 
         System.out.println(processDefinitionList.get(0).getName() + " " + processDefinitionList.get(0).getKey());
     }
+
+    @Test
+    public void getPicture() {
+        InputStream ins = repositoryService.getResourceAsStream("57501", "helloworld.png");
+
+    }
+
+//    public void inputstreamtofile(InputStream ins,File file) throws IOException {
+//        OutputStream os = new FileOutputStream(file);
+//        int bytesRead = 0;
+//        byte[] buffer = new byte[8192];
+//        while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
+//            os.write(buffer, 0, bytesRead);
+//        }
+//        os.close();
+//        ins.close();
+//    }
 }

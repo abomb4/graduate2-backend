@@ -1,6 +1,7 @@
 package org.wlyyy.itrs.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,7 @@ public class UserController {
      * @param userQuery 用户查询条件对象
      * @return 用户对象列表，不带分页参数
      */
-    @RequestMapping(value = "/myProfile/user/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/myProfile/userlist/list", method = RequestMethod.GET)
     public BaseRestResponse<List<UserListItemVo>> listUser(final UserQuery userQuery) {
         UserAgent userAgent = authenticationService.isLogin().getData();
 
@@ -102,5 +103,11 @@ public class UserController {
         } else {
             return new BaseRestResponse<>(response.isSuccess(), response.getMessage(), null);
         }
+    }
+
+    @RequestMapping(value = "myProfile/user/resetPassword/{id}", method = RequestMethod.GET)
+    public BaseRestResponse<String> resetPassword(@PathVariable("id") final Long id) {
+        BaseServiceResponse<String> resetResult = userService.resetPassword(id);
+        return new BaseRestResponse<>(resetResult.isSuccess(), resetResult.getMessage(), null);
     }
 }

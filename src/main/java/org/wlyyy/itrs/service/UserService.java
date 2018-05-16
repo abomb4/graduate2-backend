@@ -65,4 +65,12 @@ public interface UserService {
      * @return 修改后
      */
     BaseServiceResponse<Integer> modifyUser(User user);
+
+    /**
+     * 重置密码
+     *
+     * @param id 用户id
+     * @return 成功or失败信息
+     */
+    BaseServiceResponse<String> resetPassword(Long id);
 }

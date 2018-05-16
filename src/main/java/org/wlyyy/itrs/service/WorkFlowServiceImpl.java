@@ -39,18 +39,18 @@ import java.util.zip.ZipInputStream;
 public class WorkFlowServiceImpl implements  WorkFlowService{
 
     @Autowired
-    RepositoryService repositoryService;
+    private RepositoryService repositoryService;
 
     @Autowired
-    RuntimeService runtimeService;
+    private RuntimeService runtimeService;
 
     @Autowired
-    TaskService taskService;
+    private TaskService taskService;
 
     @Autowired
-    HistoryService historyService;
+    private HistoryService historyService;
 
-    final String NO_TASK = "-1";
+    private final String NO_TASK = "-1";
 
     @Override
     public BaseServiceResponse<Deployment> deployWorkFlow_file(File file, String deployName) {
