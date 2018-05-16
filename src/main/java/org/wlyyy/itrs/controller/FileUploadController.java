@@ -47,6 +47,7 @@ public class FileUploadController {
 
         final String extension = FilenameUtils.getExtension(filename);
         Resource file = storageService.loadAsResource(filename);
+        // 防止文件名乱码
         final String encode = URLEncoder.encode(aliasFileName, "UTF-8");
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + encode + "." + extension + "\"").body(file);

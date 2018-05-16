@@ -13,6 +13,7 @@ import org.wlyyy.itrs.domain.WorkFlow;
 import org.wlyyy.itrs.request.WorkFlowQuery;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -142,4 +143,13 @@ public interface WorkFlowService {
      * @return
      */
     BaseServiceResponse<String> completeRecommendTask(WorkFlow workFlow);
+
+    /**
+     * 获取部署流程图
+     *
+     * @param deploymentId 部署id
+     * @param resourceName 资源名
+     * @return InputStream
+     */
+    InputStream getDeployPictureInputStream(String deploymentId, String resourceName);
 }

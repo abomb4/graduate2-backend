@@ -3,6 +3,7 @@ package org.wlyyy.itrs.controller;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.task.Task;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,6 +28,14 @@ import org.wlyyy.itrs.vo.ApplyFlowListItemVo;
 import org.wlyyy.itrs.vo.DeploymentListItemVo;
 import org.wlyyy.itrs.vo.HistoricFlowListItemVo;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,12 +88,12 @@ public class FlowController {
     /**
      * 根据classpath下的zip文件以及部署名称进行部署
      *
-     * @param zipName 部署zip文件名（zip文件中包含.bpmn和.png）
+     * @param zipName    部署zip文件名（zip文件中包含.bpmn和.png）
      * @param deployName 流程名
      * @return 部署结果
      */
     @RequestMapping(value = "/deploy/deployZip", method = RequestMethod.GET)
-    public BaseRestResponse<Deployment> deployWorkFlow_zip(String zipName, String deployName){
+    public BaseRestResponse<Deployment> deployWorkFlow_zip(String zipName, String deployName) {
         BaseServiceResponse<Deployment> deploymentResult = workFlowService.deployWorkFlow_zip(zipName, deployName);
         if (deploymentResult.isSuccess()) {
             Deployment deployment = deploymentResult.getData();
@@ -97,7 +106,7 @@ public class FlowController {
     /**
      * 查询所有的部署信息
      *
-     * @param pageNo 页码
+     * @param pageNo   页码
      * @param pageSize 页数
      * @return 分页部署信息
      */
@@ -115,7 +124,7 @@ public class FlowController {
     /**
      * 员工给某一招聘需求推荐人才
      *
-     * @param demandId 招聘需求id
+     * @param demandId         招聘需求id
      * @param candidateRequest 候选人信息
      * @return 员工推荐成功or失败信息
      */
@@ -141,7 +150,7 @@ public class FlowController {
         // 若处于，则返回推荐失败；若不处于，则更新其在被推荐人信息表中的信息
         Long insertCandidateId;
         BaseServicePageableResponse<Candidate> recommendResult = candidateService.findByCondition(
-                new BaseServicePageableRequest<>(1,1,
+                new BaseServicePageableRequest<>(1, 1,
                         new CandidateQuery().setName(candidate.getName()).setPhoneNo(candidate.getPhoneNo())));
         if (recommendResult.getTotal() == 1) {
             // 该被推荐人已存在于被推荐人信息表中
@@ -229,7 +238,7 @@ public class FlowController {
         String demandNo = demand.getDemandNo();
 
         // 1. 根据招聘需求id找到其下的招聘流程列表
-        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
+        Sort sort = new Sort(new Order(Sort.Direction.DESC, "gmt_modify"));
         BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
                 new ApplyFlowQuery().setDemandNo(demandNo).setSort(sort));
         BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
@@ -281,7 +290,7 @@ public class FlowController {
     /**
      * 展示该用户下的所有展示层招聘流程信息表（给面试官用）
      *
-     * @param pageNo 页码
+     * @param pageNo   页码
      * @param pageSize 分页大小
      * @return ApplyFlowListItemVo列表
      */
@@ -291,7 +300,7 @@ public class FlowController {
         UserAgent userAgent = authenticationService.isLogin().getData();
 
         // 1. 根据用户id找到其下的招聘流程列表
-        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
+        Sort sort = new Sort(new Order(Sort.Direction.DESC, "gmt_modify"));
         // 需要排除掉该用户发布的招聘需求No
         // 因为hr也可以作为面试官，但规定其不得指派自己为自己发布的招聘需求的面试官
         BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
@@ -351,7 +360,7 @@ public class FlowController {
     /**
      * 展示该用户下的所有展示层招聘流程信息表（给推荐人用）
      *
-     * @param pageNo 页码
+     * @param pageNo   页码
      * @param pageSize 分页大小
      * @return ApplyFlowListItemVo列表
      */
@@ -361,7 +370,7 @@ public class FlowController {
         UserAgent userAgent = authenticationService.isLogin().getData();
 
         // 1. 根据用户id找到其下的招聘流程列表
-        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
+        Sort sort = new Sort(new Order(Sort.Direction.DESC, "gmt_modify"));
         BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
                 new ApplyFlowQuery().setUserId(userAgent.getId()).setSort(sort));
         BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
@@ -408,7 +417,7 @@ public class FlowController {
         String demandNo = demand.getDemandNo();
 
         // 1. 根据招聘需求id找到其下的招聘流程列表
-        Sort sort = new Sort( new Order(Sort.Direction.DESC, "gmt_modify"));
+        Sort sort = new Sort(new Order(Sort.Direction.DESC, "gmt_modify"));
         BaseServicePageableRequest<ApplyFlowQuery> request = new BaseServicePageableRequest<>(pageNo, pageSize,
                 new ApplyFlowQuery().setDemandNo(demandNo).setSort(sort));
         BaseServicePageableResponse<ApplyFlow> applyFlowResult = applyFlowService.findByCondition(request);
@@ -445,7 +454,7 @@ public class FlowController {
     /**
      * 查询当前用户的历史处理记录
      *
-     * @param pageNo 页码
+     * @param pageNo   页码
      * @param pageSize 分页大小
      * @return HistoricFlowListItemVo列表
      */
@@ -525,11 +534,77 @@ public class FlowController {
         return new BaseRestResponse<>(true, "完成任务成功!", null);
     }
 
+    @RequestMapping(value = "/deploy/getDeployPicture", method = RequestMethod.GET)
+    public void getDeployPicture(final HttpServletResponse response, final String deploymentId, final String resourceName) throws IOException {
+        response.setHeader("Content-Type", " image/png");
+        response.setHeader("Content-Disposition", "attachment;filename=" + resourceName);
+        try (InputStream ins = workFlowService.getDeployPictureInputStream(deploymentId, resourceName); ServletOutputStream ous = response.getOutputStream()) {
+            final BufferedImage imBuff = ImageIO.read(ins);
+            final BufferedImage resultImage = getCroppedImage(imBuff, 0);
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(resultImage, "png", os);
+            IOUtils.copy(new ByteArrayInputStream(os.toByteArray()), ous);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    public BufferedImage getCroppedImage(BufferedImage source, double tolerance) {
+        // Get our top-left pixel color as our "baseline" for cropping
+        int baseColor = source.getRGB(0, 0);
+        int width = source.getWidth();
+        int height = source.getHeight();
+        int topY = Integer.MAX_VALUE, topX = Integer.MAX_VALUE;
+        int bottomY = -1, bottomX = -1;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (colorWithinTolerance(baseColor, source.getRGB(x, y), tolerance)) {
+                    if (x < topX) topX = x;
+                    if (y < topY) topY = y;
+                    if (x > bottomX) bottomX = x;
+                    if (y > bottomY) bottomY = y;
+                }
+            }
+        }
+        BufferedImage destination = new BufferedImage((bottomX - topX + 2), (bottomY - topY + 2), BufferedImage.TYPE_INT_ARGB);
+        destination.getGraphics().drawImage(source, 0, 0,
+                destination.getWidth(), destination.getHeight(),
+                topX, topY, bottomX + 1, bottomY + 1, null);
+        return destination;
+    }
+
+    /**
+     * 非白色
+     *
+     * @param a
+     * @param b
+     * @param tolerance
+     * @return
+     */
+    private Boolean colorWithinTolerance(int a, int b, double tolerance) {
+        int aAlpha = (int) ((a & 0xFF000000) >>> 24);   // Alpha level
+        int aRed = (int) ((a & 0x00FF0000) >>> 16);   // Red level
+        int aGreen = (int) ((a & 0x0000FF00) >>> 8);    // Green level
+        int aBlue = (int) (a & 0x000000FF);            // Blue level
+        int bAlpha = (int) ((b & 0xFF000000) >>> 24);   // Alpha level
+        int bRed = (int) ((b & 0x00FF0000) >>> 16);   // Red level
+        int bGreen = (int) ((b & 0x0000FF00) >>> 8);    // Green level
+        int bBlue = (int) (b & 0x000000FF);            // Blue level
+        double distance = Math.sqrt((aAlpha - bAlpha) * (aAlpha - bAlpha) +
+                (aRed - bRed) * (aRed - bRed) +
+                (aGreen - bGreen) * (aGreen - bGreen) +
+                (aBlue - bBlue) * (aBlue - bBlue));
+        // 510.0 is the maximum distance between two colors 
+        // (0,0,0,0 -> 255,255,255,255)
+        double percentAway = distance / 510.0d;
+        return (percentAway > tolerance);
+    }
+
 
     @RequestMapping(value = "/send", method = RequestMethod.GET)
     public BaseRestResponse<String> sendScore() {
-        ApplyFlow applyFlow = applyFlowService.findById(9l);
-        ApplyFlowEvent event  = new ApplyFlowEvent(applyFlow, "otherMessage");
+        ApplyFlow applyFlow = applyFlowService.findById(9L);
+        ApplyFlowEvent event = new ApplyFlowEvent(applyFlow, "otherMessage");
         this.publisher.publishEvent(event);
         return new BaseRestResponse<>(true, "发送招聘流程成功!", null);
     }

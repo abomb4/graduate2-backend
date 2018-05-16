@@ -352,4 +352,9 @@ public class WorkFlowServiceImpl implements  WorkFlowService{
         taskService.complete(taskId, variables);
         return new BaseServiceResponse<>(true, "Complete task success!", null, null);
     }
+
+    @Override
+    public InputStream getDeployPictureInputStream(String deploymentId, String resourceName) {
+        return repositoryService.getResourceAsStream(deploymentId, resourceName);
+    }
 }

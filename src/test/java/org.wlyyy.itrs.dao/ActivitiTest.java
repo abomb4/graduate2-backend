@@ -14,6 +14,7 @@ import org.wlyyy.common.domain.BaseServiceResponse;
 import org.wlyyy.itrs.service.WorkFlowService;
 import org.wlyyy.itrs.spring.ItrsBoot;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipInputStream;
@@ -72,9 +73,10 @@ public class ActivitiTest {
     }
 
     @Test
-    public void getPicture() {
+    public void getPicture(HttpServletResponse resoibse) {
         InputStream ins = repositoryService.getResourceAsStream("57501", "helloworld.png");
 
+        // resoibse.getOutputStream().
     }
 
 //    public void inputstreamtofile(InputStream ins,File file) throws IOException {
