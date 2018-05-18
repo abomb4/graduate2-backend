@@ -51,7 +51,7 @@ public class ScoreController {
                 new ScoreFlowQuery().setUserId(userAgent.getId()).setSort(sort));
         BaseServicePageableResponse<ScoreFlow> scoreFlowResult = scoreFlowService.findByCondition(scoreFlowRequest);
         List<ScoreFlow> scoreFlowList = scoreFlowResult.getDatas();
-        List<ScoreFlowListItemVo> datas = scoreFlowList.stream().map(source -> ScoreFlowListItemVo.buildFromDomain(source))
+        List<ScoreFlowListItemVo> datas = scoreFlowList.stream().map(ScoreFlowListItemVo::buildFromDomain)
                 .collect(Collectors.toList());
 
         return new BaseRestPageableResponse<>(true, "查询用户积分流程变动记录成功!", datas,
@@ -72,7 +72,7 @@ public class ScoreController {
         BaseServicePageableRequest<ScoreRuleQuery> scoreRuleRequest = new BaseServicePageableRequest<>(pageNo, pageSize, new ScoreRuleQuery());
         BaseServicePageableResponse<ScoreRule> scoreRuleResult = scoreRuleService.findByCondition(scoreRuleRequest);
         List<ScoreRule> scoreRuleList = scoreRuleResult.getDatas();
-        List<ScoreRuleListItemVo> datas = scoreRuleList.stream().map(source -> ScoreRuleListItemVo.buildFromDomain(source))
+        List<ScoreRuleListItemVo> datas = scoreRuleList.stream().map(ScoreRuleListItemVo::buildFromDomain)
                 .collect(Collectors.toList());
         return new BaseRestPageableResponse<>(true, "查询积分规则成功!", datas,
                 scoreRuleResult.getPageNo(), scoreRuleResult.getPageSize(), scoreRuleResult.getTotal());

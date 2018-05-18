@@ -79,7 +79,7 @@ public class ApplyFlowListItemVo {
     public ApplyFlowListItemVo() {
     }
 
-    public ApplyFlowListItemVo(
+    private ApplyFlowListItemVo(
             Long id, Long demandId, String demandNo, String jobName, Long positionType, String positionTypeCnName,
             Long publisherId, String taskId, String taskName, Long candidateId, String candidateName,
             Integer candidateSex, String hopeWorkingPlace, Long recommendId, String recommendName,

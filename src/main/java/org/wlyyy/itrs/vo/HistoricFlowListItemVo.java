@@ -4,7 +4,6 @@ import org.activiti.engine.history.HistoricTaskInstance;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -21,7 +20,7 @@ public class HistoricFlowListItemVo {
      * @param findVarByTaskId               根据任务id查找流程变量(当前流程结果 result)值
      * @param findApplyFlowIdByProcId       根据流程实例id获取招聘流程id
      * @param findDemandNoByApplyFlowId     根据招聘需求id获取招聘需求No
-     * @return
+     * @return 展示层历史招聘流程对象
      */
     public static HistoricFlowListItemVo buildFromDomain(
             HistoricTaskInstance source,
@@ -50,7 +49,7 @@ public class HistoricFlowListItemVo {
     public HistoricFlowListItemVo() {
     }
 
-    public HistoricFlowListItemVo(
+    private HistoricFlowListItemVo(
             String taskId, Long applyFlowId, String demandNo, String node, String result, String startTime, String endTime
     ) {
         this.taskId = taskId;
