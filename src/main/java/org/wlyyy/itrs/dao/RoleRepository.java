@@ -1,9 +1,9 @@
 package org.wlyyy.itrs.dao;
 
 import org.apache.ibatis.annotations.*;
-import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.wlyyy.common.utils.StringTemplateUtils.St;
 import org.wlyyy.itrs.domain.Role;
 import org.wlyyy.itrs.request.RoleQuery;
 
@@ -127,9 +127,9 @@ public interface RoleRepository {
             packageWhere(role);
 
             // 不能全都是空
-            if (first) {
-                throw new IllegalArgumentException("One of query condition should be not null");
-            }
+//            if (first) {
+//                throw new IllegalArgumentException("One of query condition should be not null");
+//            }
 
             return builder.toString();
         }
@@ -153,9 +153,9 @@ public interface RoleRepository {
             packageWhere(role);
 
             // 不能全都是空
-            if (first) {
-                throw new IllegalArgumentException("One of query condition should be not null");
-            }
+//            if (first) {
+//                throw new IllegalArgumentException("One of query condition should be not null");
+//            }
 
             builder.append(getOrder(page));
             builder.append(" ").append(getPage(page));
