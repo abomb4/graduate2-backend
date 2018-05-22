@@ -31,7 +31,7 @@ public class RoleEventListenerService {
     public void assignIntervieweeRole(ApplyFlowEvent event) throws Exception {
         String otherMessage = event.getOtherMessage();
 
-        if (otherMessage.equals("指派")) {
+        if (otherMessage != null && otherMessage.equals("指派")) {
             ApplyFlow applyFlow = event.getApplyFlow();
             Long intervieweeId = applyFlow.getCurrentDealer();
 

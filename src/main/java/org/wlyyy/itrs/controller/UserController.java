@@ -79,7 +79,7 @@ public class UserController {
      * @param user 用户信息，需要包含userName, email, password, salt, sex, departmentId, realName
      * @return ID
      */
-    @RequestMapping(value = "/myProfile/user/new", method = RequestMethod.PUT)
+    @RequestMapping(value = "/myProfile/user/new", method = RequestMethod.POST)
     public BaseRestResponse<Long> createUser(final User user) {
         final BaseServiceResponse<User> user1 = userService.createUser(user);
         if (user1.isSuccess()) {

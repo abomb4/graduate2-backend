@@ -71,10 +71,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseServiceResponse<User> createUser(User user) {
         user.setSalt(SecurityUtils.generateSalt());
+        if (user.getPassword() == null) {
+            // 默认密码
+            user.setPassword("123456");
+        }
         final String encrypyPassword = SecurityUtils.encrypyPassword(user.getPassword(), user.getSalt());
         user.setPassword(encrypyPassword);
         dao.insert(user);
-        return new BaseServiceResponse<>(true, "Create user successfully.", null, null);
+        user.setPassword(null);
+        user.setSalt(null);
+        return new BaseServiceResponse<>(true, "Create user successfully.", user, null);
     }
 
     @Override
